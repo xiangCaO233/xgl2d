@@ -1,7 +1,11 @@
 #include "xmesh.h"
 #include <stdexcept>
 
-Xmesh::Xmesh(std::vector<std::vector<float>> &vertices_data) {
+Xmesh::Xmesh() {}
+
+Xmesh::~Xmesh() {}
+
+void Xmesh::load(std::vector<std::vector<float>> &vertices_data) {
   // 解码顶点数据并添加到data
   for (auto vertex_data : vertices_data) {
     if (vertex_data.size() == 3) {
@@ -27,5 +31,3 @@ Xmesh::Xmesh(std::vector<std::vector<float>> &vertices_data) {
     }
   }
 }
-
-Xmesh::~Xmesh() {}

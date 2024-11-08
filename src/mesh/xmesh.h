@@ -14,9 +14,11 @@ class Xmesh {
 
 public:
   // 构造Xmesh
-  Xmesh(std::vector<std::vector<float>> &vertices_data);
+  Xmesh();
   // 析构Xmesh
   virtual ~Xmesh();
+
+  void load(std::vector<std::vector<float>> &vertices_data);
 };
 
 #endif /* XMESH_H */
