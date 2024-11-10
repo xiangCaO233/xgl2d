@@ -2,23 +2,45 @@
 #define XMESH_H
 
 #include "../../include/core/glcore.h"
-#include <vector>
+#include <cstdint>
+
+struct Vertex {
+  // 顶点元数据
+  glm::vec3 position;
+  glm::vec4 color;
+  glm::vec2 uv;
+  // 材质id
+  float texid;
+};
 
 class Xmesh {
   // 缓冲对象
-  GLuint VBO, VAO, EBO, FBO;
-  // mesh数据
-  std::vector<glm::vec3> _positions;
-  std::vector<glm::vec4> _colors;
-  std::vector<glm::vec2> _uvs;
+  // VertexBufferObject VertexArrayObject
+  // ElementBufferObject
+  GLuint VBO, VAO, EBO;
+  // mesh顶点数量分配
+  uint32_t _vcount_size;
+  // mesh顶点缓冲对象实际分配大小(VBO)(byte)
+  uint64_t _vbuffer_size;
+  // mesh顶点索引数量分配
+  uint32_t _velecount_size;
+  // mesh顶点索引缓冲对象实际分配大小(EBO)(byte)
+  uint64_t _velebuffer_size;
 
 public:
   // 构造Xmesh
-  Xmesh();
+  Xmesh(uint32_t vcount_size = 1024);
   // 析构Xmesh
   virtual ~Xmesh();
 
-  void load(std::vector<std::vector<float>> &vertices_data);
+  // 绑定mesh缓冲
+  void bind();
+  // 解绑mesh缓冲
+  void unbind();
+
+  // 创建矩形
+  void creatquad(float x, float y, float width, float height, glm::vec4 &color,
+                 float texid = -1);
 };
 
 #endif /* XMESH_H */

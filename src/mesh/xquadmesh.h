@@ -1,0 +1,43 @@
+#ifndef XQUADMESH_H
+#define XQUADMESH_H
+
+#include "xmesh.h"
+#include <vector>
+
+class Quad {
+  // 矩形四顶点
+  Vertex *bottom_left;
+  Vertex *bottom_right;
+  Vertex *top_right;
+  Vertex *top_left;
+  // 矩形在当前meshVBO中的显存偏移
+  uint32_t meshOffset;
+  // 矩形的对应变换矩阵(默认单位矩阵)
+  glm::mat4 *_translation = new glm::mat4(1.0f);
+
+public:
+  Quad(float width, float height);
+  ~Quad();
+
+  // 应用变换
+  void scale(float scalerate);
+  void translate(glm::vec3 &trans);
+  void rotate(float rad, glm::vec3 &axis);
+};
+
+class XquadMesh : public Xmesh {
+  // 矩阵缓冲对象
+  GLuint TBO;
+  uint32_t _qcount_size;
+  // quadmesh中的全部quad(矩形)
+  std::vector<Quad> _quads;
+
+public:
+  // 构造XquadMesh
+  XquadMesh(uint32_t qcount = 256);
+  // 析构XquadMesh
+  ~XquadMesh() override;
+
+protected:
+};
+#endif /* XQUADMESH_H */
