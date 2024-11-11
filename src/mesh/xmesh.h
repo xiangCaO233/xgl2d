@@ -2,6 +2,7 @@
 #define XMESH_H
 
 #include "../../include/core/glcore.h"
+#include "../texture/texture.h"
 #include <cstdint>
 
 struct Vertex {
@@ -9,8 +10,8 @@ struct Vertex {
   glm::vec3 position;
   glm::vec4 color;
   glm::vec2 uv;
-  // 材质id
-  float texid;
+  // 顶点材质
+  Texture *tex;
 };
 
 class Xmesh {

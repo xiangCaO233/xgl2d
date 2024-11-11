@@ -17,7 +17,17 @@ class Quad {
 
 public:
   Quad(float width, float height);
+  Quad(float width, float height, glm::vec4 &color);
+  Quad(float width, float height, glm::vec2 &uv, Texture *texture);
   ~Quad();
+
+  // 设置颜色
+  void setfill(glm::vec4 &color);
+  // 设置矩形材质(默认拉伸)
+  void settexture(Texture *texture);
+  // 重置材质uv(自定义贴图坐标)
+  void setquaduv(glm::vec2 &bottom_left, glm::vec2 &bottom_right,
+                 glm::vec2 &top_right, glm::vec2 &top_left);
 
   // 应用变换
   void scale(float scalerate);
@@ -38,6 +48,9 @@ public:
   // 析构XquadMesh
   ~XquadMesh() override;
 
-protected:
+  // 使用左下角为基准构建矩形
+  void newquad(float x, float y, float width, float height, glm::vec3 &color);
+  void newquad(float x, float y, float width, float height, glm::vec2 &uv,
+               int texid);
 };
 #endif /* XQUADMESH_H */
