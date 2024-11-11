@@ -15,11 +15,15 @@ class Quad {
   // 矩形的对应变换矩阵(默认单位矩阵)
   glm::mat4 *_translation = new glm::mat4(1.0f);
 
+  friend class XquadMesh;
+
 public:
   Quad(float width, float height);
   Quad(float width, float height, glm::vec4 &color);
-  Quad(float width, float height, glm::vec2 &uv, Texture *texture);
+  Quad(float width, float height, glm::vec2 &uv, int texid);
   ~Quad();
+
+  std::vector<float> dump();
 
   // 设置颜色
   void setfill(glm::vec4 &color);
@@ -48,9 +52,11 @@ public:
   // 析构XquadMesh
   ~XquadMesh() override;
 
+  inline unsigned int size() { return _quads.size(); }
+
   // 使用左下角为基准构建矩形
   void newquad(float x, float y, float width, float height, glm::vec4 &color);
   void newquad(float x, float y, float width, float height, glm::vec2 &uv,
-               Texture *texture);
+               int texid);
 };
 #endif /* XQUADMESH_H */

@@ -4,17 +4,33 @@
 #include "../../include/core/glcore.h"
 #include "../texture/texture.h"
 #include <cstdint>
+#include <vector>
 
 struct Vertex {
   // 顶点元数据
-  glm::vec3 position;
+  glm::vec3 position{0.0f, 0.0f, 0.0f};
   glm::vec4 color{1.0f, 1.0f, 1.0f, 1.0f};
   glm::vec2 uv{0.0f, 0.0f};
   // 顶点材质
-  Texture *tex;
+  float texid{0.0f};
+  std::vector<float> dump() {
+    std::vector<float> data;
+    data.push_back(position.x);
+    data.push_back(position.y);
+    data.push_back(position.z);
+    data.push_back(color.r);
+    data.push_back(color.g);
+    data.push_back(color.b);
+    data.push_back(color.a);
+    data.push_back(uv.x);
+    data.push_back(uv.y);
+    data.push_back(texid);
+    return data;
+  }
 };
 
 class Xmesh {
+protected:
   // 缓冲对象
   // VertexBufferObject VertexArrayObject
   // ElementBufferObject
@@ -38,10 +54,6 @@ public:
   void bind();
   // 解绑mesh缓冲
   void unbind();
-
-  // 创建矩形
-  void creatquad(float x, float y, float width, float height, glm::vec4 &color,
-                 float texid = -1);
 };
 
 #endif /* XMESH_H */

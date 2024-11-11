@@ -11,12 +11,13 @@ find_package(glm REQUIRED)
 
 include_directories(include)
 
-set(LIB_SOURCES src/mesh/xmesh.cpp src/mesh/xquadmesh.cpp)
+set(LIB_SOURCES src/mesh/xmesh.cpp src/mesh/shape/xquadmesh.cpp
+                src/shader/shader.cpp)
 set(TEST_SOURCES src/main.cpp ${LIB_SOURCES})
 
 add_library(libxgl2d STATIC ${LIB_SOURCES})
 add_library(xgl2d SHARED ${LIB_SOURCES})
-add_executable(testxgl2d ${TEST_SOURCES})
+add_executable(testxgl2d ${TEST_SOURCES} ${LIB_SOURCES})
 
 target_link_libraries(libxgl2d glfw GLEW::GLEW OpenGL::GL glm::glm)
 target_link_libraries(xgl2d glfw GLEW::GLEW OpenGL::GL glm::glm)

@@ -1,4 +1,5 @@
-#include "mesh/xquadmesh.h"
+#include "mesh/shape/xquadmesh.h"
+#include "shader/shader.h"
 #include <core/glcore.h>
 #include <iostream>
 
@@ -43,8 +44,26 @@ int main(int argc, char *argv[]) {
   glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
   std::cout << "最大材质插槽数: " << maxTextureUnits << std::endl;
 
+  Shader shader("../assets/shader/vertexshader.glsl",
+                "../assets/shader/fragmentshader.glsl");
+  shader.use();
+
   // 创建mesh
-  // XquadMesh mesh;
-  // mesh.creatquad()
+  XquadMesh mesh;
+  glm::vec4 color = {1.0f, 1.0f, 1.0f, 1.0f};
+  mesh.newquad(0, 0, 100, 100, color);
+  mesh.bind();
+  // 渲染循环
+  while (glfwWindowShouldClose(w)) {
+    glClearColor(0.23f, 0.23f, 0.23f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glDrawElements(GL_TRIANGLES, mesh.size() * 6, GL_UNSIGNED_INT, (void *)0);
+
+    glfwPollEvents();
+  }
+  mesh.unbind();
+  shader.unuse();
+  glfwTerminate();
   return 0;
 }
