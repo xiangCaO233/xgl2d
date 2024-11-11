@@ -1,7 +1,7 @@
 #ifndef XQUADMESH_H
 #define XQUADMESH_H
 
-#include "xmesh.h"
+#include "../xmesh.h"
 #include <vector>
 
 class Quad {
