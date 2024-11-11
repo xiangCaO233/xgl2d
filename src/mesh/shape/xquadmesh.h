@@ -40,7 +40,7 @@ class XquadMesh : public Xmesh {
   GLuint TBO;
   uint32_t _qcount_size;
   // quadmesh中的全部quad(矩形)
-  std::vector<Quad> _quads;
+  std::vector<Quad *> _quads;
 
 public:
   // 构造XquadMesh
@@ -49,8 +49,8 @@ public:
   ~XquadMesh() override;
 
   // 使用左下角为基准构建矩形
-  void newquad(float x, float y, float width, float height, glm::vec3 &color);
+  void newquad(float x, float y, float width, float height, glm::vec4 &color);
   void newquad(float x, float y, float width, float height, glm::vec2 &uv,
-               int texid);
+               Texture *texture);
 };
 #endif /* XQUADMESH_H */

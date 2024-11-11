@@ -8,8 +8,8 @@
 struct Vertex {
   // 顶点元数据
   glm::vec3 position;
-  glm::vec4 color;
-  glm::vec2 uv;
+  glm::vec4 color{1.0f, 1.0f, 1.0f, 1.0f};
+  glm::vec2 uv{0.0f, 0.0f};
   // 顶点材质
   Texture *tex;
 };

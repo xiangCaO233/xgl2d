@@ -1,9 +1,33 @@
 #include "xquadmesh.h"
 #include <vector>
 
-Quad::Quad(float width, float height) { bottom_left = new Vertex(); }
-Quad::Quad(float width, float height, glm::vec4 &color){};
-Quad::Quad(float width, float height, glm::vec2 &uv, Texture *texture){};
+Quad::Quad(float width, float height) {
+  bottom_left = new Vertex;
+  bottom_left->position = {-width / 2, -height / 2, 0.0f};
+  bottom_right = new Vertex;
+  bottom_right->position = {width / 2, -height / 2, 0.0f};
+  top_right = new Vertex;
+  top_right->position = {width / 2, height / 2, 0.0f};
+  top_left = new Vertex;
+  top_left->position = {-width / 2, height / 2, 0.0f};
+}
+Quad::Quad(float width, float height, glm::vec4 &color) : Quad(width, height) {
+  bottom_left->color = color;
+  bottom_right->color = color;
+  top_right->color = color;
+  top_left->color = color;
+};
+Quad::Quad(float width, float height, glm::vec2 &uv, Texture *texture)
+    : Quad(width, height) {
+  bottom_left->uv = uv;
+  bottom_left->tex = texture;
+  bottom_right->uv = uv;
+  bottom_right->tex = texture;
+  top_right->uv = uv;
+  top_right->tex = texture;
+  top_left->uv = uv;
+  top_left->tex = texture;
+};
 
 Quad::~Quad() {}
 
@@ -45,3 +69,14 @@ XquadMesh::~XquadMesh() {
   Xmesh::~Xmesh();
   glDeleteBuffers(1, &TBO);
 }
+// 使用左下角为基准构建矩形
+void XquadMesh::newquad(float x, float y, float width, float height,
+                        glm::vec4 &color) {
+  auto quad = new Quad(width, height, color);
+  quad->translate(glm::translate(glm::mat4(1.0f), {}));
+  _quads.push_back(quad);
+};
+void XquadMesh::newquad(float x, float y, float width, float height,
+                        glm::vec2 &uv, Texture *texture) {
+  auto quad = new Quad(width, height, uv, texture);
+};
