@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
   mesh.newquad(0, 0, 100, 100, color);
   mesh.bind();
   // 渲染循环
-  while (glfwWindowShouldClose(w)) {
+  while (!glfwWindowShouldClose(w)) {
     glClearColor(0.23f, 0.23f, 0.23f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
