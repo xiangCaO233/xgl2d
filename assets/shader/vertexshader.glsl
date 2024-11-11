@@ -24,7 +24,8 @@ out float otexid;
 
 void main(){
 	// 应用所以矩阵
-	gl_Position = viewmat * projmat * mmodmat * vec4(mposition,1.0f);
+	// gl_Position = viewmat * projmat * mmodmat * vec4(mposition,1.0f);
+	gl_Position = vec4(mposition,1.0f);
 	ocolor = mcolor;
 	ouv = muv;
 	otexid = texid;

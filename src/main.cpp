@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
   // 创建mesh
   XquadMesh mesh;
   glm::vec4 color = {1.0f, 1.0f, 1.0f, 1.0f};
-  mesh.newquad(0, 0, 100, 100, color);
+  mesh.newquad(0, 0, 0.2, 0.2, color);
   mesh.bind();
   // 渲染循环
   while (!glfwWindowShouldClose(w)) {
@@ -60,7 +60,11 @@ int main(int argc, char *argv[]) {
 
     glDrawElements(GL_TRIANGLES, mesh.size() * 6, GL_UNSIGNED_INT, (void *)0);
 
+    glfwSwapBuffers(w);
     glfwPollEvents();
+    while (GLenum error = glGetError()) {
+      std::cerr << "OpenGL Error: " << error << std::endl;
+    }
   }
   mesh.unbind();
   shader.unuse();

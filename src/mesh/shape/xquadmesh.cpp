@@ -1,4 +1,5 @@
 #include "xquadmesh.h"
+#include <iostream>
 #include <vector>
 
 Quad::Quad(float width, float height) {
@@ -104,8 +105,10 @@ void XquadMesh::newquad(float x, float y, float width, float height,
                   4 * sizeof(Vertex), quad->dump().data());
   // 矩阵变换数据
   glBindBuffer(GL_ARRAY_BUFFER, TBO);
-  glBufferSubData(GL_ARRAY_BUFFER, _quads.size() * 4 * sizeof(glm::vec4),
-                  4 * sizeof(glm::vec4), quad->_translation);
+  /*
+glBufferSubData(GL_ARRAY_BUFFER, _quads.size() * 4 * sizeof(glm::vec4),
+            4 * sizeof(glm::vec4), quad->_translation);
+                                                                  */
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   _quads.push_back(quad);
   unbind();
