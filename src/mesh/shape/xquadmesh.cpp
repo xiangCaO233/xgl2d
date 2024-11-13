@@ -162,29 +162,64 @@ void XquadMesh::unbind() {
   Xmesh::unbind();
   // glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
+bool XquadMesh::screencontainquad(float x, float y, float width, float height,
+                                  glm::vec2 &screensize) {
+  // 计算屏幕的半宽和半高，因为是以窗口中心为原点的坐标系，所以要考虑到这一点
+  float screenHalfWidth = screensize.x / 2;
+  float screenHalfHeight = screensize.y / 2;
+  // 矩形的四个顶点坐标
+  float topLeftX = x - width / 2;
+  float topLeftY = y + height / 2;
+  float topRightX = x + width / 2;
+  float topRightY = y + height / 2;
+  float bottomLeftX = x - width / 2;
+  float bottomLeftY = y - height / 2;
+  float bottomRightX = x + width / 2;
+  float bottomRightY = y - height / 2;
+
+  // 检查是否有顶点在屏幕内
+  if ((topLeftX >= -screenHalfWidth && topLeftX <= screenHalfWidth &&
+       topLeftY >= -screenHalfHeight && topLeftY <= screenHalfHeight) ||
+      (topRightX >= -screenHalfWidth && topRightX <= screenHalfWidth &&
+       topRightY >= -screenHalfHeight && topRightY <= screenHalfHeight) ||
+      (bottomLeftX >= -screenHalfWidth && bottomLeftX <= screenHalfWidth &&
+       bottomLeftY >= -screenHalfHeight && bottomLeftY <= screenHalfHeight) ||
+      (bottomRightX >= -screenHalfWidth && bottomRightX <= screenHalfWidth &&
+       bottomRightY >= -screenHalfHeight && bottomRightY <= screenHalfHeight)) {
+    return true;
+  }
+
+  return false;
+};
 // 使用前绑定本mesh
 void XquadMesh::drawquad(float x, float y, float width, float height,
                          glm::vec4 &&color, glm::vec2 &screensize) {
+  bool should_draw = screencontainquad(x, y, width, height, screensize);
+  if (!should_draw)
+    return;
   auto quad = new Quad(width, height, color);
   quad->translate({x, y, 0.0f});
   newquad(quad);
+  _should_draw_quads.push_back(quad);
 };
 // 使用前绑定本mesh
 void XquadMesh::drawquad(float x, float y, float width, float height,
                          Texture *texture, TexType texture_type,
                          glm::vec2 &screensize) {
-  bool should_draw{true};
+  bool should_draw = screencontainquad(x, y, width, height, screensize);
   if (!should_draw)
     return;
   auto quad = new Quad(width, height, texture, texture_type);
   quad->translate({x, y, 0.0f});
   newquad(quad);
+  _should_draw_quads.push_back(quad);
 };
 
 // 使用左下角为基准构建矩形
 void XquadMesh::newquad(Quad *quad) {
-  uint32_t quadcount = size();
-  // 设置模型矩阵索引
+  uint32_t quadcount = _should_draw_quads.size();
+  // std::cout << "绘制数量:" << std::to_string(quadcount) << std::endl;
+  //  设置模型矩阵索引
   quad->setmatindex(quadcount);
   // 同步显存
   // 顶点数据
@@ -194,14 +229,13 @@ void XquadMesh::newquad(Quad *quad) {
   std::vector<unsigned int> indicies_data = {
       4 * quadcount,     4 * quadcount + 1, 4 * quadcount + 2,
       4 * quadcount + 2, 4 * quadcount + 3, 4 * quadcount};
-  // std::cout << "添加顶点索引:" << std::endl;
-  // for (auto &index : indicies_data) {
-  //  std::cout << std::to_string(index) << ",";
-  //}
-  // std::cout << std::endl;
-  glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, size() * 6 * sizeof(uint32_t),
+  glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, quadcount * 6 * sizeof(uint32_t),
                   6 * sizeof(uint32_t), indicies_data.data());
-  _quads.push_back(quad);
+  // _quads.push_back(quad);
 };
 
-void XquadMesh::finish() {}
+void XquadMesh::finish() {
+  glDrawElements(GL_TRIANGLES, 6 * _should_draw_quads.size(), GL_UNSIGNED_INT,
+                 (void *)0);
+  _should_draw_quads.clear();
+}

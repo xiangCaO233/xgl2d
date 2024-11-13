@@ -63,6 +63,9 @@ class XquadMesh : public Xmesh {
   // 矩形绘制权重(权重为0时，将矩形列表末尾的矩形移交到此0权矩形处,包括显存空间哈希表)
   std::unordered_map<Quad *, int> _quad_draw_weight;
 
+  bool screencontainquad(float x, float y, float width, float height,
+                         glm::vec2 &screensize);
+
 public:
   // 构造XquadMesh
   XquadMesh(Shader *shader, uint32_t qcount = 256);

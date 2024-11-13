@@ -88,9 +88,6 @@ int main(int argc, char *argv[]) {
 
   // 创建mesh
   XquadMesh mesh(&shader);
-  mesh.bind();
-  mesh.drawquad(0, 0, 100, 100, {0.92f, 0.46f, 0.12f, 1.0f}, screensize);
-  mesh.drawquad(200, 200, 150, 100, {0.92f, 0.20f, 0.45f, 1.0f}, screensize);
 
   // 渲染循环
   while (!glfwWindowShouldClose(w)) {
@@ -100,7 +97,12 @@ int main(int argc, char *argv[]) {
     // 应用正交投影
     shader.set_unfmat4f("projmat", proj);
     // 绘制quadmesh中的所有矩形
-    glDrawElements(GL_TRIANGLES, mesh.size() * 6, GL_UNSIGNED_INT, (void *)0);
+    mesh.bind();
+    mesh.drawquad(0, 0, 100, 100, {0.92f, 0.46f, 0.12f, 1.0f}, screensize);
+    mesh.drawquad(200, 200, 150, 100, {0.92f, 0.20f, 0.45f, 1.0f}, screensize);
+    mesh.drawquad(-100, -90, 80, 300, {0.92f, 0.10f, 0.59f, 1.0f}, screensize);
+    mesh.finish();
+    mesh.unbind();
 
     glfwSwapBuffers(w);
     glfwPollEvents();
@@ -109,7 +111,6 @@ int main(int argc, char *argv[]) {
       std::cerr << "OpenGL Error: " << error << std::endl;
     }
   }
-  mesh.unbind();
   shader.unuse();
   glfwTerminate();
   return 0;

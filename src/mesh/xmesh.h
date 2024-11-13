@@ -42,9 +42,9 @@ struct Vertex {
     data.push_back(position4.y);
     data.push_back(position4.z);
     // debug变换结果
-    std::cout << "[x=" + std::to_string(position4.x) +
-                     ",y=" + std::to_string(position4.y) + "]"
-              << std::endl;
+    // std::cout << "[x=" + std::to_string(position4.x) +
+    //                 ",y=" + std::to_string(position4.y) + "]"
+    //          << std::endl;
     // color数据
     data.push_back(color.r);
     data.push_back(color.g);
