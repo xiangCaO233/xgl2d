@@ -2,7 +2,7 @@
 #include <cstddef>
 #include <iostream>
 
-Xmesh::Xmesh(uint32_t vcount_size)
+Xmesh::Xmesh(Shader *shader, uint32_t vcount_size)
     : _vcount_size(vcount_size), _vbuffer_size(vcount_size * sizeof(Vertex)),
       _velecount_size(_vcount_size * 2),
       _velebuffer_size(_velecount_size * sizeof(uint32_t)) {
@@ -41,8 +41,13 @@ Xmesh::Xmesh(uint32_t vcount_size)
                         (const void *)offsetof(Vertex, uv));
   // 启用layout3
   glEnableVertexAttribArray(3);
-  // 描述lauout3为顶点uv
+  // 描述lauout3为顶点变换矩阵索引
   glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                        (const void *)offsetof(Vertex, matindex));
+  // 启用layout4
+  glEnableVertexAttribArray(4);
+  // 描述lauout3为顶点材质索引
+  glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                         (const void *)offsetof(Vertex, texid));
 
   // 初始化操作完成，解绑

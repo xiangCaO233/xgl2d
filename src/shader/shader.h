@@ -10,6 +10,9 @@ class Shader {
   GLuint program;
   std::unordered_map<const char *, GLuint> uniform_locs;
 
+  friend class Xmesh;
+  friend class XquadMesh;
+
 public:
   // 构造Shader
   Shader(const char *verglslfile, const char *fragglslfile);
