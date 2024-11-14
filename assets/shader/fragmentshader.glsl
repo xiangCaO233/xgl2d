@@ -1,4 +1,4 @@
-#version 330 core
+#version 400 core
 
 // 接收光栅化结果
 in vec4 ocolor;

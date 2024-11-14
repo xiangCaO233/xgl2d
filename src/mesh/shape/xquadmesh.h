@@ -2,6 +2,7 @@
 #define XQUADMESH_H
 
 #include "../xmesh.h"
+#include <memory>
 #include <unordered_map>
 #include <vector>
 enum TexType { FILL_TO_QUAD, REAPEAT_TO_QUAD };
@@ -16,14 +17,17 @@ class Quad {
   float width, height;
   // 矩形的对应变换矩阵(默认单位矩阵)
   glm::mat4 _translation = glm::mat4(1.0f);
-  Texture *quadTex = new Texture;
+  std::shared_ptr<Texture> quadTex;
 
   friend class XquadMesh;
 
 public:
   Quad(float width, float height);
   Quad(float width, float height, glm::vec4 &color);
-  Quad(float width, float height, Texture *texture, TexType texture_type);
+  Quad(float width, float height, std::shared_ptr<Texture> texture,
+       TexType texture_type);
+  Quad(float width, float height, glm::vec4 &color,
+       std::shared_ptr<Texture> texture, TexType texture_type);
   ~Quad();
 
   // 导出数据(src是否经过变换)
@@ -79,9 +83,16 @@ public:
                 glm::vec2 &screensize);
   void drawquad(float x, float y, float width, float height, glm::vec4 &color,
                 glm::vec2 &screensize);
+  void drawquad(float x, float y, float width, float height, glm::vec4 &&color,
+                std::shared_ptr<Texture> texture, TexType texture_type,
+                glm::vec2 &screensize);
+  void drawquad(float x, float y, float width, float height, glm::vec4 &color,
+                std::shared_ptr<Texture> texture, TexType texture_type,
+                glm::vec2 &screensize);
   // 使用前绑定本mesh
-  void drawquad(float x, float y, float width, float height, Texture *texture,
-                TexType texture_type, glm::vec2 &screensize);
+  void drawquad(float x, float y, float width, float height,
+                std::shared_ptr<Texture> texture, TexType texture_type,
+                glm::vec2 &screensize);
 
   // 完成此次绘制
   void finish();

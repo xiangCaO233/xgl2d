@@ -1,5 +1,6 @@
 #include "xquadmesh.h"
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -19,8 +20,10 @@ Quad::Quad(float width, float height, glm::vec4 &color) : Quad(width, height) {
   top_right->color = color;
   top_left->color = color;
 };
-Quad::Quad(float width, float height, Texture *texture, TexType texture_type)
+Quad::Quad(float width, float height, std::shared_ptr<Texture> texture,
+           TexType texture_type)
     : Quad(width, height) {
+  quadTex = texture;
   switch (texture_type) {
   case TexType::FILL_TO_QUAD: {
     // 直接填充整个矩形(尺寸不一则变形)
@@ -47,6 +50,14 @@ Quad::Quad(float width, float height, Texture *texture, TexType texture_type)
   top_left->texid = texture->texid;
 };
 
+Quad::Quad(float width, float height, glm::vec4 &color,
+           std::shared_ptr<Texture> texture, TexType texture_type)
+    : Quad(width, height, texture, texture_type) {
+  bottom_left->color = color;
+  bottom_right->color = color;
+  top_right->color = color;
+  top_left->color = color;
+};
 Quad::~Quad() {}
 bool Quad::isequaln(const Quad &quad) {
   return width / height == quad.width / quad.height;
@@ -198,22 +209,29 @@ void XquadMesh::drawquad(float x, float y, float width, float height,
 };
 void XquadMesh::drawquad(float x, float y, float width, float height,
                          glm::vec4 &color, glm::vec2 &screensize) {
+  drawquad(x, y, width, height, color, deftexture, TexType::REAPEAT_TO_QUAD,
+           screensize);
+};
+// 使用前绑定本mesh
+void XquadMesh::drawquad(float x, float y, float width, float height,
+                         std::shared_ptr<Texture> texture, TexType texture_type,
+                         glm::vec2 &screensize) {
+  drawquad(x, y, width, height, {1.0f, 1.0f, 1.0f, 1.0f}, texture, texture_type,
+           screensize);
+};
+void XquadMesh::drawquad(float x, float y, float width, float height,
+                         glm::vec4 &&color, std::shared_ptr<Texture> texture,
+                         TexType texture_type, glm::vec2 &screensize) {
+  drawquad(x, y, width, height, color, texture, texture_type, screensize);
+};
+void XquadMesh::drawquad(float x, float y, float width, float height,
+                         glm::vec4 &color, std::shared_ptr<Texture> texture,
+                         TexType texture_type, glm::vec2 &screensize) {
   bool should_draw = screencontainquad(x, y, width, height, screensize);
   if (!should_draw)
     return;
   //  std::cout << "add quad" << std::endl;
-  auto quad = new Quad(width, height, color);
-  quad->translate({x, y, 0.0f});
-  _should_draw_quads.push_back(quad);
-};
-// 使用前绑定本mesh
-void XquadMesh::drawquad(float x, float y, float width, float height,
-                         Texture *texture, TexType texture_type,
-                         glm::vec2 &screensize) {
-  bool should_draw = screencontainquad(x, y, width, height, screensize);
-  if (!should_draw)
-    return;
-  auto quad = new Quad(width, height, texture, texture_type);
+  auto quad = new Quad(width, height, color, texture, texture_type);
   quad->translate({x, y, 0.0f});
   if (texture->texid > _max_texid) {
     _max_texid = texture->texid;

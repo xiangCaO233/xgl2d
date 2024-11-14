@@ -1,9 +1,24 @@
+#include <iostream>
+#include <string>
 #include <vector>
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include "texture.h"
 
-std::vector<Texture *> Texture::texunits;
+std::vector<Texture *> Texture::textures;
+
+void Texture::activatetexunits() {
+  if (textures.size() <= 15) {
+    for (int i = 0; i < textures.size(); i++) {
+      glActiveTexture(GL_TEXTURE1 + i);
+    }
+  } else {
+    // 大于15个纹理，激活全部纹理槽
+    for (int i = 0; i < 15; i++) {
+      glActiveTexture(GL_TEXTURE1 + i);
+    }
+  }
+};
 
 Texture::Texture(const char *texpath) {
   // 使用前绑定对应mesh
@@ -15,9 +30,7 @@ Texture::Texture(const char *texpath) {
   // 初始化纹理
   glGenTextures(1, &texture);
   // 0号纹理槽留白
-  glActiveTexture(GL_TEXTURE0 + texunits.size() % 15 + 1);
-  texid = texunits.size() + 1;
-  glBindTexture(GL_TEXTURE_2D, texture);
+  texid = textures.size() + 1;
   // 为当前绑定的纹理对象设置环绕、过滤方式
   // 重复绘制
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -29,14 +42,30 @@ Texture::Texture(const char *texpath) {
   // 上传纹理数据
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGB,
                GL_UNSIGNED_BYTE, data);
-  texunits.push_back(this);
+  textures.push_back(this);
   // 释放纹理源数据
   stbi_image_free(data);
 }
 Texture::Texture() {
-  width = 0;
-  height = 0;
+  // 1*1白色纹理
+  width = 1;
+  height = 1;
   texid = 0;
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  std::cout << "deftexture obj:" << std::to_string(texture) << std::endl;
+  // 创建一个 1x1 像素的白色纹理数据
+  unsigned char whitePixel[3] = {255, 255, 255}; // RGB 全部设为 255，表示白色
+  // 将数据加载到纹理中
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE,
+               whitePixel);
+  // 设置纹理参数
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  // 初始化完成,解绑
+  glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 Texture::~Texture() {}

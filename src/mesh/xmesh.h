@@ -5,6 +5,7 @@
 #include "../texture/texture.h"
 #include <cstdint>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -70,7 +71,7 @@ protected:
   // 缓冲对象
   // VertexBufferObject VertexArrayObject
   // ElementBufferObject TextureBuffer
-  GLuint VBO, VAO, EBO, TBO, deftexture;
+  GLuint VBO, VAO, EBO, TBO;
   Shader *program;
   // mesh顶点数量分配
   uint32_t _vcount_size;
@@ -80,6 +81,7 @@ protected:
   uint32_t _velecount_size;
   // mesh顶点索引缓冲对象实际分配大小(EBO)(byte)
   uint64_t _velebuffer_size;
+  std::shared_ptr<Texture> deftexture;
 
 public:
   // 构造Xmesh

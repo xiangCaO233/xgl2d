@@ -6,8 +6,10 @@
 class Texture {
   GLuint texture;
   // 纹理单元集
-  static std::vector<Texture *> texunits;
+  static std::vector<Texture *> textures;
+  static void activatetexunits();
 
+  friend class Xmesh;
   friend class XquadMesh;
   friend class Quad;
 

@@ -1,6 +1,7 @@
 #include "xmesh.h"
 #include <cstddef>
 #include <iostream>
+#include <memory>
 #include <string>
 
 Xmesh::Xmesh(Shader *shader, uint32_t vcount_size)
@@ -14,25 +15,15 @@ Xmesh::Xmesh(Shader *shader, uint32_t vcount_size)
 
   // 先绑定
   glBindVertexArray(VAO);
-  glGenTextures(1, &deftexture);
-  glBindTexture(GL_TEXTURE_2D, deftexture);
 
-  // 创建一个 1x1 像素的白色纹理数据
-  unsigned char whitePixel[3] = {255, 255, 255}; // RGB 全部设为 255，表示白色
-
-  // 将数据加载到纹理中
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE,
-               whitePixel);
-
-  // 设置纹理参数
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glActiveTexture(GL_TEXTURE0);             // 激活纹理单元
-  glBindTexture(GL_TEXTURE_2D, deftexture); // 绑定纹理
+  deftexture = std::make_shared<Texture>();
+  // 默认纹理绑定
+  glBindTexture(GL_TEXTURE_2D, deftexture->texture);
+  // 激活纹理单元0
+  glActiveTexture(GL_TEXTURE0);
   // 在着色器中设置纹理单元的索引
-  glUniform1i(glGetUniformLocation(shader->shader_program, "samplers[0]"), 0);
+  glUniform1i(glGetUniformLocation(shader->shader_program, "samplers[0]"),
+              deftexture->texid);
 
   // 初始化VBO
   glBindBuffer(GL_ARRAY_BUFFER, VBO);

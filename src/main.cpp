@@ -99,6 +99,7 @@ int main(int argc, char *argv[]) {
   // 应用正交投影
   shader->set_unfmat4f("projmat", proj);
   mesh.bind();
+
   // 渲染循环
   while (!glfwWindowShouldClose(w)) {
     glClearColor(0.23f, 0.23f, 0.23f, 1.0f);
@@ -110,15 +111,14 @@ int main(int argc, char *argv[]) {
     // mesh.drawquad(200, 200, 150, 100, {0.92f, 0.20f, 0.45f, 1.0f},
     // screensize); mesh.drawquad(-100, -90, 80, 300, {0.92f, 0.10f,
     // 0.59f, 1.0f}, screensize);
-    for (int i = 0; i < 10; i++) {
-      for (int j = 0; j < 10; j++) {
-        glm::vec4 color = {i * 1.0f / 10.0f, j * 1.0 / 10.0f,
-                           (i + j / 2.0f) * 1.0 / 10.0f, 1.0f};
+    for (int i = 0; i < 6; i++) {
+      for (int j = 0; j < 4; j++) {
+        glm::vec4 color = {i * 1.0f / 6.0f, j * 1.0 / 4.0f,
+                           (i + j / 10.0f) * 1.0f, 1.0f};
         mesh.drawquad(
-            -windowWidth / 2.0f + i * windowWidth / 10.0f + windowWidth / 20.0f,
-            windowHeight / 2.0f - j * windowHeight / 10.0f -
-                windowHeight / 20.0f,
-            windowWidth / 10.0f, windowHeight / 10.0f, color, screensize);
+            -windowWidth / 2.0f + i * windowWidth / 6.0f + windowWidth / 12.0f,
+            windowHeight / 2.0f - j * windowHeight / 4.0f - windowHeight / 8.0f,
+            windowWidth / 6.0f, windowHeight / 4.0f, color, screensize);
       }
       // mesh.drawquad(rand() % windowWidth - windowWidth / 2.0f,
       //               rand() % windowHeight - windowHeight / 2.0f, 100, 100,
