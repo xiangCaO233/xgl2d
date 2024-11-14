@@ -1,5 +1,6 @@
 #include "mesh/shape/xquadmesh.h"
 #include "shader/shader.h"
+#include <chrono>
 #include <core/glcore.h>
 #include <cstdlib>
 #include <ctime>

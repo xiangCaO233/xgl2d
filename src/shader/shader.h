@@ -25,6 +25,7 @@ public:
   void unuse();
 
   // 设置uniform变量
+  void set_sampler(const char *name, int value);
   void set_unfm1f(const char *name, float value);
   void set_unfm1i(const char *name, int value);
   void set_unfm2f(const char *name, float value1, float value2);

@@ -89,6 +89,9 @@ GLint Shader::uniform_loc(const char *name) {
   return loc;
 }
 
+void Shader::set_sampler(const char *name, int value) {
+  glUniform1i(glGetUniformLocation(shader_program, name), value);
+};
 void Shader::set_unfm1f(const char *name, float value) {
   glUniform1f(uniform_loc(name), value);
 }
