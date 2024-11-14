@@ -4,10 +4,12 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
+#include <memory>
 #include <string>
+#include <vector>
 
 glm::mat4 proj;
-int windowWidth = 960, windowHeight = 540;
+int windowWidth = 960, windowHeight = 640;
 glm::vec2 screensize = {windowWidth, windowHeight};
 // 初始化着色器
 Shader *shader;
@@ -95,10 +97,49 @@ int main(int argc, char *argv[]) {
 
   // 创建mesh
   XquadMesh mesh(shader);
+  // 加载纹理
+  std::cout << "加载纹理..." << std::endl;
+  std::vector<std::shared_ptr<Texture>> texs;
+  texs.push_back(std::make_shared<Texture>("../assets/texture/aijier.png"));
+  texs.push_back(std::make_shared<Texture>("../assets/texture/aimudeng.png"));
+  texs.push_back(
+      std::make_shared<Texture>("../assets/texture/beierfasite.png"));
+  texs.push_back(std::make_shared<Texture>("../assets/texture/bisimai.png"));
 
+  texs.push_back(std::make_shared<Texture>("../assets/texture/bunao.png"));
+  texs.push_back(std::make_shared<Texture>("../assets/texture/dafeng.png"));
+  texs.push_back(std::make_shared<Texture>("../assets/texture/daiduo.png"));
+  texs.push_back(std::make_shared<Texture>("../assets/texture/dujiaoshou.png"));
+
+  texs.push_back(std::make_shared<Texture>("../assets/texture/guanghui.png"));
+  texs.push_back(std::make_shared<Texture>("../assets/texture/jiahe.png"));
+  texs.push_back(std::make_shared<Texture>("../assets/texture/kewei.png"));
+  texs.push_back(std::make_shared<Texture>("../assets/texture/nengdai.png"));
+
+  texs.push_back(
+      std::make_shared<Texture>("../assets/texture/ougenqinwang.png"));
+  texs.push_back(std::make_shared<Texture>("../assets/texture/qiabayefu.png"));
+  texs.push_back(
+      std::make_shared<Texture>("../assets/texture/qibolinbojue.png"));
+  texs.push_back(std::make_shared<Texture>("../assets/texture/shengli.png"));
+
+  texs.push_back(std::make_shared<Texture>("../assets/texture/sikula.png"));
+  texs.push_back(std::make_shared<Texture>("../assets/texture/tiancheng.png"));
+  texs.push_back(
+      std::make_shared<Texture>("../assets/texture/tianlangxing.png"));
+  texs.push_back(std::make_shared<Texture>("../assets/texture/wuzang.png"));
+
+  texs.push_back(
+      std::make_shared<Texture>("../assets/texture/xingdengbao.png"));
+  texs.push_back(std::make_shared<Texture>("../assets/texture/xinnong.png"));
+  texs.push_back(std::make_shared<Texture>("../assets/texture/xinzexi.png"));
+  texs.push_back(std::make_shared<Texture>("../assets/texture/yuanchou.png"));
+
+  std::cout << "加载纹理完成" << std::endl;
   // 应用正交投影
   shader->set_unfmat4f("projmat", proj);
   mesh.bind();
+  // glBindTexture(GL_TEXTURE_2D, mesh.deftexture->texture);
 
   // 渲染循环
   while (!glfwWindowShouldClose(w)) {
@@ -114,11 +155,13 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < 6; i++) {
       for (int j = 0; j < 4; j++) {
         glm::vec4 color = {i * 1.0f / 6.0f, j * 1.0 / 4.0f,
-                           (i + j / 10.0f) * 1.0f, 1.0f};
+                           i * 1.0f / 6.0f * 0.6f + j * 1.0 / 4.0f * 0.4f,
+                           1.0f};
         mesh.drawquad(
             -windowWidth / 2.0f + i * windowWidth / 6.0f + windowWidth / 12.0f,
             windowHeight / 2.0f - j * windowHeight / 4.0f - windowHeight / 8.0f,
-            windowWidth / 6.0f, windowHeight / 4.0f, color, screensize);
+            windowWidth / 6.0f, windowHeight / 4.0f, color, texs[j * 6 + i],
+            TexType::FILL_TO_QUAD, screensize);
       }
       // mesh.drawquad(rand() % windowWidth - windowWidth / 2.0f,
       //               rand() % windowHeight - windowHeight / 2.0f, 100, 100,

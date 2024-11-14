@@ -7,7 +7,7 @@
 Xmesh::Xmesh(Shader *shader, uint32_t vcount_size)
     : _vcount_size(vcount_size), _vbuffer_size(vcount_size * sizeof(Vertex)),
       _velecount_size(_vcount_size * 2),
-      _velebuffer_size(_velecount_size * sizeof(uint32_t)) {
+      _velebuffer_size(_velecount_size * sizeof(uint32_t)), _shader(shader) {
   // 在初始化Xmesh之前确保gl已初始化
   glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);
@@ -22,8 +22,7 @@ Xmesh::Xmesh(Shader *shader, uint32_t vcount_size)
   // 激活纹理单元0
   glActiveTexture(GL_TEXTURE0);
   // 在着色器中设置纹理单元的索引
-  glUniform1i(glGetUniformLocation(shader->shader_program, "samplers[0]"),
-              deftexture->texid);
+  shader->set_unfm1i("samplers[0]", deftexture->texid);
 
   // 初始化VBO
   glBindBuffer(GL_ARRAY_BUFFER, VBO);

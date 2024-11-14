@@ -27,21 +27,18 @@ Quad::Quad(float width, float height, std::shared_ptr<Texture> texture,
   switch (texture_type) {
   case TexType::FILL_TO_QUAD: {
     // 直接填充整个矩形(尺寸不一则变形)
-    bottom_left->uv = {-1.0f, -1.0f};
-    bottom_right->uv = {1.0f, -1.0f};
+    bottom_left->uv = {0.0f, 0.0f};
+    bottom_right->uv = {1.0f, 0.0f};
     top_right->uv = {1.0f, 1.0f};
-    top_left->uv = {-1.0f, 1.0f};
+    top_left->uv = {0.0f, 1.0f};
     break;
   }
   case TexType::REAPEAT_TO_QUAD: {
-    // 重复绘制材质到矩形(根据quad尺寸自动确定绘制方式)
-    // todo-
-    float qwhrate = width / height;
-    float twhrate = texture->width / texture->height;
-    // bottom_left->uv = {-1.0f, -1.0f};
-    // bottom_right->uv = {1.0f, -1.0f};
-    // top_right->uv = {1.0f, 1.0f};
-    // top_left->uv = {-1.0f, 1.0f};
+    // 重复绘制材质到矩形(根据quad尺寸自动重复绘制或直接裁剪(左下角为起点))
+    bottom_left->uv = {0.0f, 0.0f};
+    bottom_right->uv = {width / texture->width, 0.0f};
+    top_right->uv = {width / texture->width, height / texture->height};
+    top_left->uv = {0.0f, height / texture->height};
   }
   }
   bottom_left->texid = texture->texid;
@@ -265,16 +262,115 @@ void XquadMesh::finish() {
   for (auto &quad : _should_draw_quads) {
     // 将矩形放入对应批次
     batchs[quad->quadTex->texid / 15].push_back(quad);
+    // std::cout << "当前quadtexid:" << std::to_string(quad->quadTex->texid)
+    //           << std::endl;
   }
   // 逐批次绘制
-  for (auto &batch : batchs) {
-    for (auto &quad : batch) {
+  for (int i = 0; i < batchs.size(); i++) {
+    for (int j = 0; j < batchs[i].size(); j++) {
+      auto quad = batchs[i][j];
+      // 上传矩形数据
       newquad(quad);
     }
-    glDrawElements(GL_TRIANGLES, batch.size() * 6, GL_UNSIGNED_INT, (void *)0);
-    // 清除次批绘制过的矩形
+    // 0号纹理槽绑定
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, deftexture->texture);
+
+    //  此批次纹理数量
+    auto size = Texture::textures.size();
+    int currentbatchtexturecount = size < 15             ? size
+                                   : size < (i + 1) * 15 ? size - i * 15
+                                                         : 15;
+    std::cout << "此批纹理数:[" + std::to_string(currentbatchtexturecount) + "]"
+              << std::endl;
+    // 绑定此批次矩形所需的材质
+    if (currentbatchtexturecount > 0) {
+      glActiveTexture(GL_TEXTURE1);
+      glBindTexture(GL_TEXTURE_2D, Texture::textures[0 + i * 15]->texture);
+      _shader->set_unfm1i(("samplers[" + std::to_string(1) + "]").c_str(), 1);
+    }
+
+    if (currentbatchtexturecount > 1) {
+      glActiveTexture(GL_TEXTURE2);
+      glBindTexture(GL_TEXTURE_2D, Texture::textures[1 + i * 15]->texture);
+      _shader->set_unfm1i(("samplers[" + std::to_string(2) + "]").c_str(), 2);
+    }
+
+    if (currentbatchtexturecount > 2) {
+      glActiveTexture(GL_TEXTURE3);
+      glBindTexture(GL_TEXTURE_2D, Texture::textures[2 + i * 15]->texture);
+      _shader->set_unfm1i(("samplers[" + std::to_string(3) + "]").c_str(), 3);
+    }
+
+    if (currentbatchtexturecount > 3) {
+      glActiveTexture(GL_TEXTURE4);
+      glBindTexture(GL_TEXTURE_2D, Texture::textures[3 + i * 15]->texture);
+      _shader->set_unfm1i(("samplers[" + std::to_string(4) + "]").c_str(), 4);
+    }
+
+    if (currentbatchtexturecount > 4) {
+      glActiveTexture(GL_TEXTURE5);
+      glBindTexture(GL_TEXTURE_2D, Texture::textures[4 + i * 15]->texture);
+      _shader->set_unfm1i(("samplers[" + std::to_string(5) + "]").c_str(), 5);
+    }
+
+    if (currentbatchtexturecount > 5) {
+      glActiveTexture(GL_TEXTURE6);
+      glBindTexture(GL_TEXTURE_2D, Texture::textures[5 + i * 15]->texture);
+      _shader->set_unfm1i(("samplers[" + std::to_string(6) + "]").c_str(), 6);
+    }
+
+    if (currentbatchtexturecount > 6) {
+      glActiveTexture(GL_TEXTURE7);
+      glBindTexture(GL_TEXTURE_2D, Texture::textures[6 + i * 15]->texture);
+      _shader->set_unfm1i(("samplers[" + std::to_string(7) + "]").c_str(), 7);
+    }
+    if (currentbatchtexturecount > 7) {
+      glActiveTexture(GL_TEXTURE8);
+      glBindTexture(GL_TEXTURE_2D, Texture::textures[7 + i * 15]->texture);
+      _shader->set_unfm1i(("samplers[" + std::to_string(8) + "]").c_str(), 8);
+    }
+    if (currentbatchtexturecount > 8) {
+      glActiveTexture(GL_TEXTURE9);
+      glBindTexture(GL_TEXTURE_2D, Texture::textures[8 + i * 15]->texture);
+      _shader->set_unfm1i(("samplers[" + std::to_string(9) + "]").c_str(), 9);
+    }
+    if (currentbatchtexturecount > 9) {
+      glActiveTexture(GL_TEXTURE10);
+      glBindTexture(GL_TEXTURE_2D, Texture::textures[9 + i * 15]->texture);
+      _shader->set_unfm1i(("samplers[" + std::to_string(10) + "]").c_str(), 10);
+    }
+    if (currentbatchtexturecount > 10) {
+      glActiveTexture(GL_TEXTURE11);
+      glBindTexture(GL_TEXTURE_2D, Texture::textures[10 + i * 15]->texture);
+      _shader->set_unfm1i(("samplers[" + std::to_string(11) + "]").c_str(), 11);
+    }
+    if (currentbatchtexturecount > 11) {
+      glActiveTexture(GL_TEXTURE12);
+      glBindTexture(GL_TEXTURE_2D, Texture::textures[11 + i * 15]->texture);
+      _shader->set_unfm1i(("samplers[" + std::to_string(12) + "]").c_str(), 12);
+    }
+    if (currentbatchtexturecount > 12) {
+      glActiveTexture(GL_TEXTURE13);
+      glBindTexture(GL_TEXTURE_2D, Texture::textures[12 + i * 15]->texture);
+      _shader->set_unfm1i(("samplers[" + std::to_string(13) + "]").c_str(), 13);
+    }
+    if (currentbatchtexturecount > 13) {
+      glActiveTexture(GL_TEXTURE14);
+      glBindTexture(GL_TEXTURE_2D, Texture::textures[13 + i * 15]->texture);
+      _shader->set_unfm1i(("samplers[" + std::to_string(14) + "]").c_str(), 14);
+    }
+    if (currentbatchtexturecount > 14) {
+      glActiveTexture(GL_TEXTURE15);
+      glBindTexture(GL_TEXTURE_2D, Texture::textures[14 + i * 15]->texture);
+      _shader->set_unfm1i(("samplers[" + std::to_string(15) + "]").c_str(), 15);
+    }
+    glDrawElements(GL_TRIANGLES, batchs[i].size() * 6, GL_UNSIGNED_INT,
+                   (void *)0);
     _quads.clear();
+    std::cout << "绘制第[" + std::to_string(i + 1) + "]批完成" << std::endl;
   }
+  std::cout << "QuadMesh绘制完成" << std::endl;
   // 清除全部的绘制批
   _should_draw_quads.clear();
 }

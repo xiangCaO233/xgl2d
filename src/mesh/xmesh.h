@@ -72,7 +72,7 @@ protected:
   // VertexBufferObject VertexArrayObject
   // ElementBufferObject TextureBuffer
   GLuint VBO, VAO, EBO, TBO;
-  Shader *program;
+  Shader *_shader;
   // mesh顶点数量分配
   uint32_t _vcount_size;
   // mesh顶点缓冲对象实际分配大小(VBO)(byte)
@@ -81,9 +81,9 @@ protected:
   uint32_t _velecount_size;
   // mesh顶点索引缓冲对象实际分配大小(EBO)(byte)
   uint64_t _velebuffer_size;
-  std::shared_ptr<Texture> deftexture;
 
 public:
+  std::shared_ptr<Texture> deftexture;
   // 构造Xmesh
   Xmesh(Shader *shader, uint32_t vcount_size = 1024);
   // 析构Xmesh

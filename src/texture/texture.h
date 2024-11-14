@@ -4,7 +4,6 @@
 
 #include <vector>
 class Texture {
-  GLuint texture;
   // 纹理单元集
   static std::vector<Texture *> textures;
   static void activatetexunits();
@@ -14,6 +13,7 @@ class Texture {
   friend class Quad;
 
 public:
+  GLuint texture;
   // 构造Texture
   Texture();
   Texture(const char *texpath);

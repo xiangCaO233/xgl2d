@@ -29,6 +29,7 @@ Texture::Texture(const char *texpath) {
   height = theight;
   // 初始化纹理
   glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture);
   // 0号纹理槽留白
   texid = textures.size() + 1;
   // 为当前绑定的纹理对象设置环绕、过滤方式
@@ -40,8 +41,9 @@ Texture::Texture(const char *texpath) {
   // 放大使用线性过滤
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   // 上传纹理数据
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGB,
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
                GL_UNSIGNED_BYTE, data);
+  glBindTexture(GL_TEXTURE_2D, 0);
   textures.push_back(this);
   // 释放纹理源数据
   stbi_image_free(data);
