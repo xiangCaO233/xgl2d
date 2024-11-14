@@ -16,9 +16,6 @@ glm::vec2 screensize = {windowWidth, windowHeight};
 Shader *shader;
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
-  // make sure the viewport matches the new window dimensions; note that width
-  // and height will be significantly larger than specified on retina displays.
-  //  std::cout << "大小改变" << std::endl;
   glViewport(0, 0, width, height);
   glfwGetWindowSize(window, &windowWidth, &windowHeight);
   screensize = {windowWidth, windowHeight};
@@ -27,19 +24,6 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
                     -1.0f, 1.0f);
   // 应用正交投影
   shader->set_unfmat4f("projmat", proj);
-  // proj = glm::ortho(-width / 2.0f, width / 2.0f, -height / 2.0f, height
-  // / 2.0f,
-  //                 -1.0f, 1.0f);
-  // float whrate = (float)width / (float)height;
-  //   if (whrate >= 1.0f) {
-  //     // proj = glm::ortho(-1.0f, 1.0f, -1.0f /
-  //     whrate, 1.0f / whrate, -1.0f, 1.0f); proj =
-  //     glm::ortho(-1.0f, 1.0f, -1.0f / whrate, 1.0f /
-  //     whrate, -1.0f, 1.0f);
-  //   } else {
-  //     proj = glm::ortho(-whrate, whrate, -1.0f, 1.0f,
-  //     -1.0f, 1.0f);
-  //   }
 }
 
 int main(int argc, char *argv[]) {
@@ -148,11 +132,7 @@ int main(int argc, char *argv[]) {
     glClear(GL_COLOR_BUFFER_BIT);
     // 获取当前时间点
     auto start = std::chrono::high_resolution_clock::now();
-    // 绘制quadmesh中的所有矩形
-    // mesh.drawquad(0, 0, 100, 100, {0.92f, 0.46f, 0.12f, 1.0f}, screensize);
-    // mesh.drawquad(200, 200, 150, 100, {0.92f, 0.20f, 0.45f, 1.0f},
-    // screensize); mesh.drawquad(-100, -90, 80, 300, {0.92f, 0.10f,
-    // 0.59f, 1.0f}, screensize);
+    // 绘制矩形
     for (int i = 0; i < 6; i++) {
       for (int j = 0; j < 4; j++) {
         glm::vec4 color = {i * 1.0f / 6.0f, j * 1.0 / 4.0f,
@@ -164,11 +144,6 @@ int main(int argc, char *argv[]) {
             windowWidth / 6.0f, windowHeight / 4.0f, color, texs[j * 6 + i],
             TexType::FILL_TO_QUAD, screensize);
       }
-      // mesh.drawquad(rand() % windowWidth - windowWidth / 2.0f,
-      //               rand() % windowHeight - windowHeight / 2.0f, 100, 100,
-      //               {rand() % 1000 / 1000.0f, rand() % 1000 / 1000.0f,
-      //                rand() % 1000 / 1000.0f, 1.0f},
-      //               screensize);
     }
     mesh.finish();
 
