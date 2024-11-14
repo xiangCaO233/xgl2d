@@ -2,7 +2,6 @@
 #define XQUADMESH_H
 
 #include "../xmesh.h"
-#include <list>
 #include <unordered_map>
 #include <vector>
 enum TexType { FILL_TO_QUAD, REAPEAT_TO_QUAD };
@@ -17,6 +16,7 @@ class Quad {
   float width, height;
   // 矩形的对应变换矩阵(默认单位矩阵)
   glm::mat4 _translation = glm::mat4(1.0f);
+  Texture *quadTex = new Texture;
 
   friend class XquadMesh;
 
@@ -50,10 +50,9 @@ public:
 };
 
 class XquadMesh : public Xmesh {
-  // 矩阵缓冲对象
-  GLuint TBO;
   uint32_t _qcount_size;
 
+  int _max_texid{0};
   // quadmesh中的全部quad(矩形本身)
   std::vector<Quad *> _quads;
   // 将要绘制的矩形
@@ -77,6 +76,8 @@ public:
 
   // 使用前绑定本mesh
   void drawquad(float x, float y, float width, float height, glm::vec4 &&color,
+                glm::vec2 &screensize);
+  void drawquad(float x, float y, float width, float height, glm::vec4 &color,
                 glm::vec2 &screensize);
   // 使用前绑定本mesh
   void drawquad(float x, float y, float width, float height, Texture *texture,

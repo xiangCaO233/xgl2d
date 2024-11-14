@@ -69,8 +69,8 @@ class Xmesh {
 protected:
   // 缓冲对象
   // VertexBufferObject VertexArrayObject
-  // ElementBufferObject
-  GLuint VBO, VAO, EBO;
+  // ElementBufferObject TextureBuffer
+  GLuint VBO, VAO, EBO, TBO, deftexture;
   Shader *program;
   // mesh顶点数量分配
   uint32_t _vcount_size;

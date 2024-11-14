@@ -1,11 +1,16 @@
 #include "mesh/shape/xquadmesh.h"
 #include "shader/shader.h"
 #include <core/glcore.h>
+#include <cstdlib>
+#include <ctime>
 #include <iostream>
+#include <string>
 
 glm::mat4 proj;
 int windowWidth = 960, windowHeight = 540;
 glm::vec2 screensize = {windowWidth, windowHeight};
+// 初始化着色器
+Shader *shader;
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
   // make sure the viewport matches the new window dimensions; note that width
@@ -17,6 +22,8 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
   proj = glm::ortho(-(float)windowWidth / 2.0f, (float)windowWidth / 2.0f,
                     -(float)windowHeight / 2.0f, (float)windowHeight / 2.0f,
                     -1.0f, 1.0f);
+  // 应用正交投影
+  shader->set_unfmat4f("projmat", proj);
   // proj = glm::ortho(-width / 2.0f, width / 2.0f, -height / 2.0f, height
   // / 2.0f,
   //                 -1.0f, 1.0f);
@@ -34,6 +41,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
 
 int main(int argc, char *argv[]) {
   std::cout << "活了" << std::endl;
+  srand(time(nullptr));
   if (!glfwInit()) {
     std::cout << "glfw初始化失败" << std::endl;
     return -1;
@@ -63,6 +71,7 @@ int main(int argc, char *argv[]) {
   printf("最大抗锯齿倍率: %d\n", maxSamples);
   // 启用 最大 MSAA
   glfwWindowHint(GLFW_SAMPLES, maxSamples);
+  glfwSwapInterval(0); // 禁用V-Sync
 
   // 绑定窗口大小回调函数
   glfwSetFramebufferSizeCallback(w, framebuffer_size_callback);
@@ -75,11 +84,9 @@ int main(int argc, char *argv[]) {
   int maxTextureUnits = 0;
   glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
   std::cout << "最大材质插槽数: " << maxTextureUnits << std::endl;
-
-  // 初始化着色器
-  Shader shader("../assets/shader/vertexshader.glsl",
-                "../assets/shader/fragmentshader.glsl");
-  shader.use();
+  shader = new Shader("../assets/shader/vertexshader.glsl",
+                      "../assets/shader/fragmentshader.glsl");
+  shader->use();
 
   // 计算正交投影矩阵
   proj = glm::ortho(-(float)windowWidth / 2.0f, (float)windowWidth / 2.0f,
@@ -87,31 +94,57 @@ int main(int argc, char *argv[]) {
                     -1.0f, 1.0f);
 
   // 创建mesh
-  XquadMesh mesh(&shader);
+  XquadMesh mesh(shader);
 
+  // 应用正交投影
+  shader->set_unfmat4f("projmat", proj);
+  mesh.bind();
   // 渲染循环
   while (!glfwWindowShouldClose(w)) {
     glClearColor(0.23f, 0.23f, 0.23f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-
-    // 应用正交投影
-    shader.set_unfmat4f("projmat", proj);
+    // 获取当前时间点
+    auto start = std::chrono::high_resolution_clock::now();
     // 绘制quadmesh中的所有矩形
-    mesh.bind();
-    mesh.drawquad(0, 0, 100, 100, {0.92f, 0.46f, 0.12f, 1.0f}, screensize);
-    mesh.drawquad(200, 200, 150, 100, {0.92f, 0.20f, 0.45f, 1.0f}, screensize);
-    mesh.drawquad(-100, -90, 80, 300, {0.92f, 0.10f, 0.59f, 1.0f}, screensize);
+    // mesh.drawquad(0, 0, 100, 100, {0.92f, 0.46f, 0.12f, 1.0f}, screensize);
+    // mesh.drawquad(200, 200, 150, 100, {0.92f, 0.20f, 0.45f, 1.0f},
+    // screensize); mesh.drawquad(-100, -90, 80, 300, {0.92f, 0.10f,
+    // 0.59f, 1.0f}, screensize);
+    for (int i = 0; i < 10; i++) {
+      for (int j = 0; j < 10; j++) {
+        glm::vec4 color = {i * 1.0f / 10.0f, j * 1.0 / 10.0f,
+                           (i + j / 2.0f) * 1.0 / 10.0f, 1.0f};
+        mesh.drawquad(
+            -windowWidth / 2.0f + i * windowWidth / 10.0f + windowWidth / 20.0f,
+            windowHeight / 2.0f - j * windowHeight / 10.0f -
+                windowHeight / 20.0f,
+            windowWidth / 10.0f, windowHeight / 10.0f, color, screensize);
+      }
+      // mesh.drawquad(rand() % windowWidth - windowWidth / 2.0f,
+      //               rand() % windowHeight - windowHeight / 2.0f, 100, 100,
+      //               {rand() % 1000 / 1000.0f, rand() % 1000 / 1000.0f,
+      //                rand() % 1000 / 1000.0f, 1.0f},
+      //               screensize);
+    }
     mesh.finish();
-    mesh.unbind();
 
     glfwSwapBuffers(w);
+    // 获取代码执行后的时间点
+    auto end = std::chrono::high_resolution_clock::now();
+    // 计算时间差
+    auto duration =
+        std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    std::cout << "frame time:" << std::to_string(duration.count()) << "us"
+              << std::endl;
+
     glfwPollEvents();
     // 读取错误信息
     while (GLenum error = glGetError()) {
       std::cerr << "OpenGL Error: " << error << std::endl;
     }
   }
-  shader.unuse();
+  mesh.unbind();
+  shader->unuse();
   glfwTerminate();
   return 0;
 }

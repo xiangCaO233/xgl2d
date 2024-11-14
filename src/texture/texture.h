@@ -4,15 +4,21 @@
 
 #include <vector>
 class Texture {
+  GLuint texture;
   // 纹理单元集
-  static std::vector<GLuint> texunits;
+  static std::vector<Texture *> texunits;
+
+  friend class XquadMesh;
+  friend class Quad;
 
 public:
   // 构造Texture
+  Texture();
   Texture(const char *texpath);
   // 析构Texture
   virtual ~Texture();
-  int texid;
+  // 纹理id,颜色通道数
+  int texid, nrChannels;
   float width, height;
 };
 

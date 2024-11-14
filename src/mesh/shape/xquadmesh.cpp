@@ -194,12 +194,16 @@ bool XquadMesh::screencontainquad(float x, float y, float width, float height,
 // 使用前绑定本mesh
 void XquadMesh::drawquad(float x, float y, float width, float height,
                          glm::vec4 &&color, glm::vec2 &screensize) {
+  drawquad(x, y, width, height, color, screensize);
+};
+void XquadMesh::drawquad(float x, float y, float width, float height,
+                         glm::vec4 &color, glm::vec2 &screensize) {
   bool should_draw = screencontainquad(x, y, width, height, screensize);
   if (!should_draw)
     return;
+  //  std::cout << "add quad" << std::endl;
   auto quad = new Quad(width, height, color);
   quad->translate({x, y, 0.0f});
-  newquad(quad);
   _should_draw_quads.push_back(quad);
 };
 // 使用前绑定本mesh
@@ -211,13 +215,15 @@ void XquadMesh::drawquad(float x, float y, float width, float height,
     return;
   auto quad = new Quad(width, height, texture, texture_type);
   quad->translate({x, y, 0.0f});
-  newquad(quad);
+  if (texture->texid > _max_texid) {
+    _max_texid = texture->texid;
+  }
   _should_draw_quads.push_back(quad);
 };
 
 // 使用左下角为基准构建矩形
 void XquadMesh::newquad(Quad *quad) {
-  uint32_t quadcount = _should_draw_quads.size();
+  uint32_t quadcount = size();
   // std::cout << "绘制数量:" << std::to_string(quadcount) << std::endl;
   //  设置模型矩阵索引
   quad->setmatindex(quadcount);
@@ -231,11 +237,26 @@ void XquadMesh::newquad(Quad *quad) {
       4 * quadcount + 2, 4 * quadcount + 3, 4 * quadcount};
   glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, quadcount * 6 * sizeof(uint32_t),
                   6 * sizeof(uint32_t), indicies_data.data());
-  // _quads.push_back(quad);
+  _quads.push_back(quad);
 };
 
 void XquadMesh::finish() {
-  glDrawElements(GL_TRIANGLES, 6 * _should_draw_quads.size(), GL_UNSIGNED_INT,
-                 (void *)0);
+  // 根据纹理划分渲染批次(至少1批)
+  int batch_count = _max_texid / 15 + 1;
+  auto batchs = std::vector<std::vector<Quad *>>(batch_count);
+  for (auto &quad : _should_draw_quads) {
+    // 将矩形放入对应批次
+    batchs[quad->quadTex->texid / 15].push_back(quad);
+  }
+  // 逐批次绘制
+  for (auto &batch : batchs) {
+    for (auto &quad : batch) {
+      newquad(quad);
+    }
+    glDrawElements(GL_TRIANGLES, batch.size() * 6, GL_UNSIGNED_INT, (void *)0);
+    // 清除次批绘制过的矩形
+    _quads.clear();
+  }
+  // 清除全部的绘制批
   _should_draw_quads.clear();
 }
