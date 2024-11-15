@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 3.28)
 
 project(xgl2d)
 set(CMAKE_CXX_STANDARD 17)
+# 设置默认构建类型为 Debug
+set(CMAKE_BUILD_TYPE
+    Debug
+    CACHE STRING "Build type" FORCE)
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
+set(CMAKE_C_FLAGS_DEBUG "-g -O0")
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 find_package(glfw3 REQUIRED)

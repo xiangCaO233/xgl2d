@@ -12,21 +12,39 @@ class Quad {
   Vertex *bottom_right;
   Vertex *top_right;
   Vertex *top_left;
-  // 矩形在当前meshVBO中的显存偏移
-  uint32_t meshOffset;
   float width, height;
   // 矩形的对应变换矩阵(默认单位矩阵)
   glm::mat4 _translation = glm::mat4(1.0f);
+  // 矩形的纹理
   std::shared_ptr<Texture> quadTex;
 
   friend class XquadMesh;
 
 public:
-  Quad(float width, float height);
-  Quad(float width, float height, glm::vec4 &color);
-  Quad(float width, float height, std::shared_ptr<Texture> texture,
-       TexType texture_type);
-  Quad(float width, float height, glm::vec4 &color,
+  // 带右值构造
+  Quad(glm::vec2 &cp, float width, float height);
+  Quad(glm::vec2 &&cp, float width, float height);
+  Quad(glm::vec2 &cp, float width, float height, glm::vec4 &color);
+
+  Quad(glm::vec2 &&cp, float width, float height, glm::vec4 &color);
+  Quad(glm::vec2 &cp, float width, float height, glm::vec4 &&color);
+
+  Quad(glm::vec2 &&cp, float width, float height, glm::vec4 &&color);
+
+  Quad(glm::vec2 &cp, float width, float height,
+       std::shared_ptr<Texture> texture, TexType texture_type);
+  Quad(glm::vec2 &&cp, float width, float height,
+       std::shared_ptr<Texture> texture, TexType texture_type);
+
+  Quad(glm::vec2 &cp, float width, float height, glm::vec4 &color,
+       std::shared_ptr<Texture> texture, TexType texture_type);
+
+  Quad(glm::vec2 &cp, float width, float height, glm::vec4 &&color,
+       std::shared_ptr<Texture> texture, TexType texture_type);
+  Quad(glm::vec2 &&cp, float width, float height, glm::vec4 &color,
+       std::shared_ptr<Texture> texture, TexType texture_type);
+
+  Quad(glm::vec2 &&cp, float width, float height, glm::vec4 &&color,
        std::shared_ptr<Texture> texture, TexType texture_type);
   ~Quad();
 
@@ -37,7 +55,7 @@ public:
   // 设置颜色
   void setfill(glm::vec4 &color);
   // 设置矩形材质(默认拉伸)
-  void settexture(Texture *texture);
+  void settexture(std::shared_ptr<Texture> texture);
   // 重置材质uv(自定义贴图坐标)
   void setquaduv(glm::vec2 &bottom_left, glm::vec2 &bottom_right,
                  glm::vec2 &top_right, glm::vec2 &top_left);
@@ -51,6 +69,50 @@ public:
 
   bool isequaln(const Quad &quad);
   bool operator==(const Quad &quad);
+};
+
+class Linestrip : public Quad {
+  // 长度
+  float linelength;
+  // 线宽
+  float linewidth;
+
+public:
+  // 构造Linestrip
+  Linestrip(glm::vec2 &p1, glm::vec2 &p2, float width);
+
+  Linestrip(glm::vec2 &p1, glm::vec2 &&p2, float width);
+  Linestrip(glm::vec2 &&p1, glm::vec2 &p2, float width);
+
+  Linestrip(glm::vec2 &&p1, glm::vec2 &&p2, float width);
+
+  Linestrip(glm::vec2 &p1, glm::vec2 &p2, float width, glm::vec4 &color);
+
+  Linestrip(glm::vec2 &p1, glm::vec2 &&p2, float width, glm::vec4 &&color);
+  Linestrip(glm::vec2 &&p1, glm::vec2 &p2, float width, glm::vec4 &&color);
+  Linestrip(glm::vec2 &&p1, glm::vec2 &&p2, float width, glm::vec4 &color);
+
+  Linestrip(glm::vec2 &p1, glm::vec2 &p2, float width, glm::vec4 &&color);
+  Linestrip(glm::vec2 &p1, glm::vec2 &&p2, float width, glm::vec4 &color);
+  Linestrip(glm::vec2 &&p1, glm::vec2 &p2, float width, glm::vec4 &color);
+
+  Linestrip(glm::vec2 &&p1, glm::vec2 &&p2, float width, glm::vec4 &&color);
+
+  Linestrip(glm::vec2 &sp, float length, float degrees, float width);
+  Linestrip(glm::vec2 &&sp, float length, float degrees, float width);
+
+  Linestrip(glm::vec2 &sp, float length, float degrees, float width,
+            glm::vec4 &color);
+
+  Linestrip(glm::vec2 &sp, float length, float degrees, float width,
+            glm::vec4 &&color);
+  Linestrip(glm::vec2 &&sp, float length, float degrees, float width,
+            glm::vec4 &color);
+
+  Linestrip(glm::vec2 &&sp, float length, float degrees, float width,
+            glm::vec4 &&color);
+  // 析构Linestrip
+  virtual ~Linestrip();
 };
 
 class XquadMesh : public Xmesh {
@@ -73,7 +135,7 @@ public:
   // 构造XquadMesh
   XquadMesh(Shader *shader, uint32_t qcount = 256);
   // 析构XquadMesh
-  ~XquadMesh() override;
+  virtual ~XquadMesh() override;
 
   void bind() override;
   void unbind() override;
@@ -89,10 +151,11 @@ public:
   void drawquad(float x, float y, float width, float height, glm::vec4 &color,
                 std::shared_ptr<Texture> texture, TexType texture_type,
                 glm::vec2 &screensize);
-  // 使用前绑定本mesh
   void drawquad(float x, float y, float width, float height,
                 std::shared_ptr<Texture> texture, TexType texture_type,
                 glm::vec2 &screensize);
+  void drawlinestrip(float x1, float y1, float x2, float y2, float width,
+                     glm::vec4 color, glm::vec2 &screensize);
 
   // 完成此次绘制
   void finish();
