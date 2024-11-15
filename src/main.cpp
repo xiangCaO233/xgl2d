@@ -133,24 +133,27 @@ int main(int argc, char *argv[]) {
     // 获取当前时间点
     auto start = std::chrono::high_resolution_clock::now();
     // 绘制矩形
-    // for (int i = 0; i < 6; i++) {
-    //  for (int j = 0; j < 4; j++) {
-    //    glm::vec4 color = {i * 1.0f / 6.0f, j * 1.0 / 4.0f,
-    //                       i * 1.0f / 6.0f * 0.6f + j * 1.0 / 4.0f * 0.4f,
-    //                       1.0f};
-    //    mesh.drawquad(
-    //        -windowWidth / 2.0f + i * windowWidth / 6.0f + windowWidth
-    //        / 12.0f, windowHeight / 2.0f - j * windowHeight / 4.0f -
-    //        windowHeight / 8.0f, windowWidth / 6.0f, windowHeight / 4.0f,
-    //        color, texs[j * 6 + i], TexType::REAPEAT_TO_QUAD, screensize);
-    //  }
-    //}
-    mesh.drawlinestrip(0, 0, 100, 100, 4, {1.0f, 0.0f, 0.0f, 1.0f}, screensize);
-    mesh.drawlinestrip(-30, 40, 40, -200, 4, {0.0f, 1.0f, 0.0f, 1.0f},
+    for (int i = 0; i < 6; i++) {
+      for (int j = 0; j < 4; j++) {
+        mesh.drawquad(
+            {-windowWidth / 2.0f + i * windowWidth / 6.0f + windowWidth / 12.0f,
+             windowHeight / 2.0f - j * windowHeight / 4.0f -
+                 windowHeight / 8.0f},
+            windowWidth / 6.0f, windowHeight / 4.0f,
+            {i * 1.0f / 6.0f, j * 1.0 / 4.0f,
+             i * 1.0f / 6.0f * 0.6f + j * 1.0 / 4.0f * 0.4f, 1.0f},
+            texs[j * 6 + i], TexType::REAPEAT_TO_QUAD, screensize);
+      }
+    }
+    mesh.drawlinestrip({0, 0}, {100, 100}, 4, {1.0f, 0.0f, 0.0f, 1.0f},
                        screensize);
-    mesh.drawlinestrip(120, -20, -100, 200, 8, {0.0f, 0.0f, 1.0f, 1.0f},
+    mesh.drawlinestrip({-30, 40}, {40, -200}, 4, {0.0f, 1.0f, 0.0f, 1.0f},
                        screensize);
-    mesh.drawlinestrip(-80, 300, -100, -100, 8, {1.0f, 0.0f, 1.0f, 1.0f},
+    mesh.drawlinestrip({120, -20}, {-100, 200}, 8, {0.0f, 0.0f, 1.0f, 1.0f},
+                       screensize);
+    mesh.drawlinestrip({-80, 300}, {-100, -100}, 8, {1.0f, 0.0f, 1.0f, 1.0f},
+                       screensize);
+    mesh.drawlinestrip({0, 0}, 80.0f, 315.0f, 50.0f, {1.0f, 1.0f, 1.0f, 1.0f},
                        screensize);
     mesh.finish();
 

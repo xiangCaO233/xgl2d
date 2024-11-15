@@ -1,5 +1,4 @@
 #include "xquadmesh.h"
-#include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
@@ -17,7 +16,7 @@ Quad::Quad(glm::vec2 &cp, float width, float height)
   translate({cp.x, cp.y, 0.0f});
 }
 Quad::Quad(glm::vec2 &&cp, float width, float height)
-    : Quad(cp, width, height) {}
+    : Quad(cp, width, height){};
 Quad::Quad(glm::vec2 &cp, float width, float height, glm::vec4 &color)
     : Quad(cp, width, height) {
   bottom_left->color = color;
@@ -25,8 +24,6 @@ Quad::Quad(glm::vec2 &cp, float width, float height, glm::vec4 &color)
   top_right->color = color;
   top_left->color = color;
 };
-Quad::Quad(glm::vec2 &&cp, float width, float height, glm::vec4 &&color)
-    : Quad(cp, width, height, color) {}
 Quad::Quad(glm::vec2 &cp, float width, float height,
            std::shared_ptr<Texture> texture, TexType texture_type)
     : Quad(cp, width, height) {
@@ -53,9 +50,6 @@ Quad::Quad(glm::vec2 &cp, float width, float height,
   top_right->texid = texture->texid;
   top_left->texid = texture->texid;
 };
-Quad::Quad(glm::vec2 &&cp, float width, float height,
-           std::shared_ptr<Texture> texture, TexType texture_type)
-    : Quad(cp, width, height, texture, texture_type) {}
 
 Quad::Quad(glm::vec2 &cp, float width, float height, glm::vec4 &color,
            std::shared_ptr<Texture> texture, TexType texture_type)
@@ -65,15 +59,6 @@ Quad::Quad(glm::vec2 &cp, float width, float height, glm::vec4 &color,
   top_right->color = color;
   top_left->color = color;
 };
-Quad::Quad(glm::vec2 &cp, float width, float height, glm::vec4 &&color,
-           std::shared_ptr<Texture> texture, TexType texture_type)
-    : Quad(cp, width, height, color, texture, texture_type) {}
-Quad::Quad(glm::vec2 &&cp, float width, float height, glm::vec4 &color,
-           std::shared_ptr<Texture> texture, TexType texture_type)
-    : Quad(cp, width, height, color, texture, texture_type) {}
-Quad::Quad(glm::vec2 &&cp, float width, float height, glm::vec4 &&color,
-           std::shared_ptr<Texture> texture, TexType texture_type)
-    : Quad(cp, width, height, color, texture, texture_type) {}
 Quad::~Quad() {}
 bool Quad::isequaln(const Quad &quad) {
   return width / height == quad.width / quad.height;
@@ -165,99 +150,31 @@ Linestrip::Linestrip(glm::vec2 &p1, glm::vec2 &p2, float width)
   rotate(atan((p2.y - p1.y) / (p2.x - p1.x)) * 180.0f / M_PI,
          {0.0f, 0.0f, 1.0f});
 }
-Linestrip::Linestrip(glm::vec2 &p1, glm::vec2 &&p2, float width)
-    : Linestrip(p1, p2, width) {}
-Linestrip::Linestrip(glm::vec2 &&p1, glm::vec2 &p2, float width)
-    : Linestrip(p1, p2, width) {}
-Linestrip::Linestrip(glm::vec2 &&p1, glm::vec2 &&p2, float width)
-    : Linestrip(p1, p2, width) {}
 
 Linestrip::Linestrip(glm::vec2 &p1, glm::vec2 &p2, float width,
                      glm::vec4 &color)
     : Linestrip(p1, p2, width) {
   setfill(color);
 };
-Linestrip::Linestrip(glm::vec2 &p1, glm::vec2 &&p2, float width,
-                     glm::vec4 &&color)
-    : Linestrip(p1, p2, width, color){};
-Linestrip::Linestrip(glm::vec2 &&p1, glm::vec2 &p2, float width,
-                     glm::vec4 &&color)
-    : Linestrip(p1, p2, width, color){};
-Linestrip::Linestrip(glm::vec2 &&p1, glm::vec2 &&p2, float width,
-                     glm::vec4 &color)
-    : Linestrip(p1, p2, width, color){};
-Linestrip::Linestrip(glm::vec2 &p1, glm::vec2 &p2, float width,
-                     glm::vec4 &&color)
-    : Linestrip(p1, p2, width, color){};
-Linestrip::Linestrip(glm::vec2 &p1, glm::vec2 &&p2, float width,
-                     glm::vec4 &color)
-    : Linestrip(p1, p2, width, color){};
-Linestrip::Linestrip(glm::vec2 &&p1, glm::vec2 &p2, float width,
-                     glm::vec4 &color)
-    : Linestrip(p1, p2, width, color){};
-Linestrip::Linestrip(glm::vec2 &&p1, glm::vec2 &&p2, float width,
-                     glm::vec4 &&color)
-    : Linestrip(p1, p2, width, color){};
 
 Linestrip::Linestrip(glm::vec2 &sp, float length, float degrees, float width)
     : Quad({sp.x + length * cos(degrees / 180.0f * M_PI),
             sp.y + length * sin(degrees / 180.0f * M_PI)},
            length, width) {}
-Linestrip::Linestrip(glm::vec2 &&sp, float length, float degrees, float width)
-    : Linestrip(sp, length, degrees, width) {}
 
 Linestrip::Linestrip(glm::vec2 &sp, float length, float degrees, float width,
                      glm::vec4 &color)
     : Linestrip(sp, length, degrees, width) {
   setfill(color);
 };
-Linestrip::Linestrip(glm::vec2 &sp, float length, float degrees, float width,
-                     glm::vec4 &&color)
-    : Linestrip(sp, length, degrees, width, color) {}
-Linestrip::Linestrip(glm::vec2 &&sp, float length, float degrees, float width,
-                     glm::vec4 &color)
-    : Linestrip(sp, length, degrees, width, color) {}
-Linestrip::Linestrip(glm::vec2 &&sp, float length, float degrees, float width,
-                     glm::vec4 &&color)
-    : Linestrip(sp, length, degrees, width, color) {}
 
 Linestrip::~Linestrip() = default;
 
 XquadMesh::XquadMesh(Shader *shader, uint32_t qcount)
-    : Xmesh(shader, qcount * 4), _qcount_size(qcount) {
-  // 初始化矩形的绘制索引表
-  // bind();
-  // auto indicies = std::vector<uint32_t>();
-  // for (int i = 0; i < qcount; i++) {
-  //   int offset = i * 4;
-  //   indicies.push_back(offset);
-  //   indicies.push_back(offset + 1);
-  //   indicies.push_back(offset + 2);
-  //   indicies.push_back(offset + 2);
-  //   indicies.push_back(offset + 3);
-  //   indicies.push_back(offset);
-  // }
-  // // 预填充quad索引数据
-  // glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0,
-  //                 indicies.size() * sizeof(uint32_t), indicies.data());
+    : Xmesh(shader, qcount * 4), _qcount_size(qcount) {}
 
-  // unbind();
-}
+XquadMesh::~XquadMesh() { Xmesh::~Xmesh(); }
 
-XquadMesh::~XquadMesh() {
-  Xmesh::~Xmesh();
-  // glDeleteBuffers(1, &TBO);
-}
-
-void XquadMesh::bind() {
-  Xmesh::bind();
-  // glBindBuffer(GL_UNIFORM_BUFFER, TBO);
-}
-
-void XquadMesh::unbind() {
-  Xmesh::unbind();
-  // glBindBuffer(GL_UNIFORM_BUFFER, 0);
-}
 bool XquadMesh::screencontainquad(float x, float y, float width, float height,
                                   glm::vec2 &screensize) {
   // 计算屏幕的半宽和半高，因为是以窗口中心为原点的坐标系，所以要考虑到这一点
@@ -288,42 +205,130 @@ bool XquadMesh::screencontainquad(float x, float y, float width, float height,
   return false;
 };
 // 使用前绑定本mesh
-void XquadMesh::drawquad(float x, float y, float width, float height,
-                         glm::vec4 &&color, glm::vec2 &screensize) {
-  drawquad(x, y, width, height, color, screensize);
-};
-void XquadMesh::drawquad(float x, float y, float width, float height,
+void XquadMesh::drawquad(glm::vec2 &cp, float width, float height,
                          glm::vec4 &color, glm::vec2 &screensize) {
-  drawquad(x, y, width, height, color, deftexture, TexType::REAPEAT_TO_QUAD,
+  drawquad(cp, width, height, color, deftexture, TexType::REAPEAT_TO_QUAD,
            screensize);
 };
-// 使用前绑定本mesh
-void XquadMesh::drawquad(float x, float y, float width, float height,
+void XquadMesh::drawquad(glm::vec2 &cp, float width, float height,
+                         glm::vec4 &&color, glm::vec2 &screensize) {
+  drawquad(cp, width, height, color, screensize);
+};
+void XquadMesh::drawquad(glm::vec2 &&cp, float width, float height,
+                         glm::vec4 &color, glm::vec2 &screensize) {
+  drawquad(cp, width, height, color, screensize);
+};
+void XquadMesh::drawquad(glm::vec2 &&cp, float width, float height,
+                         glm::vec4 &&color, glm::vec2 &screensize) {
+  drawquad(cp, width, height, color, screensize);
+};
+void XquadMesh::drawquad(glm::vec2 &cp, float width, float height,
                          std::shared_ptr<Texture> texture, TexType texture_type,
                          glm::vec2 &screensize) {
-  drawquad(x, y, width, height, {1.0f, 1.0f, 1.0f, 1.0f}, texture, texture_type,
+  drawquad(cp, width, height, {1.0f, 1.0f, 1.0f, 1.0f}, texture, texture_type,
            screensize);
 };
-void XquadMesh::drawquad(float x, float y, float width, float height,
-                         glm::vec4 &&color, std::shared_ptr<Texture> texture,
-                         TexType texture_type, glm::vec2 &screensize) {
-  drawquad(x, y, width, height, color, texture, texture_type, screensize);
-};
-void XquadMesh::drawquad(float x, float y, float width, float height,
+void XquadMesh::drawquad(glm::vec2 &cp, float width, float height,
                          glm::vec4 &color, std::shared_ptr<Texture> texture,
                          TexType texture_type, glm::vec2 &screensize) {
-  bool should_draw = screencontainquad(x, y, width, height, screensize);
+  bool should_draw = screencontainquad(cp.x, cp.y, width, height, screensize);
   if (!should_draw)
     return;
   //  std::cout << "add quad" << std::endl;
-  auto quad = new Quad({x, y}, width, height, color, texture, texture_type);
+  auto quad = new Quad(cp, width, height, color, texture, texture_type);
   if (texture->texid > _max_texid) {
     _max_texid = texture->texid;
   }
+  quad->draworder = _should_draw_quads.size();
   _should_draw_quads.push_back(quad);
 };
+void XquadMesh::drawquad(glm::vec2 &cp, float width, float height,
+                         glm::vec4 &&color, std::shared_ptr<Texture> texture,
+                         TexType texture_type, glm::vec2 &screensize) {
+  drawquad(cp, width, height, color, texture, texture_type, screensize);
+}
+void XquadMesh::drawquad(glm::vec2 &&cp, float width, float height,
+                         glm::vec4 &color, std::shared_ptr<Texture> texture,
+                         TexType texture_type, glm::vec2 &screensize) {
+  drawquad(cp, width, height, color, texture, texture_type, screensize);
+}
+void XquadMesh::drawquad(glm::vec2 &&cp, float width, float height,
+                         glm::vec4 &&color, std::shared_ptr<Texture> texture,
+                         TexType texture_type, glm::vec2 &screensize) {
+  drawquad(cp, width, height, color, texture, texture_type, screensize);
+};
 
-// 使用左下角为基准构建矩形
+void XquadMesh::drawlinestrip(glm::vec2 &p1, glm::vec2 &p2, float width,
+                              glm::vec4 &color, glm::vec2 &screensize) {
+  bool should_draw = screencontainquad(
+      (p2.x + p1.x) / 2.0f, (p2.y + p1.y) / 2.0f,
+      sqrt(pow(p2.x - p1.x, 2) + pow(p2.y - p1.y, 2)), width, screensize);
+  //  std::cout << "add quad" << std::endl;
+  auto line = new Linestrip(p1, p2, width, color);
+  line->settexture(deftexture);
+  line->draworder = _should_draw_quads.size();
+  _should_draw_quads.push_back(line);
+}
+
+// 绘制线段
+void XquadMesh::drawlinestrip(glm::vec2 &p1, glm::vec2 &&p2, float width,
+                              glm::vec4 &&color, glm::vec2 &screensize) {
+  drawlinestrip(p1, p2, width, color, screensize);
+};
+void XquadMesh::drawlinestrip(glm::vec2 &&p1, glm::vec2 &p2, float width,
+                              glm::vec4 &&color, glm::vec2 &screensize) {
+  drawlinestrip(p1, p2, width, color, screensize);
+};
+void XquadMesh::drawlinestrip(glm::vec2 &&p1, glm::vec2 &&p2, float width,
+                              glm::vec4 &color, glm::vec2 &screensize) {
+  drawlinestrip(p1, p2, width, color, screensize);
+};
+
+void XquadMesh::drawlinestrip(glm::vec2 &p1, glm::vec2 &p2, float width,
+                              glm::vec4 &&color, glm::vec2 &screensize) {
+  drawlinestrip(p1, p2, width, color, screensize);
+};
+void XquadMesh::drawlinestrip(glm::vec2 &p1, glm::vec2 &&p2, float width,
+                              glm::vec4 &color, glm::vec2 &screensize) {
+  drawlinestrip(p1, p2, width, color, screensize);
+};
+void XquadMesh::drawlinestrip(glm::vec2 &&p1, glm::vec2 &p2, float width,
+                              glm::vec4 &color, glm::vec2 &screensize) {
+  drawlinestrip(p1, p2, width, color, screensize);
+};
+
+void XquadMesh::drawlinestrip(glm::vec2 &&p1, glm::vec2 &&p2, float width,
+                              glm::vec4 &&color, glm::vec2 &screensize) {
+  drawlinestrip(p1, p2, width, color, screensize);
+};
+
+// 绘制射线
+void XquadMesh::drawlinestrip(glm::vec2 &sp, float length, float degrees,
+                              float width, glm::vec4 &color,
+                              glm::vec2 &screensize) {
+  drawlinestrip(sp,
+                {sp.x + length * cos(degrees / 180.0f * M_PI),
+                 sp.y + length * sin(degrees / 180.f * M_PI)},
+                width, color, screensize);
+};
+
+void XquadMesh::drawlinestrip(glm::vec2 &sp, float length, float degrees,
+                              float width, glm::vec4 &&color,
+                              glm::vec2 &screensize) {
+  drawlinestrip(sp, length, degrees, width, color, screensize);
+};
+void XquadMesh::drawlinestrip(glm::vec2 &&sp, float length, float degrees,
+                              float width, glm::vec4 &color,
+                              glm::vec2 &screensize) {
+  drawlinestrip(sp, length, degrees, width, color, screensize);
+};
+void XquadMesh::drawlinestrip(glm::vec2 &&sp, float length, float degrees,
+                              float width, glm::vec4 &&color,
+                              glm::vec2 &screensize) {
+  drawlinestrip(sp, length, degrees, width, color, screensize);
+};
+
+// 构建矩形
 void XquadMesh::newquad(Quad *quad) {
   uint32_t quadcount = size();
   // std::cout << "绘制数量:" << std::to_string(quadcount) << std::endl;
@@ -341,18 +346,6 @@ void XquadMesh::newquad(Quad *quad) {
                   6 * sizeof(uint32_t), indicies_data.data());
   _quads.push_back(quad);
 };
-
-void XquadMesh::drawlinestrip(float x1, float y1, float x2, float y2,
-                              float width, glm::vec4 color,
-                              glm::vec2 &screensize) {
-  bool should_draw = screencontainquad((x2 + x1) / 2.0f, (y2 - y1) / 2.0f,
-                                       sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2)),
-                                       width, screensize);
-  //  std::cout << "add quad" << std::endl;
-  auto line = new Linestrip({x1, y1}, {x2, y2}, width, color);
-  line->settexture(deftexture);
-  _should_draw_quads.push_back(line);
-}
 
 void XquadMesh::finish() {
   // 根据纹理划分渲染批次(至少1批)
