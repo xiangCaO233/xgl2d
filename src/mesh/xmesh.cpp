@@ -1,4 +1,5 @@
 #include "xmesh.h"
+#include "shape/Shape.h"
 #include <cstddef>
 #include <iostream>
 #include <memory>

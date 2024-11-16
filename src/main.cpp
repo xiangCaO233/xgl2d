@@ -144,7 +144,7 @@ int main(int argc, char *argv[]) {
              windowHeight / 2.0f - j * windowHeight / 4.0f -
                  windowHeight / 8.0f},
             windowWidth / 6.0f, windowHeight / 4.0f, color, texs[i * 4 + j],
-            TexType::FILL_TO_QUAD, screensize);
+            TexType::FILL, screensize);
       }
     }
     mesh.drawlinestrip({0, 0}, {100, 100}, 4, {1.0f, 0.0f, 0.0f, 1.0f},

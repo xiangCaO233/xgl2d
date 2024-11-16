@@ -2,88 +2,22 @@
 #define XQUADMESH_H
 
 #include "../xmesh.h"
-#include <memory>
+#include "Quad.h"
 #include <vector>
-enum TexType { FILL_TO_QUAD, REAPEAT_TO_QUAD };
-class Quad {
-  // 矩形四顶点
-  std::shared_ptr<Vertex> bottom_left;
-  std::shared_ptr<Vertex> bottom_right;
-  std::shared_ptr<Vertex> top_right;
-  std::shared_ptr<Vertex> top_left;
-
-  float width, height;
-  // 矩形的对应变换矩阵(默认单位矩阵)
-  glm::mat4 _translation = glm::mat4(1.0f);
-  // 矩形的纹理
-  std::shared_ptr<Texture> quadTex;
-  uint32_t draworder{0};
-
-  friend class XquadMesh;
-
-public:
-  Quad(glm::vec2 &cp, float width, float height);
-  Quad(glm::vec2 &&cp, float width, float height);
-  Quad(glm::vec2 &cp, float width, float height, glm::vec4 &color);
-  Quad(glm::vec2 &cp, float width, float height,
-       const std::shared_ptr<Texture> &texture, TexType texture_type);
-  Quad(glm::vec2 &cp, float width, float height, glm::vec4 &color,
-       std::shared_ptr<Texture> texture, TexType texture_type);
-  virtual ~Quad();
-
-  // 导出数据(src是否经过变换)
-  float *dump(bool src);
-
-  void setmatindex(unsigned int index);
-  // 设置颜色
-  void setfill(glm::vec4 &color);
-  // 设置矩形材质(默认拉伸)
-  void settexture(const std::shared_ptr<Texture> &texture);
-  // 重置材质uv(自定义贴图坐标)
-  void setquaduv(glm::vec2 &bottom_left, glm::vec2 &bottom_right,
-                 glm::vec2 &top_right, glm::vec2 &top_left);
-
-  // 应用变换
-  void scale(float scalerate);
-  void translate(glm::vec3 &trans);
-  void translate(glm::vec3 &&trans);
-  void rotate(float degrees, glm::vec3 &axis);
-  void rotate(float degrees, glm::vec3 &&axis);
-
-  bool isequaln(const Quad &quad);
-  bool operator==(const Quad &quad);
-};
-
-class Linestrip : public Quad {
-  // 长度
-  float linelength{};
-  // 线宽
-  float linewidth{};
-
-public:
-  // 构造Linestrip
-  Linestrip(glm::vec2 &p1, glm::vec2 &p2, float width);
-  Linestrip(glm::vec2 &p1, glm::vec2 &p2, float width, glm::vec4 &color);
-  Linestrip(glm::vec2 &sp, float length, float degrees, float width);
-  Linestrip(glm::vec2 &sp, float length, float degrees, float width,
-            glm::vec4 &color);
-  // 析构Linestrip
-  virtual ~Linestrip();
-};
 
 class QuadBatch {
   // 该批次中的全部矩形
   std::vector<std::shared_ptr<Quad>> batch;
   // 此批次中的纹理批次索引
-  int texture_batch_index;
+  int texture_batch_index{0};
 
   friend class XquadMesh;
 
 public:
   // 构造QuadBatch
-  QuadBatch();
+  QuadBatch(){};
   // 析构QuadBatch
-  virtual ~QuadBatch();
+  virtual ~QuadBatch() = default;
 };
 
 class XquadMesh : public Xmesh {
@@ -92,11 +26,9 @@ class XquadMesh : public Xmesh {
   // 全部批次
   std::vector<std::shared_ptr<QuadBatch>> _all_batchs;
   int _max_texid{0};
-  // 处理中的quad
-  std::vector<std::shared_ptr<Quad>> _quads;
   // 将要绘制的矩形
   std::vector<std::shared_ptr<Quad>> _should_draw_quads;
-
+  // 判断屏幕中是否包含矩形
   static bool screencontainquad(float x, float y, float width, float height,
                                 glm::vec2 &screensize);
 
@@ -104,7 +36,7 @@ public:
   // 构造XquadMesh
   XquadMesh(Shader *shader, int max_texture_unit, uint32_t qcount = 256);
   // 析构XquadMesh
-  ~XquadMesh() override;
+  ~XquadMesh() override = default;
 
   // 使用前绑定本mesh
   // 矩形中心点+尺寸(仅填充颜色)
@@ -169,11 +101,6 @@ public:
                      glm::vec4 &&color, glm::vec2 &screensize);
 
   // 完成此次绘制(实际绘制,包括传输顶点数据)
-  void finish();
-
-  inline unsigned int size() { return _quads.size(); }
-
-  // 使用左下角为基准构建矩形
-  void newquad(const std::shared_ptr<Quad> &quad);
+  void finish() override;
 };
 #endif /* XQUADMESH_H */

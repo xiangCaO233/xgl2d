@@ -17,8 +17,14 @@ find_package(glm REQUIRED)
 
 include_directories(include)
 
-set(LIB_SOURCES src/mesh/xmesh.cpp src/mesh/shape/xquadmesh.cpp
-                src/shader/shader.cpp src/texture/texture.cpp)
+set(LIB_SOURCES
+    src/mesh/shape/Oval.cpp
+    src/mesh/shape/Shape.cpp
+    src/mesh/shape/Quad.cpp
+    src/mesh/xmesh.cpp
+    src/mesh/shape/xquadmesh.cpp
+    src/shader/shader.cpp
+    src/texture/texture.cpp)
 set(TEST_SOURCES src/main.cpp ${LIB_SOURCES})
 
 add_library(libxgl2d STATIC ${LIB_SOURCES})
