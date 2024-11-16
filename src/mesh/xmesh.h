@@ -4,10 +4,7 @@
 #include "../shader/shader.h"
 #include "../texture/texture.h"
 #include <cstdint>
-#include <iostream>
 #include <memory>
-#include <string>
-#include <vector>
 
 struct Vertex {
   // 顶点元数据
@@ -18,46 +15,38 @@ struct Vertex {
   float matindex{0};
   // 顶点材质
   float texid{0.0f};
-  std::vector<float> dump() const {
-    std::vector<float> data;
-    data.push_back(position.x);
-    data.push_back(position.y);
-    data.push_back(position.z);
-    data.push_back(color.r);
-    data.push_back(color.g);
-    data.push_back(color.b);
-    data.push_back(color.a);
-    data.push_back(uv.x);
-    data.push_back(uv.y);
-    data.push_back(matindex);
-    data.push_back(texid);
+  float *dump() const {
+    float *data = new float[11];
+    data[0] = position.x;
+    data[1] = position.y;
+    data[2] = position.z;
+    data[3] = color.r;
+    data[4] = color.g;
+    data[5] = color.b;
+    data[6] = color.a;
+    data[7] = uv.x;
+    data[8] = uv.y;
+    data[9] = matindex;
+    data[10] = texid;
     return data;
   }
   // dump出变换后的顶点数据
-  std::vector<float> dump(glm::mat4 transform) const {
-    std::vector<float> data;
+  float *dump(glm::mat4 transform) const {
+    float *data = new float[11];
     glm::vec4 position4 = glm::vec4(position, 1.0f);
     // 变换顶点
     position4 = transform * position4;
-    data.push_back(position4.x);
-    data.push_back(position4.y);
-    data.push_back(position4.z);
-    // debug变换结果
-    // std::cout << "[x=" + std::to_string(position4.x) +
-    //                 ",y=" + std::to_string(position4.y) + "]"
-    //          << std::endl;
-    // color数据
-    data.push_back(color.r);
-    data.push_back(color.g);
-    data.push_back(color.b);
-    data.push_back(color.a);
-    // 材质uv数据
-    data.push_back(uv.x);
-    data.push_back(uv.y);
-    // 矩阵索引数据
-    data.push_back(matindex);
-    // 材质索引数据
-    data.push_back(texid);
+    data[0] = position4.x;
+    data[1] = position4.y;
+    data[2] = position4.z;
+    data[3] = color.r;
+    data[4] = color.g;
+    data[5] = color.b;
+    data[6] = color.a;
+    data[7] = uv.x;
+    data[8] = uv.y;
+    data[9] = matindex;
+    data[10] = texid;
     return data;
   }
   bool operator==(const Vertex &v) const {

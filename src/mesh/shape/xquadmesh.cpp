@@ -1,4 +1,5 @@
 #include "xquadmesh.h"
+#include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
@@ -68,12 +69,12 @@ bool Quad::operator==(const Quad &quad) {
          *bottom_right == *quad.bottom_right && *top_right == *quad.top_right &&
          *top_left == *quad.top_left;
 };
-std::vector<float> Quad::dump(bool src) {
-  std::vector<float> data;
-  std::vector<float> bldata;
-  std::vector<float> brdata;
-  std::vector<float> trdata;
-  std::vector<float> tldata;
+float *Quad::dump(bool src) {
+  float *data = new float[44];
+  float *bldata;
+  float *brdata;
+  float *trdata;
+  float *tldata;
   if (src) {
     // dump源顶点数据
     bldata = bottom_left->dump();
@@ -87,10 +88,14 @@ std::vector<float> Quad::dump(bool src) {
     trdata = top_right->dump(_translation);
     tldata = top_left->dump(_translation);
   }
-  data.insert(data.end(), bldata.begin(), bldata.end());
-  data.insert(data.end(), brdata.begin(), brdata.end());
-  data.insert(data.end(), trdata.begin(), trdata.end());
-  data.insert(data.end(), tldata.begin(), tldata.end());
+  std::copy(bldata, bldata + 11, data);
+  std::copy(brdata, brdata + 11, data + 11);
+  std::copy(trdata, trdata + 11, data + 22);
+  std::copy(tldata, tldata + 11, data + 33);
+  delete[] bldata;
+  delete[] brdata;
+  delete[] trdata;
+  delete[] tldata;
   return data;
 };
 void Quad::setmatindex(unsigned int index) {
@@ -399,19 +404,20 @@ void XquadMesh::drawlinestrip(glm::vec2 &&sp, float length, float degrees,
 // 构建矩形数据到gpu
 void XquadMesh::newquad(const std::shared_ptr<Quad> &quad) {
   auto quadcount = size();
-  // std::cout << "绘制数量:" << std::to_string(quadcount) << std::endl;
   //  设置模型矩阵索引
   quad->setmatindex(quadcount);
   // 同步显存
+  float *quaddata = quad->dump(false);
   // 顶点数据
   glBufferSubData(GL_ARRAY_BUFFER, quadcount * 4 * sizeof(Vertex),
-                  4 * sizeof(Vertex), quad->dump(false).data());
+                  4 * sizeof(Vertex), quaddata);
+  delete[] quaddata;
   // 更新顶点索引数据
-  std::vector<unsigned int> indicies_data = {
-      4 * quadcount,     4 * quadcount + 1, 4 * quadcount + 2,
-      4 * quadcount + 2, 4 * quadcount + 3, 4 * quadcount};
+  uint32_t indicies_data[6] = {4 * quadcount,     4 * quadcount + 1,
+                               4 * quadcount + 2, 4 * quadcount + 2,
+                               4 * quadcount + 3, 4 * quadcount};
   glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, quadcount * 6 * sizeof(uint32_t),
-                  6 * sizeof(uint32_t), indicies_data.data());
+                  6 * sizeof(uint32_t), indicies_data);
   _quads.push_back(quad);
 };
 
@@ -434,14 +440,36 @@ void XquadMesh::finish() {
                            j + 1);
     }
     // 上传矩形数据
-    for (auto &quad : quadBatch->batch)
-      newquad(quad);
+    auto batchsize = quadBatch->batch.size();
+    float *data = new float[batchsize * 44];
+    uint32_t *indicies_data = new uint32_t[batchsize * 6];
+    for (uint32_t i = 0; i < batchsize; i++) {
+      // 设置模型矩阵索引
+      quadBatch->batch[i]->setmatindex(i);
+      float *quaddata = quadBatch->batch[i]->dump(false);
+      // 顶点数据
+      std::copy(quaddata, quaddata + 44, data + i * 44);
+      delete[] quaddata;
+      // 顶点索引数据
+      uint32_t quad_indicies_data[6] = {4 * i,     4 * i + 1, 4 * i + 2,
+                                        4 * i + 2, 4 * i + 3, 4 * i};
+      std::copy(quad_indicies_data, quad_indicies_data + 6,
+                indicies_data + i * 6);
+    }
+    // 上传顶点索引数据
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0,
+                    batchsize * 6 * sizeof(uint32_t), indicies_data);
+    // 上传顶点数据
+    glBufferSubData(GL_ARRAY_BUFFER, 0, batchsize * 4 * sizeof(Vertex), data);
+
     // 批量绘制矩形
-    glDrawElements(GL_TRIANGLES, (int)(quadBatch->batch.size()) * 6,
-                   GL_UNSIGNED_INT, nullptr);
-    _quads.clear();
+    glDrawElements(GL_TRIANGLES, (quadBatch->batch.size()) * 6, GL_UNSIGNED_INT,
+                   nullptr);
+
+    // 清理缓存
+    delete[] indicies_data;
+    delete[] data;
   }
-  // 清理缓存
   _should_draw_quads.clear();
   _all_batchs.clear();
 }
