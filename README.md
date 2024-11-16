@@ -15,7 +15,6 @@
   - 基类 Xmesh 实现 mesh 的全部顶点缓冲对象管理和数组对象的描述
   - Xquadmesh 类 实现顶点元素索引缓冲对象的自动管理,
     外部调用 drawquad 在帧缓冲区绘制矩形 使用 drawlinestrip 绘制线段
-  - Xcirclemesh 类 圆的顶点索引管理和绘制(实现中)
   - Xovalmesh 类 椭圆的实现(实现中)
   - Xpolygonmesh 类 多边形的实现(实现中)
   - Xtextmesh 类 文本的实现(实现中)
