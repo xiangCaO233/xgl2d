@@ -143,7 +143,7 @@ int main(int argc, char *argv[]) {
             {-windowWidth / 2.0f + i * windowWidth / 6.0f + windowWidth / 12.0f,
              windowHeight / 2.0f - j * windowHeight / 4.0f -
                  windowHeight / 8.0f},
-            windowWidth / 6.0f, windowHeight / 4.0f, color, texs[j * 6 + i],
+            windowWidth / 6.0f, windowHeight / 4.0f, color, texs[i * 4 + j],
             TexType::FILL_TO_QUAD, screensize);
       }
     }

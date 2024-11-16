@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 
-Xmesh::Xmesh(Shader *shader, uint32_t vcount_size)
+Xmesh::Xmesh(Shader *shader, int max_texture_unit, uint32_t vcount_size)
     : _vcount_size(vcount_size), _vbuffer_size(vcount_size * sizeof(Vertex)),
       _velecount_size(_vcount_size * 2),
       _velebuffer_size(_velecount_size * sizeof(uint32_t)), _shader(shader) {

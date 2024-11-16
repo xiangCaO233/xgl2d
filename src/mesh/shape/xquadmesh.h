@@ -18,7 +18,7 @@ class Quad {
   glm::mat4 _translation = glm::mat4(1.0f);
   // 矩形的纹理
   std::shared_ptr<Texture> quadTex;
-  uint32_t draworder;
+  uint32_t draworder{0};
 
   friend class XquadMesh;
 
@@ -27,7 +27,7 @@ public:
   Quad(glm::vec2 &&cp, float width, float height);
   Quad(glm::vec2 &cp, float width, float height, glm::vec4 &color);
   Quad(glm::vec2 &cp, float width, float height,
-       std::shared_ptr<Texture> texture, TexType texture_type);
+       const std::shared_ptr<Texture>& texture, TexType texture_type);
   Quad(glm::vec2 &cp, float width, float height, glm::vec4 &color,
        std::shared_ptr<Texture> texture, TexType texture_type);
   virtual ~Quad();
@@ -35,11 +35,11 @@ public:
   // 导出数据(src是否经过变换)
   std::vector<float> dump(bool src);
 
-  void setmatindex(int index);
+  void setmatindex(unsigned int index);
   // 设置颜色
   void setfill(glm::vec4 &color);
   // 设置矩形材质(默认拉伸)
-  void settexture(std::shared_ptr<Texture> texture);
+  void settexture(const std::shared_ptr<Texture>& texture);
   // 重置材质uv(自定义贴图坐标)
   void setquaduv(glm::vec2 &bottom_left, glm::vec2 &bottom_right,
                  glm::vec2 &top_right, glm::vec2 &top_left);
@@ -57,9 +57,9 @@ public:
 
 class Linestrip : public Quad {
   // 长度
-  float linelength;
+  float linelength{};
   // 线宽
-  float linewidth;
+  float linewidth{};
 
 public:
   // 构造Linestrip
@@ -75,9 +75,9 @@ public:
 class QuadBatch {
   // 该批次中的全部矩形
   std::vector<std::shared_ptr<Quad>> batch;
-  // 此批次中矩形添加序列最大和最小值
-  int minquadorder, maxquadorder;
+  // 此批次中的纹理批次索引
   int texture_batch_index;
+
   friend class XquadMesh;
 
 public:
@@ -93,23 +93,19 @@ class XquadMesh : public Xmesh {
   // 全部批次
   std::vector<std::shared_ptr<QuadBatch>> _all_batchs;
   int _max_texid{0};
-  // quadmesh中的全部quad(矩形本身)
+    // 处理中的quad
   std::vector<std::shared_ptr<Quad>> _quads;
   // 将要绘制的矩形
   std::vector<std::shared_ptr<Quad>> _should_draw_quads;
-  // 矩形在列表中的索引(快速查找在绘制长宽比相同的矩形数据哈希表)
-  std::unordered_map<std::shared_ptr<Quad>, int> _quad_indicies;
-  // 矩形绘制权重(权重为0时，将矩形列表末尾的矩形移交到此0权矩形处,包括显存空间哈希表)
-  std::unordered_map<std::shared_ptr<Quad>, int> _quad_draw_weight;
 
-  bool screencontainquad(float x, float y, float width, float height,
+  static bool screencontainquad(float x, float y, float width, float height,
                          glm::vec2 &screensize);
 
 public:
   // 构造XquadMesh
   XquadMesh(Shader *shader, int max_texture_unit, uint32_t qcount = 256);
   // 析构XquadMesh
-  virtual ~XquadMesh() override;
+  ~XquadMesh() override;
 
   // 使用前绑定本mesh
   // 矩形中心点+尺寸(仅填充颜色)
@@ -123,23 +119,23 @@ public:
                 glm::vec2 &screensize);
   // 仅纹理
   void drawquad(glm::vec2 &cp, float width, float height,
-                std::shared_ptr<Texture> texture, TexType texture_type,
+                const std::shared_ptr<Texture>& texture, TexType texture_type,
                 glm::vec2 &screensize);
   void drawquad(glm::vec2 &&cp, float width, float height,
-                std::shared_ptr<Texture> texture, TexType texture_type,
+                const std::shared_ptr<Texture>& texture, TexType texture_type,
                 glm::vec2 &screensize);
   // 矩形中心点+尺寸(颜色+纹理混合)
   void drawquad(glm::vec2 &cp, float width, float height, glm::vec4 &color,
-                std::shared_ptr<Texture> texture, TexType texture_type,
+                const std::shared_ptr<Texture>& texture, TexType texture_type,
                 glm::vec2 &screensize);
   void drawquad(glm::vec2 &cp, float width, float height, glm::vec4 &&color,
-                std::shared_ptr<Texture> texture, TexType texture_type,
+                const std::shared_ptr<Texture>& texture, TexType texture_type,
                 glm::vec2 &screensize);
   void drawquad(glm::vec2 &&cp, float width, float height, glm::vec4 &color,
-                std::shared_ptr<Texture> texture, TexType texture_type,
+                const std::shared_ptr<Texture>& texture, TexType texture_type,
                 glm::vec2 &screensize);
   void drawquad(glm::vec2 &&cp, float width, float height, glm::vec4 &&color,
-                std::shared_ptr<Texture> texture, TexType texture_type,
+                const std::shared_ptr<Texture>& texture, TexType texture_type,
                 glm::vec2 &screensize);
   // 两点确定线段
   void drawlinestrip(glm::vec2 &p1, glm::vec2 &p2, float width,
@@ -179,6 +175,6 @@ public:
   inline unsigned int size() { return _quads.size(); }
 
   // 使用左下角为基准构建矩形
-  void newquad(std::shared_ptr<Quad> quad);
+  void newquad(const std::shared_ptr<Quad>& quad);
 };
 #endif /* XQUADMESH_H */

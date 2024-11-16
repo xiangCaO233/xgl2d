@@ -18,7 +18,7 @@ struct Vertex {
   float matindex{0};
   // 顶点材质
   float texid{0.0f};
-  std::vector<float> dump() {
+  std::vector<float> dump() const {
     std::vector<float> data;
     data.push_back(position.x);
     data.push_back(position.y);
@@ -34,7 +34,7 @@ struct Vertex {
     return data;
   }
   // dump出变换后的顶点数据
-  std::vector<float> dump(glm::mat4 transform) {
+  std::vector<float> dump(glm::mat4 transform) const {
     std::vector<float> data;
     glm::vec4 position4 = glm::vec4(position, 1.0f);
     // 变换顶点
@@ -60,7 +60,7 @@ struct Vertex {
     data.push_back(texid);
     return data;
   }
-  bool operator==(const Vertex &v) {
+  bool operator==(const Vertex &v) const {
     return position == v.position && color == v.color && uv == v.uv &&
            matindex == v.matindex && texid == v.texid;
   };

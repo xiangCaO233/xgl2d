@@ -25,7 +25,7 @@ Quad::Quad(glm::vec2 &cp, float width, float height, glm::vec4 &color)
   top_left->color = color;
 };
 Quad::Quad(glm::vec2 &cp, float width, float height,
-           std::shared_ptr<Texture> texture, TexType texture_type)
+           const std::shared_ptr<Texture> &texture, TexType texture_type)
     : Quad(cp, width, height) {
   quadTex = texture;
   switch (texture_type) {
@@ -59,7 +59,7 @@ Quad::Quad(glm::vec2 &cp, float width, float height, glm::vec4 &color,
   top_right->color = color;
   top_left->color = color;
 };
-Quad::~Quad() {}
+Quad::~Quad() = default;
 bool Quad::isequaln(const Quad &quad) {
   return width / height == quad.width / quad.height;
 };
@@ -93,7 +93,7 @@ std::vector<float> Quad::dump(bool src) {
   data.insert(data.end(), tldata.begin(), tldata.end());
   return data;
 };
-void Quad::setmatindex(int index) {
+void Quad::setmatindex(unsigned int index) {
   bottom_left->matindex = index;
   bottom_right->matindex = index;
   top_right->matindex = index;
@@ -107,7 +107,7 @@ void Quad::setfill(glm::vec4 &color) {
   top_left->color = color;
 };
 // 设置矩形材质(默认拉伸)
-void Quad::settexture(std::shared_ptr<Texture> texture) {
+void Quad::settexture(const std::shared_ptr<Texture> &texture) {
   quadTex = texture;
   bottom_left->texid = texture->texid;
   bottom_right->texid = texture->texid;
@@ -160,7 +160,8 @@ Linestrip::Linestrip(glm::vec2 &p1, glm::vec2 &p2, float width,
 Linestrip::Linestrip(glm::vec2 &sp, float length, float degrees, float width)
     : Quad({sp.x + length * cos(degrees / 180.0f * M_PI),
             sp.y + length * sin(degrees / 180.0f * M_PI)},
-           length, width) {}
+           length, width),
+      linewidth(width), linelength(length) {}
 
 Linestrip::Linestrip(glm::vec2 &sp, float length, float degrees, float width,
                      glm::vec4 &color)
@@ -170,8 +171,12 @@ Linestrip::Linestrip(glm::vec2 &sp, float length, float degrees, float width,
 
 Linestrip::~Linestrip() = default;
 
+QuadBatch::QuadBatch() {}
+
+QuadBatch::~QuadBatch() = default;
+
 XquadMesh::XquadMesh(Shader *shader, int max_texture_unit, uint32_t qcount)
-    : Xmesh(shader, qcount * 4), _qcount_size(qcount) {}
+    : Xmesh(shader, max_texture_unit, qcount * 4), _qcount_size(qcount) {}
 
 XquadMesh::~XquadMesh() { Xmesh::~Xmesh(); }
 
@@ -223,18 +228,19 @@ void XquadMesh::drawquad(glm::vec2 &&cp, float width, float height,
   drawquad(cp, width, height, color, screensize);
 };
 void XquadMesh::drawquad(glm::vec2 &cp, float width, float height,
-                         std::shared_ptr<Texture> texture, TexType texture_type,
-                         glm::vec2 &screensize) {
+                         const std::shared_ptr<Texture> &texture,
+                         TexType texture_type, glm::vec2 &screensize) {
   drawquad(cp, width, height, {1.0f, 1.0f, 1.0f, 1.0f}, texture, texture_type,
            screensize);
 };
 void XquadMesh::drawquad(glm::vec2 &&cp, float width, float height,
-                         std::shared_ptr<Texture> texture, TexType texture_type,
-                         glm::vec2 &screensize) {
+                         const std::shared_ptr<Texture> &texture,
+                         TexType texture_type, glm::vec2 &screensize) {
   drawquad(cp, width, height, texture, texture_type, screensize);
 }
 void XquadMesh::drawquad(glm::vec2 &cp, float width, float height,
-                         glm::vec4 &color, std::shared_ptr<Texture> texture,
+                         glm::vec4 &color,
+                         const std::shared_ptr<Texture> &texture,
                          TexType texture_type, glm::vec2 &screensize) {
   bool should_draw = screencontainquad(cp.x, cp.y, width, height, screensize);
   if (!should_draw)
@@ -247,11 +253,10 @@ void XquadMesh::drawquad(glm::vec2 &cp, float width, float height,
   }
   quad->draworder = _should_draw_quads.size();
   _should_draw_quads.push_back(quad);
-  // todo
   // 临时矩形列表
   std::shared_ptr<QuadBatch> tempbatch;
-  if (_all_batchs.size() == 0) {
-    // 所有批数为0(直接新建批次)
+  if (_all_batchs.empty()) {
+    // 所有批数为空(直接新建批次)
     tempbatch = std::make_shared<QuadBatch>();
     tempbatch->batch.push_back(quad);
     tempbatch->texture_batch_index = quad->quadTex->texid / _max_texture_unit;
@@ -260,34 +265,36 @@ void XquadMesh::drawquad(glm::vec2 &cp, float width, float height,
   } else {
     // 已有批次
     int last_texture_batch_index =
-        _all_batchs.end()->get()->texture_batch_index;
+        _all_batchs.at(_all_batchs.size() - 1)->texture_batch_index;
     int this_quad_texture_batch_index =
         quad->quadTex->texid / _max_texture_unit;
     if (this_quad_texture_batch_index == last_texture_batch_index)
       // 和上一批texture_batch_index相同
-      _all_batchs.end()->get()->batch.push_back(quad);
+      _all_batchs.at(_all_batchs.size() - 1)->batch.push_back(quad);
     else {
       tempbatch = std::make_shared<QuadBatch>();
       tempbatch->batch.push_back(quad);
       tempbatch->texture_batch_index = this_quad_texture_batch_index;
+      _all_batchs.push_back(tempbatch);
     }
-
-    // 计算此quad绑定的texture应处的纹理批次
   }
 };
 
 void XquadMesh::drawquad(glm::vec2 &cp, float width, float height,
-                         glm::vec4 &&color, std::shared_ptr<Texture> texture,
+                         glm::vec4 &&color,
+                         const std::shared_ptr<Texture> &texture,
                          TexType texture_type, glm::vec2 &screensize) {
   drawquad(cp, width, height, color, texture, texture_type, screensize);
 }
 void XquadMesh::drawquad(glm::vec2 &&cp, float width, float height,
-                         glm::vec4 &color, std::shared_ptr<Texture> texture,
+                         glm::vec4 &color,
+                         const std::shared_ptr<Texture> &texture,
                          TexType texture_type, glm::vec2 &screensize) {
   drawquad(cp, width, height, color, texture, texture_type, screensize);
 }
 void XquadMesh::drawquad(glm::vec2 &&cp, float width, float height,
-                         glm::vec4 &&color, std::shared_ptr<Texture> texture,
+                         glm::vec4 &&color,
+                         const std::shared_ptr<Texture> &texture,
                          TexType texture_type, glm::vec2 &screensize) {
   drawquad(cp, width, height, color, texture, texture_type, screensize);
 };
@@ -297,11 +304,38 @@ void XquadMesh::drawlinestrip(glm::vec2 &p1, glm::vec2 &p2, float width,
   bool should_draw = screencontainquad(
       (p2.x + p1.x) / 2.0f, (p2.y + p1.y) / 2.0f,
       sqrt(pow(p2.x - p1.x, 2) + pow(p2.y - p1.y, 2)), width, screensize);
+  if (!should_draw)
+    return;
   //  std::cout << "add quad" << std::endl;
   auto line = std::make_shared<Linestrip>(p1, p2, width, color);
   line->settexture(deftexture);
   line->draworder = _should_draw_quads.size();
   _should_draw_quads.push_back(line);
+  // 临时矩形列表
+  std::shared_ptr<QuadBatch> tempbatch;
+  if (_all_batchs.empty()) {
+    // 所有批数为空(直接新建批次)
+    tempbatch = std::make_shared<QuadBatch>();
+    tempbatch->batch.push_back(line);
+    tempbatch->texture_batch_index = line->quadTex->texid / _max_texture_unit;
+    // 将新批次加入全部批次
+    _all_batchs.push_back(tempbatch);
+  } else {
+    // 已有批次
+    int last_texture_batch_index =
+        _all_batchs.at(_all_batchs.size() - 1)->texture_batch_index;
+    int this_quad_texture_batch_index =
+        line->quadTex->texid / _max_texture_unit;
+    if (this_quad_texture_batch_index == last_texture_batch_index)
+      // 和上一批texture_batch_index相同
+      _all_batchs.at(_all_batchs.size() - 1)->batch.push_back(line);
+    else {
+      tempbatch = std::make_shared<QuadBatch>();
+      tempbatch->batch.push_back(line);
+      tempbatch->texture_batch_index = this_quad_texture_batch_index;
+      _all_batchs.push_back(tempbatch);
+    }
+  }
 }
 
 // 绘制线段
@@ -363,8 +397,8 @@ void XquadMesh::drawlinestrip(glm::vec2 &&sp, float length, float degrees,
 };
 
 // 构建矩形数据到gpu
-void XquadMesh::newquad(std::shared_ptr<Quad> quad) {
-  uint32_t quadcount = size();
+void XquadMesh::newquad(const std::shared_ptr<Quad> &quad) {
+  auto quadcount = size();
   // std::cout << "绘制数量:" << std::to_string(quadcount) << std::endl;
   //  设置模型矩阵索引
   quad->setmatindex(quadcount);
@@ -382,45 +416,32 @@ void XquadMesh::newquad(std::shared_ptr<Quad> quad) {
 };
 
 void XquadMesh::finish() {
-  // 根据纹理划分渲染批次(至少1批)
-  int batch_count = _max_texid / 15 + 1;
-  auto batchs = std::vector<std::vector<std::shared_ptr<Quad>>>(batch_count);
-  for (auto &quad : _should_draw_quads) {
-    // 将矩形放入对应批次
-    batchs[quad->quadTex->texid / 15].push_back(quad);
-  }
-  // 逐批次绘制
-  for (int i = 0; i < batchs.size(); i++) {
-    for (int j = 0; j < batchs[i].size(); j++) {
-      auto quad = batchs[i][j];
-      // 上传矩形数据
-      newquad(quad);
-    }
-    // 0号纹理槽绑定
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, deftexture->texture);
-
-    //  此批次纹理数量
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, deftexture->texture);
+  for (auto &quadBatch : _all_batchs) {
+    int texture_batch_index = quadBatch->texture_batch_index;
     auto size = Texture::textures.size();
-    int currentbatchtexturecount = size < 15             ? size
-                                   : size < (i + 1) * 15 ? size - i * 15
-                                                         : 15;
-    // std::cout << "此批纹理数:[" + std::to_string(currentbatchtexturecount) +
-    // "]"
-    //           << std::endl;
-    //  循环绑定此批次矩形所需的材质
-    for (int j = 0; j < currentbatchtexturecount; ++j) {
+    auto currentbatchtexturecount = size < 15 ? size
+                                    : size < (texture_batch_index + 1) * 15
+                                        ? size - texture_batch_index * 15
+                                        : 15;
+    // 激活绑定此批次的全部纹理单元
+    for (int j = 0; j < currentbatchtexturecount; j++) {
       glActiveTexture(GL_TEXTURE1 + j);
-      glBindTexture(GL_TEXTURE_2D, Texture::textures[j + i * 15]->texture);
+      glBindTexture(GL_TEXTURE_2D,
+                    Texture::textures[j + texture_batch_index * 15]->texture);
       _shader->set_sampler(("samplers[" + std::to_string(j + 1) + "]").c_str(),
                            j + 1);
     }
-    glDrawElements(GL_TRIANGLES, batchs[i].size() * 6, GL_UNSIGNED_INT,
-                   (void *)0);
+    // 上传矩形数据
+    for (auto &quad : quadBatch->batch)
+      newquad(quad);
+    // 批量绘制矩形
+    glDrawElements(GL_TRIANGLES, (int)(quadBatch->batch.size()) * 6,
+                   GL_UNSIGNED_INT, nullptr);
     _quads.clear();
-    // std::cout << "绘制第[" + std::to_string(i + 1) + "]批完成" << std::endl;
   }
-  // std::cout << "QuadMesh绘制完成" << std::endl;
-  // 清除全部的绘制批
+  // 清理缓存
   _should_draw_quads.clear();
+  _all_batchs.clear();
 }
