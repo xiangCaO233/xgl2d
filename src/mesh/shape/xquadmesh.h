@@ -77,6 +77,7 @@ class QuadBatch {
   std::vector<std::shared_ptr<Quad>> batch;
   // 此批次中矩形添加序列最大和最小值
   int minquadorder, maxquadorder;
+  int texture_batch_index;
   friend class XquadMesh;
 
 public:

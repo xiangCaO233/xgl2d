@@ -254,10 +254,23 @@ void XquadMesh::drawquad(glm::vec2 &cp, float width, float height,
     // 所有批数为0(直接新建批次)
     tempbatch = std::make_shared<QuadBatch>();
     tempbatch->batch.push_back(quad);
+    tempbatch->texture_batch_index = quad->quadTex->texid / _max_texture_unit;
     // 将新批次加入全部批次
     _all_batchs.push_back(tempbatch);
   } else {
     // 已有批次
+    int last_texture_batch_index =
+        _all_batchs.end()->get()->texture_batch_index;
+    int this_quad_texture_batch_index =
+        quad->quadTex->texid / _max_texture_unit;
+    if (this_quad_texture_batch_index == last_texture_batch_index)
+      // 和上一批texture_batch_index相同
+      _all_batchs.end()->get()->batch.push_back(quad);
+    else {
+      tempbatch = std::make_shared<QuadBatch>();
+      tempbatch->batch.push_back(quad);
+      tempbatch->texture_batch_index = this_quad_texture_batch_index;
+    }
 
     // 计算此quad绑定的texture应处的纹理批次
   }
