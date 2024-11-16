@@ -22,3 +22,5 @@
 
 - main.cpp 示例(
   ![涩涩不叫我.png](./sesebujiaowo.png)
+- 当前渲染瓶颈:CPU侧
+  ![2024瓶颈](20241116-10.40.jpg)
