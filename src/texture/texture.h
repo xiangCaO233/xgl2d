@@ -27,6 +27,7 @@ class Texture {
 
   friend class Xmesh;
   friend class XquadMesh;
+  friend class Xovalmesh;
   friend class Quad;
 
 public:

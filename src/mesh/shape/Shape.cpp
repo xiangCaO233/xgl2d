@@ -72,6 +72,4 @@ void Shape::rotate(float degrees, glm::vec3 &axis) {
   _transform = _transform * rotationMatrix;
 };
 void Shape::rotate(float degrees, glm::vec3 &&axis) { rotate(degrees, axis); }
-bool Shape::screen_is_contain(glm::vec2 &screen) const {
-
-};
+bool Shape::screen_is_contain(glm::vec2 &screen) const { return false; };

@@ -2,6 +2,7 @@
 #define OVAL_H
 
 #include "Shape.h"
+#include <memory>
 
 class Oval : public Shape {
   // 割数
@@ -11,7 +12,8 @@ class Oval : public Shape {
 
 public:
   // 构造Oval
-  Oval(glm::vec2 &cp, float rx, float ry, int segment, glm::vec4 &color);
+  Oval(glm::vec2 &cp, float rx, float ry, int segment, glm::vec4 &color,
+       std::shared_ptr<Texture> texture, TexType texture_type);
   // 析构Oval
   virtual ~Oval() = default;
 };

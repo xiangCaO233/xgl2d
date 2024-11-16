@@ -1,3 +1,4 @@
+#include "mesh/shape/xovalmesh.h"
 #include "mesh/shape/xquadmesh.h"
 #include "shader/shader.h"
 #include <chrono>
@@ -52,6 +53,8 @@ int main(int argc, char *argv[]) {
   }
   // 创建opengl上下文
   glfwMakeContextCurrent(w);
+  const GLubyte *version = glGetString(GL_VERSION);
+  std::cout << "OpenGL Version: " << version << std::endl;
   // 查询最大支持抗锯齿MSAA倍率
   GLint maxSamples;
   glGetIntegerv(GL_MAX_SAMPLES, &maxSamples);
@@ -83,6 +86,7 @@ int main(int argc, char *argv[]) {
 
   // 创建mesh
   XquadMesh mesh(shader, maxTextureUnits);
+  Xovalmesh ovalMesh(shader, maxTextureUnits, 128);
   // 加载纹理
   std::cout << "加载纹理..." << std::endl;
   std::vector<std::shared_ptr<Texture>> texs;
@@ -124,7 +128,6 @@ int main(int argc, char *argv[]) {
   std::cout << "加载纹理完成" << std::endl;
   // 应用正交投影
   shader->set_unfmat4f("projmat", proj);
-  mesh.bind();
   // glBindTexture(GL_TEXTURE_2D, mesh.deftexture->texture);
 
   // 渲染循环
@@ -133,31 +136,44 @@ int main(int argc, char *argv[]) {
     glClear(GL_COLOR_BUFFER_BIT);
     // 获取当前时间点
     auto start = std::chrono::high_resolution_clock::now();
-    // 绘制矩形
-    for (int i = 0; i < 6; i++) {
-      for (int j = 0; j < 4; j++) {
-        glm::vec4 color = {i * 1.0f / 6.0f, j * 1.0 / 4.0f,
-                           i * 1.0f / 6.0f * 0.6f + j * 1.0 / 4.0f * 0.4f,
-                           1.0f};
-        mesh.drawquad(
-            {-windowWidth / 2.0f + i * windowWidth / 6.0f + windowWidth / 12.0f,
-             windowHeight / 2.0f - j * windowHeight / 4.0f -
-                 windowHeight / 8.0f},
-            windowWidth / 6.0f, windowHeight / 4.0f, color, texs[i * 4 + j],
-            TexType::FILL, screensize);
-      }
-    }
-    mesh.drawlinestrip({0, 0}, {100, 100}, 4, {1.0f, 0.0f, 0.0f, 1.0f},
-                       screensize);
-    mesh.drawlinestrip({-30, 40}, {40, -200}, 4, {0.0f, 1.0f, 0.0f, 1.0f},
-                       screensize);
-    mesh.drawlinestrip({120, -20}, {-100, 200}, 8, {0.0f, 0.0f, 1.0f, 1.0f},
-                       screensize);
-    mesh.drawlinestrip({-80, 300}, {-100, -100}, 8, {1.0f, 0.0f, 1.0f, 1.0f},
-                       screensize);
-    mesh.drawlinestrip({0, 0}, 80.0f, 315.0f, 50.0f, {1.0f, 1.0f, 1.0f, 1.0f},
-                       screensize);
-    mesh.finish();
+    // mesh.bind();
+    //// 绘制矩形
+    // for (int i = 0; i < 6; i++) {
+    //   for (int j = 0; j < 4; j++) {
+    //     glm::vec4 color = {i * 1.0f / 6.0f, j * 1.0 / 4.0f,
+    //                        i * 1.0f / 6.0f * 0.6f + j * 1.0 / 4.0f * 0.4f,
+    //                        1.0f};
+    //     mesh.drawquad(
+    //         {-windowWidth / 2.0f + i * windowWidth / 6.0f + windowWidth
+    //         / 12.0f,
+    //          windowHeight / 2.0f - j * windowHeight / 4.0f -
+    //              windowHeight / 8.0f},
+    //         windowWidth / 6.0f, windowHeight / 4.0f, color, texs[i * 4 + j],
+    //         TexType::FILL, screensize);
+    //   }
+    // }
+    // mesh.drawlinestrip({0, 0}, {100, 100}, 4, {1.0f, 0.0f, 0.0f, 1.0f},
+    //                    screensize);
+    // mesh.drawlinestrip({-30, 40}, {40, -200}, 4, {0.0f, 1.0f, 0.0f, 1.0f},
+    //                    screensize);
+    // mesh.drawlinestrip({120, -20}, {-100, 200}, 8, {0.0f, 0.0f, 1.0f, 1.0f},
+    //                    screensize);
+    // mesh.drawlinestrip({-80, 300}, {-100, -100}, 8, {1.0f, 0.0f, 1.0f, 1.0f},
+    //                    screensize);
+    // mesh.drawlinestrip({0, 0}, 80.0f, 315.0f, 50.0f,
+    // {1.0f, 1.0f, 1.0f, 1.0f},
+    //                    screensize);
+    // mesh.finish();
+    // mesh.unbind();
+
+    ovalMesh.bind();
+    ovalMesh.drawcircle({50, 50}, 50, {0.5f, 0.5f, 0.5f, 1.0f}, screensize);
+    ovalMesh.drawoval({-40, -100}, 150, 75, {0.0f, 1.0f, 0.0f, 1.0f},
+                      screensize);
+    ovalMesh.drawoval({-200, 100}, 50, 175, {1.0f, 0.0f, 0.0f, 1.0f},
+                      screensize);
+    ovalMesh.finish();
+    ovalMesh.unbind();
 
     glfwSwapBuffers(w);
     // 获取代码执行后的时间点
@@ -174,7 +190,6 @@ int main(int argc, char *argv[]) {
       std::cerr << "OpenGL Error: " << error << std::endl;
     }
   }
-  mesh.unbind();
   shader->unuse();
   glfwTerminate();
   return 0;

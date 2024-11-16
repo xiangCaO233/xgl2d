@@ -65,10 +65,11 @@ class Shape {
   // 绘制顺序
   uint32_t draworder{0};
 
+  friend class Oval;
   friend class Quad;
   friend class XquadMesh;
+  friend class Xovalmesh;
   friend class Linestrip;
-  friend class Oval;
 
 public:
   // 构造Shape
