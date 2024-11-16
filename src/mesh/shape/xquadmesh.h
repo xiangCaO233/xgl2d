@@ -8,10 +8,11 @@
 enum TexType { FILL_TO_QUAD, REAPEAT_TO_QUAD };
 class Quad {
   // 矩形四顶点
-  Vertex *bottom_left;
-  Vertex *bottom_right;
-  Vertex *top_right;
-  Vertex *top_left;
+  std::shared_ptr<Vertex> bottom_left;
+  std::shared_ptr<Vertex> bottom_right;
+  std::shared_ptr<Vertex> top_right;
+  std::shared_ptr<Vertex> top_left;
+
   float width, height;
   // 矩形的对应变换矩阵(默认单位矩阵)
   glm::mat4 _translation = glm::mat4(1.0f);
@@ -29,7 +30,7 @@ public:
        std::shared_ptr<Texture> texture, TexType texture_type);
   Quad(glm::vec2 &cp, float width, float height, glm::vec4 &color,
        std::shared_ptr<Texture> texture, TexType texture_type);
-  ~Quad();
+  virtual ~Quad();
 
   // 导出数据(src是否经过变换)
   std::vector<float> dump(bool src);
@@ -71,25 +72,41 @@ public:
   virtual ~Linestrip();
 };
 
+class QuadBatch {
+  // 该批次中的全部矩形
+  std::vector<std::shared_ptr<Quad>> batch;
+  // 此批次中矩形添加序列最大和最小值
+  int minquadorder, maxquadorder;
+  friend class XquadMesh;
+
+public:
+  // 构造QuadBatch
+  QuadBatch();
+  // 析构QuadBatch
+  virtual ~QuadBatch();
+};
+
 class XquadMesh : public Xmesh {
   uint32_t _qcount_size;
 
+  // 全部批次
+  std::vector<std::shared_ptr<QuadBatch>> _all_batchs;
   int _max_texid{0};
   // quadmesh中的全部quad(矩形本身)
-  std::vector<Quad *> _quads;
+  std::vector<std::shared_ptr<Quad>> _quads;
   // 将要绘制的矩形
-  std::vector<Quad *> _should_draw_quads;
+  std::vector<std::shared_ptr<Quad>> _should_draw_quads;
   // 矩形在列表中的索引(快速查找在绘制长宽比相同的矩形数据哈希表)
-  std::unordered_map<Quad *, int> _quad_indicies;
+  std::unordered_map<std::shared_ptr<Quad>, int> _quad_indicies;
   // 矩形绘制权重(权重为0时，将矩形列表末尾的矩形移交到此0权矩形处,包括显存空间哈希表)
-  std::unordered_map<Quad *, int> _quad_draw_weight;
+  std::unordered_map<std::shared_ptr<Quad>, int> _quad_draw_weight;
 
   bool screencontainquad(float x, float y, float width, float height,
                          glm::vec2 &screensize);
 
 public:
   // 构造XquadMesh
-  XquadMesh(Shader *shader, uint32_t qcount = 256);
+  XquadMesh(Shader *shader, int max_texture_unit, uint32_t qcount = 256);
   // 析构XquadMesh
   virtual ~XquadMesh() override;
 
@@ -161,6 +178,6 @@ public:
   inline unsigned int size() { return _quads.size(); }
 
   // 使用左下角为基准构建矩形
-  void newquad(Quad *quad);
+  void newquad(std::shared_ptr<Quad> quad);
 };
 #endif /* XQUADMESH_H */

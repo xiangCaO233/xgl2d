@@ -58,7 +58,8 @@ int main(int argc, char *argv[]) {
   printf("最大抗锯齿倍率: %d\n", maxSamples);
   // 启用 最大 MSAA
   glfwWindowHint(GLFW_SAMPLES, maxSamples);
-  glfwSwapInterval(0); // 禁用V-Sync
+  // 禁用V-Sync
+  // glfwSwapInterval(0);
 
   // 绑定窗口大小回调函数
   glfwSetFramebufferSizeCallback(w, framebuffer_size_callback);
@@ -81,7 +82,7 @@ int main(int argc, char *argv[]) {
                     -1.0f, 1.0f);
 
   // 创建mesh
-  XquadMesh mesh(shader);
+  XquadMesh mesh(shader, maxTextureUnits);
   // 加载纹理
   std::cout << "加载纹理..." << std::endl;
   std::vector<std::shared_ptr<Texture>> texs;
@@ -135,14 +136,15 @@ int main(int argc, char *argv[]) {
     // 绘制矩形
     for (int i = 0; i < 6; i++) {
       for (int j = 0; j < 4; j++) {
+        glm::vec4 color = {i * 1.0f / 6.0f, j * 1.0 / 4.0f,
+                           i * 1.0f / 6.0f * 0.6f + j * 1.0 / 4.0f * 0.4f,
+                           1.0f};
         mesh.drawquad(
             {-windowWidth / 2.0f + i * windowWidth / 6.0f + windowWidth / 12.0f,
              windowHeight / 2.0f - j * windowHeight / 4.0f -
                  windowHeight / 8.0f},
-            windowWidth / 6.0f, windowHeight / 4.0f,
-            {i * 1.0f / 6.0f, j * 1.0 / 4.0f,
-             i * 1.0f / 6.0f * 0.6f + j * 1.0 / 4.0f * 0.4f, 1.0f},
-            texs[j * 6 + i], TexType::REAPEAT_TO_QUAD, screensize);
+            windowWidth / 6.0f, windowHeight / 4.0f, color, texs[j * 6 + i],
+            TexType::FILL_TO_QUAD, screensize);
       }
     }
     mesh.drawlinestrip({0, 0}, {100, 100}, 4, {1.0f, 0.0f, 0.0f, 1.0f},

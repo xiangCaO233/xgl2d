@@ -5,13 +5,13 @@
 
 Quad::Quad(glm::vec2 &cp, float width, float height)
     : width(width), height(height) {
-  bottom_left = new Vertex;
+  bottom_left = std::make_shared<Vertex>();
   bottom_left->position = {-width / 2, -height / 2, 0.0f};
-  bottom_right = new Vertex;
+  bottom_right = std::make_shared<Vertex>();
   bottom_right->position = {width / 2, -height / 2, 0.0f};
-  top_right = new Vertex;
+  top_right = std::make_shared<Vertex>();
   top_right->position = {width / 2, height / 2, 0.0f};
-  top_left = new Vertex;
+  top_left = std::make_shared<Vertex>();
   top_left->position = {-width / 2, height / 2, 0.0f};
   translate({cp.x, cp.y, 0.0f});
 }
@@ -170,7 +170,7 @@ Linestrip::Linestrip(glm::vec2 &sp, float length, float degrees, float width,
 
 Linestrip::~Linestrip() = default;
 
-XquadMesh::XquadMesh(Shader *shader, uint32_t qcount)
+XquadMesh::XquadMesh(Shader *shader, int max_texture_unit, uint32_t qcount)
     : Xmesh(shader, qcount * 4), _qcount_size(qcount) {}
 
 XquadMesh::~XquadMesh() { Xmesh::~Xmesh(); }
@@ -228,6 +228,11 @@ void XquadMesh::drawquad(glm::vec2 &cp, float width, float height,
   drawquad(cp, width, height, {1.0f, 1.0f, 1.0f, 1.0f}, texture, texture_type,
            screensize);
 };
+void XquadMesh::drawquad(glm::vec2 &&cp, float width, float height,
+                         std::shared_ptr<Texture> texture, TexType texture_type,
+                         glm::vec2 &screensize) {
+  drawquad(cp, width, height, texture, texture_type, screensize);
+}
 void XquadMesh::drawquad(glm::vec2 &cp, float width, float height,
                          glm::vec4 &color, std::shared_ptr<Texture> texture,
                          TexType texture_type, glm::vec2 &screensize) {
@@ -235,13 +240,29 @@ void XquadMesh::drawquad(glm::vec2 &cp, float width, float height,
   if (!should_draw)
     return;
   //  std::cout << "add quad" << std::endl;
-  auto quad = new Quad(cp, width, height, color, texture, texture_type);
+  auto quad =
+      std::make_shared<Quad>(cp, width, height, color, texture, texture_type);
   if (texture->texid > _max_texid) {
     _max_texid = texture->texid;
   }
   quad->draworder = _should_draw_quads.size();
   _should_draw_quads.push_back(quad);
+  // todo
+  // 临时矩形列表
+  std::shared_ptr<QuadBatch> tempbatch;
+  if (_all_batchs.size() == 0) {
+    // 所有批数为0(直接新建批次)
+    tempbatch = std::make_shared<QuadBatch>();
+    tempbatch->batch.push_back(quad);
+    // 将新批次加入全部批次
+    _all_batchs.push_back(tempbatch);
+  } else {
+    // 已有批次
+
+    // 计算此quad绑定的texture应处的纹理批次
+  }
 };
+
 void XquadMesh::drawquad(glm::vec2 &cp, float width, float height,
                          glm::vec4 &&color, std::shared_ptr<Texture> texture,
                          TexType texture_type, glm::vec2 &screensize) {
@@ -264,7 +285,7 @@ void XquadMesh::drawlinestrip(glm::vec2 &p1, glm::vec2 &p2, float width,
       (p2.x + p1.x) / 2.0f, (p2.y + p1.y) / 2.0f,
       sqrt(pow(p2.x - p1.x, 2) + pow(p2.y - p1.y, 2)), width, screensize);
   //  std::cout << "add quad" << std::endl;
-  auto line = new Linestrip(p1, p2, width, color);
+  auto line = std::make_shared<Linestrip>(p1, p2, width, color);
   line->settexture(deftexture);
   line->draworder = _should_draw_quads.size();
   _should_draw_quads.push_back(line);
@@ -328,8 +349,8 @@ void XquadMesh::drawlinestrip(glm::vec2 &&sp, float length, float degrees,
   drawlinestrip(sp, length, degrees, width, color, screensize);
 };
 
-// 构建矩形
-void XquadMesh::newquad(Quad *quad) {
+// 构建矩形数据到gpu
+void XquadMesh::newquad(std::shared_ptr<Quad> quad) {
   uint32_t quadcount = size();
   // std::cout << "绘制数量:" << std::to_string(quadcount) << std::endl;
   //  设置模型矩阵索引
@@ -350,7 +371,7 @@ void XquadMesh::newquad(Quad *quad) {
 void XquadMesh::finish() {
   // 根据纹理划分渲染批次(至少1批)
   int batch_count = _max_texid / 15 + 1;
-  auto batchs = std::vector<std::vector<Quad *>>(batch_count);
+  auto batchs = std::vector<std::vector<std::shared_ptr<Quad>>>(batch_count);
   for (auto &quad : _should_draw_quads) {
     // 将矩形放入对应批次
     batchs[quad->quadTex->texid / 15].push_back(quad);
