@@ -21,6 +21,8 @@
   - Xtextmesh 类 文本的实现(实现中)
 
 - main.cpp 示例(
-  ![涩涩不叫我.png](./sesebujiaowo.png)
+  ![涩涩不叫我.png](./sesebujiaowo.jpg)
 - 当前渲染瓶颈:CPU侧
   ![2024瓶颈](20241116-10.40.jpg)
+- 优化后:
+  ![finish占用](finish.jpg)
