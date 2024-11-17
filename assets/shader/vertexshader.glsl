@@ -1,4 +1,4 @@
-#version 400 core
+#version 410 core
 
 // 顶点位置
 layout (location = 0) in vec3 mposition;

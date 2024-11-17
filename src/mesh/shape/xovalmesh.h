@@ -38,7 +38,7 @@ class Xovalmesh : public Xmesh {
 public:
   // 构造Xovalmesh
   Xovalmesh(Shader *shader, int max_texture_unit, int ovalcount,
-            int defsegment = 8);
+            int defsegment = 800);
   // 析构Xovalmesh
   ~Xovalmesh() override;
 
