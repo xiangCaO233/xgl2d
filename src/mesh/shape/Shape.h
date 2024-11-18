@@ -66,7 +66,7 @@ class Shape {
   uint32_t draworder{0};
 
   friend class Oval;
-  friend class Quad;
+  friend class XQuad;
   friend class XquadMesh;
   friend class Xovalmesh;
   friend class Linestrip;

@@ -66,6 +66,7 @@ Xmesh::Xmesh(Shader *shader, int max_texture_unit, uint32_t vcount_size)
 }
 
 Xmesh::~Xmesh() {
+  unbind();
   glDeleteBuffers(1, &VBO);
   glDeleteBuffers(1, &EBO);
   glDeleteBuffers(1, &VAO);

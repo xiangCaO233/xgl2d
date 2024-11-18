@@ -1,7 +1,7 @@
 #include "Quad.h"
 #include "Shape.h"
 
-Quad::Quad(glm::vec2 &cp, float width, float height)
+XQuad::XQuad(glm::vec2 &cp, float width, float height)
     : Shape(4), width(width), height(height) {
   _vertices[0].position = {-width / 2, -height / 2, 0.0f};
   _vertices[1].position = {width / 2, -height / 2, 0.0f};
@@ -9,18 +9,18 @@ Quad::Quad(glm::vec2 &cp, float width, float height)
   _vertices[3].position = {-width / 2, height / 2, 0.0f};
   translate({cp.x, cp.y, 0.0f});
 }
-Quad::Quad(glm::vec2 &&cp, float width, float height)
-    : Quad(cp, width, height){};
-Quad::Quad(glm::vec2 &cp, float width, float height, glm::vec4 &color)
-    : Quad(cp, width, height) {
+XQuad::XQuad(glm::vec2 &&cp, float width, float height)
+    : XQuad(cp, width, height){};
+XQuad::XQuad(glm::vec2 &cp, float width, float height, glm::vec4 &color)
+    : XQuad(cp, width, height) {
   _vertices[0].color = color;
   _vertices[1].color = color;
   _vertices[2].color = color;
   _vertices[3].color = color;
 };
-Quad::Quad(glm::vec2 &cp, float width, float height,
-           const std::shared_ptr<Texture> &texture, TexType texture_type)
-    : Quad(cp, width, height) {
+XQuad::XQuad(glm::vec2 &cp, float width, float height,
+             const std::shared_ptr<Texture> &texture, TexType texture_type)
+    : XQuad(cp, width, height) {
   tex = texture;
   switch (texture_type) {
   case TexType::FILL: {
@@ -66,22 +66,22 @@ Quad::Quad(glm::vec2 &cp, float width, float height,
   _vertices[3].texid = texture->texid;
 };
 
-Quad::Quad(glm::vec2 &cp, float width, float height, glm::vec4 &color,
-           std::shared_ptr<Texture> texture, TexType texture_type)
-    : Quad(cp, width, height, texture, texture_type) {
+XQuad::XQuad(glm::vec2 &cp, float width, float height, glm::vec4 &color,
+             std::shared_ptr<Texture> texture, TexType texture_type)
+    : XQuad(cp, width, height, texture, texture_type) {
   _vertices[0].color = color;
   _vertices[1].color = color;
   _vertices[2].color = color;
   _vertices[3].color = color;
 };
-Quad::~Quad() = default;
+XQuad::~XQuad() = default;
 
 // 线段构造
 Linestrip::Linestrip(glm::vec2 &p1, glm::vec2 &p2, float width)
     : linelength(sqrt(pow(p2.x - p1.x, 2) + pow(p2.y - p1.y, 2))),
       linewidth(width),
-      Quad({(p2.x + p1.x) / 2.0f, (p2.y - p1.y) / 2.0f},
-           sqrt(pow(p2.x - p1.x, 2) + pow(p2.y - p1.y, 2)), width) {
+      XQuad({(p2.x + p1.x) / 2.0f, (p2.y - p1.y) / 2.0f},
+            sqrt(pow(p2.x - p1.x, 2) + pow(p2.y - p1.y, 2)), width) {
   // 旋转线段
   rotate(atan((p2.y - p1.y) / (p2.x - p1.x)) * 180.0f / M_PI,
          {0.0f, 0.0f, 1.0f});
@@ -94,9 +94,9 @@ Linestrip::Linestrip(glm::vec2 &p1, glm::vec2 &p2, float width,
 };
 
 Linestrip::Linestrip(glm::vec2 &sp, float length, float degrees, float width)
-    : Quad({sp.x + length * cos(degrees / 180.0f * M_PI),
+    : XQuad({sp.x + length * cos(degrees / 180.0f * M_PI),
             sp.y + length * sin(degrees / 180.0f * M_PI)},
-           length, width),
+            length, width),
       linewidth(width), linelength(length) {}
 
 Linestrip::Linestrip(glm::vec2 &sp, float length, float degrees, float width,

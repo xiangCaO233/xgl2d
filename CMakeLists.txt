@@ -16,6 +16,7 @@ find_package(OpenGL REQUIRED)
 find_package(glm REQUIRED)
 
 include_directories(include)
+include_directories(src)
 
 set(LIB_SOURCES
     src/texture/texture.cpp
@@ -24,6 +25,7 @@ set(LIB_SOURCES
     src/mesh/shape/Quad.cpp
     src/mesh/shape/Oval.cpp
     src/mesh/xmesh.cpp
+    src/newmesh/mesh.cpp
     src/mesh/shape/xquadmesh.cpp
     src/mesh/shape/xovalmesh.cpp)
 

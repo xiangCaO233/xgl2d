@@ -7,7 +7,7 @@
 
 class QuadBatch {
   // 该批次中的全部矩形
-  std::vector<std::shared_ptr<Quad>> batch;
+  std::vector<std::shared_ptr<XQuad>> batch;
   // 此批次中的纹理批次索引
   int texture_batch_index{0};
 
@@ -27,7 +27,7 @@ class XquadMesh : public Xmesh {
   std::vector<std::shared_ptr<QuadBatch>> _all_batchs;
   int _max_texid{0};
   // 将要绘制的矩形
-  std::vector<std::shared_ptr<Quad>> _should_draw_quads;
+  std::vector<std::shared_ptr<XQuad>> _should_draw_quads;
   // 判断屏幕中是否包含矩形
   static bool screencontainquad(float x, float y, float width, float height,
                                 glm::vec2 &screensize);

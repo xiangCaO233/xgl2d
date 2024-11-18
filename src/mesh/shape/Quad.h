@@ -5,7 +5,7 @@
 #include "Shape.h"
 #include <memory>
 
-class Quad : public Shape {
+class XQuad : public Shape {
 
   // 矩形宽高
   float width, height;
@@ -15,17 +15,17 @@ class Quad : public Shape {
   friend class XquadMesh;
 
 public:
-  Quad(glm::vec2 &cp, float width, float height);
-  Quad(glm::vec2 &&cp, float width, float height);
-  Quad(glm::vec2 &cp, float width, float height, glm::vec4 &color);
-  Quad(glm::vec2 &cp, float width, float height,
-       const std::shared_ptr<Texture> &texture, TexType texture_type);
-  Quad(glm::vec2 &cp, float width, float height, glm::vec4 &color,
-       std::shared_ptr<Texture> texture, TexType texture_type);
-  virtual ~Quad();
+  XQuad(glm::vec2 &cp, float width, float height);
+  XQuad(glm::vec2 &&cp, float width, float height);
+  XQuad(glm::vec2 &cp, float width, float height, glm::vec4 &color);
+  XQuad(glm::vec2 &cp, float width, float height,
+        const std::shared_ptr<Texture> &texture, TexType texture_type);
+  XQuad(glm::vec2 &cp, float width, float height, glm::vec4 &color,
+        std::shared_ptr<Texture> texture, TexType texture_type);
+  virtual ~XQuad();
 };
 
-class Linestrip : public Quad {
+class Linestrip : public XQuad {
   // 长度
   float linelength{};
   // 线宽

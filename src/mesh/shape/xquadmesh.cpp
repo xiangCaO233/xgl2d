@@ -73,7 +73,7 @@ void XquadMesh::drawquad(glm::vec2 &cp, float width, float height,
     return;
   //  std::cout << "add quad" << std::endl;
   auto quad =
-      std::make_shared<Quad>(cp, width, height, color, texture, texture_type);
+      std::make_shared<XQuad>(cp, width, height, color, texture, texture_type);
   if (texture->texid > _max_texid) {
     _max_texid = texture->texid;
   }

@@ -1,5 +1,4 @@
-#include "mesh/shape/xovalmesh.h"
-#include "mesh/shape/xquadmesh.h"
+#include "newmesh/mesh.h"
 #include "shader/shader.h"
 #include <chrono>
 #include <core/glcore.h>
@@ -46,7 +45,7 @@ int main(int argc, char *argv[]) {
   // 创建窗口
   GLFWwindow *w =
       glfwCreateWindow(windowWidth, windowHeight, "example", nullptr, nullptr);
-  if (w == NULL) {
+  if (w == nullptr) {
     std::cout << "创建窗口失败" << std::endl;
     glfwTerminate();
     return -1;
@@ -85,8 +84,8 @@ int main(int argc, char *argv[]) {
                     -1.0f, 1.0f);
 
   // 创建mesh
-  XquadMesh mesh(shader, maxTextureUnits);
-  Xovalmesh ovalMesh(shader, maxTextureUnits, 128);
+  // XquadMesh mesh(shader, maxTextureUnits);
+  // Xovalmesh ovalMesh(shader, maxTextureUnits, 128);
   // 加载纹理
   std::cout << "加载纹理..." << std::endl;
   std::vector<std::shared_ptr<Texture>> texs;
@@ -130,12 +129,16 @@ int main(int argc, char *argv[]) {
   shader->set_unfmat4f("projmat", proj);
   // glBindTexture(GL_TEXTURE_2D, mesh.deftexture->texture);
 
+  Mesh mesh;
+  mesh.bind();
   // 渲染循环
   while (!glfwWindowShouldClose(w)) {
     glClearColor(0.23f, 0.23f, 0.23f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     // 获取当前时间点
     auto start = std::chrono::high_resolution_clock::now();
+    mesh.drawquad({0, 0}, 100, 100, 0, {1.0f, 1.0f, 1.0f, 1.0f}, screensize);
+    mesh.finish();
     // mesh.bind();
     //// 绘制矩形
     // for (int i = 0; i < 6; i++) {
@@ -166,14 +169,14 @@ int main(int argc, char *argv[]) {
     // mesh.finish();
     // mesh.unbind();
 
-    ovalMesh.bind();
-    ovalMesh.drawcircle({50, 50}, 50, {0.5f, 0.5f, 0.5f, 1.0f}, screensize);
-    ovalMesh.drawoval({-40, -100}, 150, 75, {0.0f, 1.0f, 0.0f, 1.0f},
-                      screensize);
-    ovalMesh.drawoval({-200, 100}, 50, 175, {1.0f, 0.0f, 0.0f, 1.0f},
-                      screensize);
-    ovalMesh.finish();
-    ovalMesh.unbind();
+    // ovalMesh.bind();
+    // ovalMesh.drawcircle({50, 50}, 50, {0.5f, 0.5f, 0.5f, 1.0f}, screensize);
+    // ovalMesh.drawoval({-40, -100}, 150, 75, {0.0f, 1.0f, 0.0f, 1.0f},
+    //                   screensize);
+    // ovalMesh.drawoval({-200, 100}, 50, 175, {1.0f, 0.0f, 0.0f, 1.0f},
+    //                   screensize);
+    // ovalMesh.finish();
+    // ovalMesh.unbind();
 
     glfwSwapBuffers(w);
     // 获取代码执行后的时间点
