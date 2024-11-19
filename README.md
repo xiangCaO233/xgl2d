@@ -2,10 +2,7 @@
 
 练手项目,用学过的东西做一个能跑的 2D 图形库
 
-## Second Level Heading
-
-源码文件夹:
-
+## 源码文件夹 
 - Shader
   - 读取”assets/shader/“目录下的 glsl 着色器源代码文件简单实现了 uniform 变量的编辑
 - Texture
