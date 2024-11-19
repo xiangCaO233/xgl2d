@@ -29,6 +29,7 @@ class Texture {
   friend class XquadMesh;
   friend class Xovalmesh;
   friend class XQuad;
+  friend class Mesh;
 
 public:
   GLuint texture;
@@ -37,7 +38,7 @@ public:
   Texture(const char *texpath);
   // 析构Texture
   virtual ~Texture();
-  // 纹理id,颜色通道数
+  // 纹理id(GPU用于索引的id),颜色通道数
   int texid, nrChannels;
   float width, height;
 };

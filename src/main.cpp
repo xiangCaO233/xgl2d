@@ -129,7 +129,7 @@ int main(int argc, char *argv[]) {
   shader->set_unfmat4f("projmat", proj);
   // glBindTexture(GL_TEXTURE_2D, mesh.deftexture->texture);
 
-  Mesh mesh;
+  Mesh mesh(shader, maxTextureUnits);
   mesh.bind();
   // 渲染循环
   while (!glfwWindowShouldClose(w)) {
@@ -139,11 +139,6 @@ int main(int argc, char *argv[]) {
     auto start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < 6; i++) {
       for (int j = 0; j < 4; j++) {
-        // mesh.drawquad({windowWidth / 5.0f * i - windowWidth / 10.0f,
-        //                windowHeight / 5.0f * j + windowHeight / 10.0f},
-        //               windowWidth / 5.0f, windowHeight / 5.0f, 0,
-        //               {1 / 5.0f * i, 1 / 5.0f * j, (i + j) / 10.0f, 1.0f},
-        //               screensize);
         glm::vec4 color = {i * 1.0f / 6.0f, j * 1.0 / 4.0f,
                            i * 1.0f / 6.0f * 0.6f + j * 1.0 / 4.0f * 0.4f,
                            1.0f};
@@ -152,53 +147,11 @@ int main(int argc, char *argv[]) {
              windowHeight / 2.0f - j * windowHeight / 4.0f -
                  windowHeight / 8.0f},
             windowWidth / 6.0f, windowHeight / 4.0f,
-            asin(sin(glfwGetTime())) / M_PI * 180.0f, color, screensize);
+            asin(sin(glfwGetTime())) / M_PI * 180.0f, color, texs[j * 6 + i],
+            FILL, screensize);
       }
     }
-    // mesh.drawquad({50, 100}, 200, 400, 45, {0.0f, 1.0f, 1.0f, 1.0f},
-    //               screensize);
-    // mesh.drawquad({-30, -200}, 300, 100, 0, {1.0f, 1.0f, 1.0f, 1.0f},
-    //               screensize);
     mesh.finish();
-    // mesh.bind();
-    //// 绘制矩形
-    // for (int i = 0; i < 6; i++) {
-    //   for (int j = 0; j < 4; j++) {
-    //     glm::vec4 color = {i * 1.0f / 6.0f, j * 1.0 / 4.0f,
-    //                        i * 1.0f / 6.0f * 0.6f + j * 1.0 / 4.0f * 0.4f,
-    //                        1.0f};
-    //     mesh.drawquad(
-    //         {-windowWidth / 2.0f + i * windowWidth / 6.0f + windowWidth
-    //         / 12.0f,
-    //          windowHeight / 2.0f - j * windowHeight / 4.0f -
-    //              windowHeight / 8.0f},
-    //         windowWidth / 6.0f, windowHeight / 4.0f, color, texs[i * 4 + j],
-    //         TexType::FILL, screensize);
-    //   }
-    // }
-    // mesh.drawlinestrip({0, 0}, {100, 100}, 4, {1.0f, 0.0f, 0.0f, 1.0f},
-    //                    screensize);
-    // mesh.drawlinestrip({-30, 40}, {40, -200}, 4, {0.0f, 1.0f, 0.0f, 1.0f},
-    //                    screensize);
-    // mesh.drawlinestrip({120, -20}, {-100, 200}, 8, {0.0f, 0.0f, 1.0f, 1.0f},
-    //                    screensize);
-    // mesh.drawlinestrip({-80, 300}, {-100, -100}, 8, {1.0f, 0.0f, 1.0f, 1.0f},
-    //                    screensize);
-    // mesh.drawlinestrip({0, 0}, 80.0f, 315.0f, 50.0f,
-    // {1.0f, 1.0f, 1.0f, 1.0f},
-    //                    screensize);
-    // mesh.finish();
-    // mesh.unbind();
-
-    // ovalMesh.bind();
-    // ovalMesh.drawcircle({50, 50}, 50, {0.5f, 0.5f, 0.5f, 1.0f}, screensize);
-    // ovalMesh.drawoval({-40, -100}, 150, 75, {0.0f, 1.0f, 0.0f, 1.0f},
-    //                   screensize);
-    // ovalMesh.drawoval({-200, 100}, 50, 175, {1.0f, 0.0f, 0.0f, 1.0f},
-    //                   screensize);
-    // ovalMesh.finish();
-    // ovalMesh.unbind();
-
     glfwSwapBuffers(w);
     // 获取代码执行后的时间点
     auto end = std::chrono::high_resolution_clock::now();

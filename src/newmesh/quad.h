@@ -12,11 +12,12 @@ class Quad {
   float _rotation{0.0f};
   glm::vec4 _color;
   std::shared_ptr<Texture> _tex;
-  glm::vec2 _uv;
+  // 左下到左上逆时针顺序存储纹理坐标
+  glm::vec2 _uv1;
+  glm::vec2 _uv2;
+  glm::vec2 _uv3;
+  glm::vec2 _uv4;
   TexType _textype;
-
-  // 是否需要更新的标识
-  bool _is_update{false};
 
   // 绘制顺序
   uint32_t _draw_order{0};
@@ -30,11 +31,31 @@ public:
   // 构造Quad
   Quad(glm::vec2 &cp, float w, float h, float rotation, glm::vec4 &color,
        std::shared_ptr<Texture> &tex, TexType texture_type)
-      : _cp(cp), _w(w), _h(h), _rotation(rotation), _color(color), _tex(tex),
-        _textype(texture_type){};
+      : _cp(cp), _w(w), _h(h), _rotation(rotation), _color(color), _tex(tex) {
+    settextyppe(texture_type);
+  };
   // 析构Quad
   virtual ~Quad() = default;
 
+  // 重新设置纹理填充方式
+  void settextyppe(TexType texture_type) {
+    _textype = texture_type;
+    switch (_textype) {
+    case FILL: {
+      _uv1.x = 0.0f;
+      _uv1.y = 0.0f;
+      _uv2.x = 1.0f;
+      _uv2.y = 0.0f;
+      _uv3.x = 1.0f;
+      _uv3.y = 1.0f;
+      _uv4.x = 0.0f;
+      _uv4.y = 1.0f;
+      break;
+    }
+    default:
+      break;
+    }
+  }
   void rotate(float rotate) { _rotation = rotate; }
   // 重写==运算符
   inline bool operator==(const Quad &q) const {

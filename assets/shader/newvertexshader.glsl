@@ -26,6 +26,8 @@ uniform mat4 projmat;
 const float PI = atan(1.0) * 4;
 
 out vec4 vertex_color;
+out vec2 texcoord;
+out float texid;
 
 void main(){
     // 缩放矩形到指定大小
@@ -43,4 +45,6 @@ void main(){
     gl_Position = projmat * vec4(final_pos, 0.0, 1.0);
     // 传递颜色、UV和纹理ID到片段着色器
     vertex_color = shape_color;
+		texcoord = shape_uv;
+		texid = shape_texid;
 }

@@ -27,3 +27,6 @@
   ![finish占用](finish.jpg)
 - 新渲染逻辑优化:
   ![finish占用](premiere.jpg)
+- 新的批绘制处理纹理由于驱动opengl版本限制
+  不得不在每一帧频繁绑定缓冲区,导致帧生成时间严重不稳定
+  ![frametime](frametimeissue.jpg)
