@@ -74,8 +74,8 @@ int main(int argc, char *argv[]) {
   int maxTextureUnits = 0;
   glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
   std::cout << "最大材质插槽数: " << maxTextureUnits << std::endl;
-  shader = new Shader("../assets/shader/vertexshader.glsl",
-                      "../assets/shader/fragmentshader.glsl");
+  shader = new Shader("../assets/shader/newvertexshader.glsl",
+                      "../assets/shader/newfragmentshader.glsl");
   shader->use();
 
   // 计算正交投影矩阵
@@ -137,7 +137,27 @@ int main(int argc, char *argv[]) {
     glClear(GL_COLOR_BUFFER_BIT);
     // 获取当前时间点
     auto start = std::chrono::high_resolution_clock::now();
-    mesh.drawquad({0, 0}, 100, 100, 0, {1.0f, 1.0f, 1.0f, 1.0f}, screensize);
+    for (int i = 0; i < 6; i++) {
+      for (int j = 0; j < 4; j++) {
+        // mesh.drawquad({windowWidth / 5.0f * i - windowWidth / 10.0f,
+        //                windowHeight / 5.0f * j + windowHeight / 10.0f},
+        //               windowWidth / 5.0f, windowHeight / 5.0f, 0,
+        //               {1 / 5.0f * i, 1 / 5.0f * j, (i + j) / 10.0f, 1.0f},
+        //               screensize);
+        glm::vec4 color = {i * 1.0f / 6.0f, j * 1.0 / 4.0f,
+                           i * 1.0f / 6.0f * 0.6f + j * 1.0 / 4.0f * 0.4f,
+                           1.0f};
+        mesh.drawquad(
+            {-windowWidth / 2.0f + i * windowWidth / 6.0f + windowWidth / 12.0f,
+             windowHeight / 2.0f - j * windowHeight / 4.0f -
+                 windowHeight / 8.0f},
+            windowWidth / 6.0f, windowHeight / 4.0f, 0, color, screensize);
+      }
+    }
+    // mesh.drawquad({50, 100}, 200, 400, 45, {0.0f, 1.0f, 1.0f, 1.0f},
+    //               screensize);
+    // mesh.drawquad({-30, -200}, 300, 100, 0, {1.0f, 1.0f, 1.0f, 1.0f},
+    //               screensize);
     mesh.finish();
     // mesh.bind();
     //// 绘制矩形

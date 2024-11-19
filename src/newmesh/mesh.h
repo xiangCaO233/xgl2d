@@ -7,7 +7,7 @@
 #include <memory>
 #include <vector>
 
-enum DataType { UPDATEFLAG, POSITION, ROTATION, COLOR, UV, TEXID };
+enum DataType { POSITION, SIZE, ROTATION, COLOR, UV, TEXID };
 
 class Mesh {
   // 缓冲对象
@@ -15,8 +15,8 @@ class Mesh {
   // VAO:顶点数组缓冲对象
   // FBO:帧缓冲对象
   // TBO:纹理贴图缓冲对象
-  // (instanceVBOs[0]:更新标识,
-  // instanceVBOs[1]:x,y中心坐标,
+  // (instanceVBOs[0]:x,y中心坐标,
+  // instanceVBOs[1]:尺寸
   // instanceVBOs[2]:旋转角度,
   // instanceVBOs[3]:r,g,b,a颜色,
   // instanceVBOs[4]:u,v贴图坐标,
@@ -26,11 +26,11 @@ class Mesh {
   // 包含的图形
   std::vector<std::shared_ptr<Quad>> _quads;
   // 每一段要更新的连续的矩形和数据
-  std::vector<std::vector<std::shared_ptr<Quad>>>
-      _update_consequent_quads_updateflags;
-  std::vector<std::vector<float>> _update_consequent_quads_updateflag_datas;
   std::vector<std::vector<std::shared_ptr<Quad>>> _update_consequent_quads_poss;
   std::vector<std::vector<float>> _update_consequent_quads_pos_datas;
+  std::vector<std::vector<std::shared_ptr<Quad>>>
+      _update_consequent_quads_sizes;
+  std::vector<std::vector<float>> _update_consequent_quads_size_datas;
   std::vector<std::vector<std::shared_ptr<Quad>>>
       _update_consequent_quads_rotations;
   std::vector<std::vector<float>> _update_consequent_quads_rotation_datas;
@@ -88,11 +88,11 @@ public:
                 glm::vec2 &screen_size);
   // 更新连续区
   void update_consecutive(
-          std::vector<std::vector<std::shared_ptr<Quad>>> &update_consequent_list,
-          std::vector<std::shared_ptr<Quad>> &current_consequent_list,
-          std::vector<std::vector<float>> &update_consequent_data_list,
-          std::vector<float> &current_consequent_data, DataType dataType,
-          std::shared_ptr<Quad> &handle_quad, bool is_update = true);
+      std::vector<std::vector<std::shared_ptr<Quad>>> &update_consequent_list,
+      std::vector<std::shared_ptr<Quad>> *current_consequent_list,
+      std::vector<std::vector<float>> &update_consequent_data_list,
+      std::vector<float> *current_consequent_data, DataType dataType,
+      std::shared_ptr<Quad> &handle_quad, bool is_update = true) const;
   void drawlinestrip();
   void drawoval();
   void drawcircle();

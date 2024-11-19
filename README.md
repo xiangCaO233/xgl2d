@@ -25,3 +25,5 @@
   ![2024瓶颈](20241116-10.40.jpg)
 - 优化后:
   ![finish占用](finish.jpg)
+- 新渲染逻辑优化:
+  ![finish占用](premiere.jpg)

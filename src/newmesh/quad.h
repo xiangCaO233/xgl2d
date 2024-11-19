@@ -12,6 +12,7 @@ class Quad {
   float _rotation{0.0f};
   glm::vec4 _color;
   std::shared_ptr<Texture> _tex;
+  glm::vec2 _uv;
   TexType _textype;
 
   // 是否需要更新的标识
@@ -21,18 +22,16 @@ class Quad {
   uint32_t _draw_order{0};
 
   // 在模型缓冲区中的偏移
-  uint32_t model_data_offset[6]{0, 0, 0, 0};
+  uint32_t model_data_offset[7]{0, 0, 0, 0, 0, 0, 0};
 
   friend class Mesh;
 
 public:
   // 构造Quad
   Quad(glm::vec2 &cp, float w, float h, float rotation, glm::vec4 &color,
-        std::shared_ptr<Texture> &tex, TexType texture_type)
+       std::shared_ptr<Texture> &tex, TexType texture_type)
       : _cp(cp), _w(w), _h(h), _rotation(rotation), _color(color), _tex(tex),
-        _textype(texture_type){
-
-        };
+        _textype(texture_type){};
   // 析构Quad
   virtual ~Quad() = default;
 
@@ -47,14 +46,24 @@ public:
   [[nodiscard]] inline bool isrotationequal(const Quad &q) const {
     return _rotation == q._rotation;
   }
-    [[nodiscard]] inline bool iscpequal(const Quad &q) const { return _cp == q._cp; }
-    [[nodiscard]] inline bool iswhequal(const Quad &q) const {
+  [[nodiscard]] inline bool iscpequal(const Quad &q) const {
+    return _cp == q._cp;
+  }
+  [[nodiscard]] inline bool iswhequal(const Quad &q) const {
     return _w == q._w && _h == q._h;
   }
-    [[nodiscard]] inline bool iscolorequal(const Quad &q) const { return _color == q._color; }
-    [[nodiscard]] inline bool istexequal(const Quad &q) const { return _tex == q._tex; }
-    [[nodiscard]] inline bool isuvequal(const Quad &q) const { return _textype == q._textype; }
-    [[nodiscard]] inline bool iscpequal(glm::vec2 &_cp_) const { return _cp == _cp_; }
+  [[nodiscard]] inline bool iscolorequal(const Quad &q) const {
+    return _color == q._color;
+  }
+  [[nodiscard]] inline bool istexequal(const Quad &q) const {
+    return _tex == q._tex;
+  }
+  [[nodiscard]] inline bool isuvequal(const Quad &q) const {
+    return _textype == q._textype;
+  }
+  [[nodiscard]] inline bool iscpequal(glm::vec2 &_cp_) const {
+    return _cp == _cp_;
+  }
   inline bool iswhequal(float &_w_, float &_h_) const {
     return _w == _w_ && _h == _h_;
   }
