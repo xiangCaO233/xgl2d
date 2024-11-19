@@ -404,8 +404,8 @@ void Mesh::update_consecutive(
     break;
   }
   case SIZE: {
-    current_consequent_data->push_back(handle_quad->_w / 2.0f);
-    current_consequent_data->push_back(handle_quad->_h / 2.0f);
+    current_consequent_data->push_back(handle_quad->_w);
+    current_consequent_data->push_back(handle_quad->_h);
     break;
   }
   case ROTATION: {

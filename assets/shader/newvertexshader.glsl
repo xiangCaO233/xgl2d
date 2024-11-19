@@ -28,44 +28,19 @@ const float PI = atan(1.0) * 4;
 out vec4 vertex_color;
 
 void main(){
-	// 计算模型矩阵
-	mat4 temp_model_mat;
-	// 尺寸缩放
-	// 缩放矩阵
-	mat4 scale_mat = mat4(
-		shape_size.x,			0.0,				0.0, 0.0,
-			0.0,				shape_size.y, 	0.0, 0.0,
-			0.0,						0.0,				1.0, 0.0,
-			0.0,						0.0,				0.0, 1.0
-	);
-	// 移动位置(与平移矩阵相乘)
-	// 平移矩阵
-	//mat4 translate_mat = mat4(
-	//	1.0, 0.0, 0.0, shape_cp.x,
-	//	0.0, 1.0, 0.0, shape_cp.y,
-	//	0.0, 0.0, 1.0, 0.0,
-	//	0.0, 0.0, 0.0, 1.0
-	//);
-	// 旋转矩阵（绕Z轴）
-	// 计算弧度值
-	float angle = shape_rotation / 180.0 * PI;
-	// 分别计算正弦余弦值
-    float cosTheta = cos(angle);
-    float sinTheta = sin(angle);
-	// 定义旋转矩阵
-    mat4 rotation_mat = mat4(
-        cosTheta, -sinTheta, 0.0, 0.0,
-        sinTheta,  cosTheta, 0.0, 0.0,
-        0.0,       0.0,      1.0, 0.0,
-        0.0,       0.0,      0.0, 1.0
-    );
-	// 按照顺序应用矩阵变换(不可逆)
-	temp_model_mat = rotation_mat * scale_mat;
-	// 输出顶点位置到之后的渲染管线
-	vec4 vertex_pos = temp_model_mat * vec4(vpos, 1.0);
-	vertex_pos = vertex_pos + vec4(shape_cp, 1.0, 1.0);
-	// 应用投影
-	gl_Position = projmat * vertex_pos;
-	vertex_color = shape_color;
+    // 缩放矩形到指定大小
+    vec2 scaled_pos = vpos.xy * shape_size * 0.5;
+    // 旋转矩形
+    float angle_rad = radians(shape_rotation);
+    float cos_angle = cos(angle_rad);
+    float sin_angle = sin(angle_rad);
+    mat2 rotation_matrix = mat2(cos_angle, -sin_angle, sin_angle, cos_angle);
+    vec2 rotated_pos = rotation_matrix * scaled_pos;
 
+    // 平移到指定中心点
+    vec2 final_pos = rotated_pos + shape_cp;
+    // 应用视图和投影矩阵
+    gl_Position = projmat * vec4(final_pos, 0.0, 1.0);
+    // 传递颜色、UV和纹理ID到片段着色器
+    vertex_color = shape_color;
 }

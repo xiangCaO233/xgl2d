@@ -151,7 +151,8 @@ int main(int argc, char *argv[]) {
             {-windowWidth / 2.0f + i * windowWidth / 6.0f + windowWidth / 12.0f,
              windowHeight / 2.0f - j * windowHeight / 4.0f -
                  windowHeight / 8.0f},
-            windowWidth / 6.0f, windowHeight / 4.0f, 0, color, screensize);
+            windowWidth / 6.0f, windowHeight / 4.0f,
+            asin(sin(glfwGetTime())) / M_PI * 180.0f, color, screensize);
       }
     }
     // mesh.drawquad({50, 100}, 200, 400, 45, {0.0f, 1.0f, 1.0f, 1.0f},
