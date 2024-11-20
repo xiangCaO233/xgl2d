@@ -129,6 +129,7 @@ int main(int argc, char *argv[]) {
   // glBindTexture(GL_TEXTURE_2D, mesh.deftexture->texture);
   // 初始化纹理池
   Texturepool texpool("../assets/texture/");
+  texpool.creatatlas();
 
   // 初始化网格
   Mesh mesh(shader, maxTextureUnits);
