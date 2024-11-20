@@ -1,4 +1,5 @@
 #include "mesh/mesh.h"
+#include "mesh/texturepool.h"
 #include "shader/shader.h"
 #include <chrono>
 #include <core/glcore.h>
@@ -84,52 +85,52 @@ int main(int argc, char *argv[]) {
                     -(float)windowHeight / 2.0f, (float)windowHeight / 2.0f,
                     -1.0f, 1.0f);
 
-  // 创建mesh
-  // XquadMesh mesh(shader, maxTextureUnits);
-  // Xovalmesh ovalMesh(shader, maxTextureUnits, 128);
   // 加载纹理
-  std::cout << "加载纹理..." << std::endl;
-  std::vector<std::shared_ptr<Texture>> texs;
-  texs.push_back(std::make_shared<Texture>("../assets/texture/aijier.png"));
-  texs.push_back(std::make_shared<Texture>("../assets/texture/aimudeng.png"));
-  texs.push_back(
-      std::make_shared<Texture>("../assets/texture/beierfasite.png"));
-  texs.push_back(std::make_shared<Texture>("../assets/texture/bisimai.png"));
+  // std::cout << "加载纹理..." << std::endl;
+  // std::vector<std::shared_ptr<Texture>> texs;
+  // texs.push_back(std::make_shared<Texture>("../assets/texture/aijier.png"));
+  // texs.push_back(std::make_shared<Texture>("../assets/texture/aimudeng.png"));
+  // texs.push_back(
+  //    std::make_shared<Texture>("../assets/texture/beierfasite.png"));
+  // texs.push_back(std::make_shared<Texture>("../assets/texture/bisimai.png"));
 
-  texs.push_back(std::make_shared<Texture>("../assets/texture/bunao.png"));
-  texs.push_back(std::make_shared<Texture>("../assets/texture/dafeng.png"));
-  texs.push_back(std::make_shared<Texture>("../assets/texture/daiduo.png"));
-  texs.push_back(std::make_shared<Texture>("../assets/texture/dujiaoshou.png"));
+  // texs.push_back(std::make_shared<Texture>("../assets/texture/bunao.png"));
+  // texs.push_back(std::make_shared<Texture>("../assets/texture/dafeng.png"));
+  // texs.push_back(std::make_shared<Texture>("../assets/texture/daiduo.png"));
+  // texs.push_back(std::make_shared<Texture>("../assets/texture/dujiaoshou.png"));
 
-  texs.push_back(std::make_shared<Texture>("../assets/texture/guanghui.png"));
-  texs.push_back(std::make_shared<Texture>("../assets/texture/jiahe.png"));
-  texs.push_back(std::make_shared<Texture>("../assets/texture/kewei.png"));
-  texs.push_back(std::make_shared<Texture>("../assets/texture/nengdai.png"));
+  // texs.push_back(std::make_shared<Texture>("../assets/texture/guanghui.png"));
+  // texs.push_back(std::make_shared<Texture>("../assets/texture/jiahe.png"));
+  // texs.push_back(std::make_shared<Texture>("../assets/texture/kewei.png"));
+  // texs.push_back(std::make_shared<Texture>("../assets/texture/nengdai.png"));
 
-  texs.push_back(
-      std::make_shared<Texture>("../assets/texture/ougenqinwang.png"));
-  texs.push_back(std::make_shared<Texture>("../assets/texture/qiabayefu.png"));
-  texs.push_back(
-      std::make_shared<Texture>("../assets/texture/qibolinbojue.png"));
-  texs.push_back(std::make_shared<Texture>("../assets/texture/shengli.png"));
+  // texs.push_back(
+  //     std::make_shared<Texture>("../assets/texture/ougenqinwang.png"));
+  // texs.push_back(std::make_shared<Texture>("../assets/texture/qiabayefu.png"));
+  // texs.push_back(
+  //     std::make_shared<Texture>("../assets/texture/qibolinbojue.png"));
+  // texs.push_back(std::make_shared<Texture>("../assets/texture/shengli.png"));
 
-  texs.push_back(std::make_shared<Texture>("../assets/texture/sikula.png"));
-  texs.push_back(std::make_shared<Texture>("../assets/texture/tiancheng.png"));
-  texs.push_back(
-      std::make_shared<Texture>("../assets/texture/tianlangxing.png"));
-  texs.push_back(std::make_shared<Texture>("../assets/texture/wuzang.png"));
+  // texs.push_back(std::make_shared<Texture>("../assets/texture/sikula.png"));
+  // texs.push_back(std::make_shared<Texture>("../assets/texture/tiancheng.png"));
+  // texs.push_back(
+  //     std::make_shared<Texture>("../assets/texture/tianlangxing.png"));
+  // texs.push_back(std::make_shared<Texture>("../assets/texture/wuzang.png"));
 
-  texs.push_back(
-      std::make_shared<Texture>("../assets/texture/xingdengbao.png"));
-  texs.push_back(std::make_shared<Texture>("../assets/texture/xinnong.png"));
-  texs.push_back(std::make_shared<Texture>("../assets/texture/xinzexi.png"));
-  texs.push_back(std::make_shared<Texture>("../assets/texture/yuanchou.png"));
+  // texs.push_back(
+  //     std::make_shared<Texture>("../assets/texture/xingdengbao.png"));
+  // texs.push_back(std::make_shared<Texture>("../assets/texture/xinnong.png"));
+  // texs.push_back(std::make_shared<Texture>("../assets/texture/xinzexi.png"));
+  // texs.push_back(std::make_shared<Texture>("../assets/texture/yuanchou.png"));
 
-  std::cout << "加载纹理完成" << std::endl;
-  // 应用正交投影
+  // std::cout << "加载纹理完成" << std::endl;
+  //  应用正交投影
   shader->set_unfmat4f("projmat", proj);
   // glBindTexture(GL_TEXTURE_2D, mesh.deftexture->texture);
+  // 初始化纹理池
+  Texturepool texpool("../assets/texture/");
 
+  // 初始化网格
   Mesh mesh(shader, maxTextureUnits);
   mesh.bind();
   int framecount = 1;
@@ -139,25 +140,26 @@ int main(int argc, char *argv[]) {
     glClear(GL_COLOR_BUFFER_BIT);
     // 获取当前时间点
     auto start = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < 6; i++) {
-      for (int j = 0; j < 4; j++) {
-        glm::vec4 color = {i * 1.0f / 5.0f, j * 1.0 / 3.0f,
-                           i * 1.0f / 5.0f * 0.6f + j * 1.0 / 3.0f * 0.4f,
-                           1.0f};
-        float rotation = asin(sin(glfwGetTime())) / M_PI * 180.0f;
-        mesh.drawquad(
-            {-windowWidth / 2.0f + i * windowWidth / 6.0f + windowWidth / 12.0f,
-             windowHeight / 2.0f - j * windowHeight / 4.0f -
-                 windowHeight / 8.0f},
-            windowWidth / 6.0f, windowHeight / 4.0f, 0, color, texs[i * 4 + j],
-            FILL, screensize);
-      }
-    }
-    mesh.drawquad({0, 0}, 512, 512, 0, {1.0, 1.0, 1.0, 1.0}, texs[0], FILL,
-                  screensize);
+    // for (int i = 0; i < 6; i++) {
+    //   for (int j = 0; j < 4; j++) {
+    //     glm::vec4 color = {i * 1.0f / 5.0f, j * 1.0 / 3.0f,
+    //                        i * 1.0f / 5.0f * 0.6f + j * 1.0 / 3.0f * 0.4f,
+    //                        1.0f};
+    //     float rotation = asin(sin(glfwGetTime())) / M_PI * 180.0f;
+    //     mesh.drawquad(
+    //         {-windowWidth / 2.0f + i * windowWidth / 6.0f + windowWidth
+    //         / 12.0f,
+    //          windowHeight / 2.0f - j * windowHeight / 4.0f -
+    //              windowHeight / 8.0f},
+    //         windowWidth / 6.0f, windowHeight / 4.0f, 0, color, texs[i * 4 +
+    //         j], FILL, screensize);
+    //   }
+    // }
+    // mesh.drawquad({0, 0}, 512, 512, 0, {1.0, 1.0, 1.0, 1.0}, texs[0], FILL,
+    //              screensize);
     mesh.drawquad({100, 100}, 200, 80, 45, {1.0, 1.0, 0.0, 1.0}, screensize);
-    mesh.drawquad({-200, 20}, 50, 300, -45, {0.2, 0.9, 0.5, 1.0}, screensize);
-    mesh.drawquad({300, -200}, 100, 150, 120, {0.0, 1.0, 0.0, 1.0}, screensize);
+    mesh.drawquad({-200, 20}, 50, 300, -25, {0.2, 0.9, 0.5, 1.0}, screensize);
+    mesh.drawquad({300, -200}, 100, 150, 70, {0.0, 1.0, 0.0, 1.0}, screensize);
     mesh.finish();
     glfwSwapBuffers(w);
     // 获取代码执行后的时间点
@@ -165,15 +167,15 @@ int main(int argc, char *argv[]) {
     // 计算时间差
     auto duration =
         std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-    std::cout << "frame time:" << std::to_string(duration.count()) << "us"
-              << std::endl;
+    // std::cout << "frame time:" << std::to_string(duration.count()) << "us"
+    //           << std::endl;
 
     glfwPollEvents();
     // 读取错误信息
     while (GLenum error = glGetError()) {
       std::cerr << "OpenGL Error: " << error << std::endl;
     }
-    std::cout << "frame[" + std::to_string(framecount++) + "]" << std::endl;
+    // std::cout << "frame[" + std::to_string(framecount++) + "]" << std::endl;
   }
   shader->unuse();
   glfwTerminate();

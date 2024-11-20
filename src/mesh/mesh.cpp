@@ -12,7 +12,6 @@ Mesh::Mesh(Shader *shader, int max_texture_unit, int initial_quad_count)
   glGenBuffers(1, &VBO);
   glGenBuffers(1, &instanceVBO);
   // glGenBuffers(1, &FBO);
-  // glGenBuffers(1, &TBO);
   // 变换前原始矩形(1x1像素)
   // 初始化默认纹理
   _deftexture = std::make_shared<Texture>();
@@ -115,8 +114,6 @@ Mesh::~Mesh() {
   unbind();
   if (FBO)
     glDeleteBuffers(1, &FBO);
-  if (TBO)
-    glDeleteBuffers(1, &TBO);
   glDeleteBuffers(1, &instanceVBO);
   glDeleteVertexArrays(1, &VAO);
 }
@@ -377,8 +374,7 @@ void Mesh::finish() {
   if (_max_texid == 0) {
     // 都是默认纹理
     // 直接全部绘制
-    updateinstanceoffset(1);
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, (int)(_quads.size()));
+    glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, (int)(_quads.size()));
   } else {
     // 有非默认纹理绑定,批处理多纹理
     // std::cout << "批数:" << std::to_string(_all_batchs.size()) << std::endl;

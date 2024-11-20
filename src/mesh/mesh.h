@@ -49,7 +49,7 @@ class Mesh {
   // quad_instanceVBOs[4]:u,v贴图坐标,
   // quad_instanceVBOs[5]:texid贴图索引
   // )
-  GLuint VBO{0}, VAO{0}, instanceVBO, FBO{0}, TBO{0};
+  GLuint VBO{0}, VAO{0}, instanceVBO, FBO{0};
   int max_quad_count;
   Shader *_shader;
   // 矩形批次
