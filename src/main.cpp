@@ -1,4 +1,4 @@
-#include "newmesh/mesh.h"
+#include "mesh/mesh.h"
 #include "shader/shader.h"
 #include <chrono>
 #include <core/glcore.h>
@@ -10,7 +10,7 @@
 #include <vector>
 
 glm::mat4 proj;
-int windowWidth = 960, windowHeight = 640;
+int windowWidth, windowHeight;
 glm::vec2 screensize = {windowWidth, windowHeight};
 // 初始化着色器
 Shader *shader;
@@ -42,6 +42,7 @@ int main(int argc, char *argv[]) {
   // Apple平台前向适配
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
+  windowWidth = 960, windowHeight = 640;
   // 创建窗口
   GLFWwindow *w =
       glfwCreateWindow(windowWidth, windowHeight, "example", nullptr, nullptr);
@@ -152,12 +153,11 @@ int main(int argc, char *argv[]) {
             FILL, screensize);
       }
     }
-    // mesh.drawquad({0, 0}, 512, 512, 0, {1.0, 1.0, 1.0, 1.0}, texs[0], FILL,
-    //               screensize);
-    //   mesh.drawquad({100, 100}, 200, 80, 45, {1.0, 1.0, 0.0, 1.0},
-    //   screensize); mesh.drawquad({-200, 20}, 50, 300, -45, {0.2, 0.9,
-    //   0.5, 1.0}, screensize); mesh.drawquad({300, -200}, 100, 150, 120,
-    //   {0.0, 1.0, 0.0, 1.0}, screensize);
+    mesh.drawquad({0, 0}, 512, 512, 0, {1.0, 1.0, 1.0, 1.0}, texs[0], FILL,
+                  screensize);
+    mesh.drawquad({100, 100}, 200, 80, 45, {1.0, 1.0, 0.0, 1.0}, screensize);
+    mesh.drawquad({-200, 20}, 50, 300, -45, {0.2, 0.9, 0.5, 1.0}, screensize);
+    mesh.drawquad({300, -200}, 100, 150, 120, {0.0, 1.0, 0.0, 1.0}, screensize);
     mesh.finish();
     glfwSwapBuffers(w);
     // 获取代码执行后的时间点

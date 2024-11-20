@@ -18,16 +18,7 @@ find_package(glm REQUIRED)
 include_directories(include)
 include_directories(src)
 
-set(LIB_SOURCES
-    src/texture/texture.cpp
-    src/shader/shader.cpp
-    src/mesh/shape/Shape.cpp
-    src/mesh/shape/Quad.cpp
-    src/mesh/shape/Oval.cpp
-    src/mesh/xmesh.cpp
-    src/newmesh/mesh.cpp
-    src/mesh/shape/xquadmesh.cpp
-    src/mesh/shape/xovalmesh.cpp)
+set(LIB_SOURCES src/texture/texture.cpp src/shader/shader.cpp src/mesh/mesh.cpp)
 
 set(TEST_SOURCES src/main.cpp ${LIB_SOURCES})
 

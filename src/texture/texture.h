@@ -25,10 +25,6 @@ class Texture {
   static std::vector<Texture *> textures;
   static void activatetexunits();
 
-  friend class Xmesh;
-  friend class XquadMesh;
-  friend class Xovalmesh;
-  friend class XQuad;
   friend class Mesh;
 
 public:

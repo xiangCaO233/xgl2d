@@ -7,19 +7,6 @@
 
 std::vector<Texture *> Texture::textures;
 
-void Texture::activatetexunits() {
-  if (textures.size() <= 15) {
-    for (int i = 0; i < textures.size(); i++) {
-      glActiveTexture(GL_TEXTURE1 + i);
-    }
-  } else {
-    // 大于15个纹理，激活全部纹理槽
-    for (int i = 0; i < 15; i++) {
-      glActiveTexture(GL_TEXTURE1 + i);
-    }
-  }
-};
-
 Texture::Texture(const char *texpath) {
   // 使用前绑定对应mesh
   int twidth, theight;
