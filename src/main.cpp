@@ -131,6 +131,7 @@ int main(int argc, char *argv[]) {
 
   Mesh mesh(shader, maxTextureUnits);
   mesh.bind();
+  int framecount = 1;
   // 渲染循环
   while (!glfwWindowShouldClose(w)) {
     glClearColor(0.23f, 0.23f, 0.23f, 1.0f);
@@ -139,18 +140,24 @@ int main(int argc, char *argv[]) {
     auto start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < 6; i++) {
       for (int j = 0; j < 4; j++) {
-        glm::vec4 color = {i * 1.0f / 6.0f, j * 1.0 / 4.0f,
-                           i * 1.0f / 6.0f * 0.6f + j * 1.0 / 4.0f * 0.4f,
+        glm::vec4 color = {i * 1.0f / 5.0f, j * 1.0 / 3.0f,
+                           i * 1.0f / 5.0f * 0.6f + j * 1.0 / 3.0f * 0.4f,
                            1.0f};
+        float rotation = asin(sin(glfwGetTime())) / M_PI * 180.0f;
         mesh.drawquad(
             {-windowWidth / 2.0f + i * windowWidth / 6.0f + windowWidth / 12.0f,
              windowHeight / 2.0f - j * windowHeight / 4.0f -
                  windowHeight / 8.0f},
-            windowWidth / 6.0f, windowHeight / 4.0f,
-            asin(sin(glfwGetTime())) / M_PI * 180.0f, color, texs[j * 6 + i],
+            windowWidth / 6.0f, windowHeight / 4.0f, 0, color, texs[i * 4 + j],
             FILL, screensize);
       }
     }
+    // mesh.drawquad({0, 0}, 512, 512, 0, {1.0, 1.0, 1.0, 1.0}, texs[0], FILL,
+    //               screensize);
+    //   mesh.drawquad({100, 100}, 200, 80, 45, {1.0, 1.0, 0.0, 1.0},
+    //   screensize); mesh.drawquad({-200, 20}, 50, 300, -45, {0.2, 0.9,
+    //   0.5, 1.0}, screensize); mesh.drawquad({300, -200}, 100, 150, 120,
+    //   {0.0, 1.0, 0.0, 1.0}, screensize);
     mesh.finish();
     glfwSwapBuffers(w);
     // 获取代码执行后的时间点
@@ -166,6 +173,7 @@ int main(int argc, char *argv[]) {
     while (GLenum error = glGetError()) {
       std::cerr << "OpenGL Error: " << error << std::endl;
     }
+    std::cout << "frame[" + std::to_string(framecount++) + "]" << std::endl;
   }
   shader->unuse();
   glfwTerminate();

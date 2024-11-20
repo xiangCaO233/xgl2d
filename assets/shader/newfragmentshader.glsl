@@ -22,6 +22,8 @@ void main() {
   int samplerIndex = (txindex == 0) ? 0 : ((txindex - 1) % 15) + 1;
   vec4 textureColor = texture(samplers[samplerIndex], texcoord);
 	// 混合采样器颜色与顶点颜色
+	// FragColor = textureColor;
+	// FragColor = vec4(texid / 24.0);
 	FragColor = textureColor * vertex_color;
-	//FragColor = vec4(texcoord.x);
+	// FragColor = vec4(texcoord.y);
 }

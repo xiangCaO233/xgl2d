@@ -13,10 +13,12 @@ layout (location = 3) in vec2 shape_size;
 layout (location = 4) in float shape_rotation;
 // 图形填充颜色
 layout (location = 5) in vec4 shape_color;
-// 图形的纹理坐标
-layout (location = 6) in vec2 shape_uv;
 // 图形的纹理id(用于多纹理选择)
-layout (location = 7) in float shape_texid;
+layout (location = 6) in float shape_texid;
+// 图形的纹理变换
+layout (location = 7) in vec3 shape_uvtransforml1;
+layout (location = 8) in vec3 shape_uvtransforml2;
+layout (location = 9) in vec3 shape_uvtransforml3;
 
 // 视图矩阵
 uniform mat4 viewmat;
@@ -45,6 +47,10 @@ void main(){
     gl_Position = projmat * vec4(final_pos, 0.0, 1.0);
     // 传递颜色、UV和纹理ID到片段着色器
     vertex_color = shape_color;
-		texcoord = shape_uv;
+		mat3 shape_uvtransform  = mat3(
+				shape_uvtransforml1,
+				shape_uvtransforml2,
+				shape_uvtransforml3);
+		texcoord = (shape_uvtransform * vec3(vuv, 1.0)).xy;
 		texid = shape_texid;
 }

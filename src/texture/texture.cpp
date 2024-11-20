@@ -55,7 +55,7 @@ Texture::Texture() {
   texid = 0;
   glGenTextures(1, &texture);
   glBindTexture(GL_TEXTURE_2D, texture);
-  std::cout << "deftexture obj:" << std::to_string(texture) << std::endl;
+  // std::cout << "deftexture obj:" << std::to_string(texture) << std::endl;
   // 创建一个 1x1 像素的白色纹理数据
   unsigned char whitePixel[3] = {255, 255, 255}; // RGB 全部设为 255，表示白色
   // 将数据加载到纹理中
