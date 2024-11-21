@@ -16,11 +16,11 @@ struct TextureMeta {
   // 纹理宽高的偏移
   int woffset, hoffset;
   // 纹理id
-  float texid;
+  float metaid;
   bool operator==(const TextureMeta &other) const {
     return name == other.name && width == other.width &&
            height == other.height && woffset == other.woffset &&
-           hoffset == other.hoffset && texid == other.texid;
+           hoffset == other.hoffset && metaid == other.metaid;
   }
 };
 
@@ -34,15 +34,18 @@ class Texturepool {
   uint32_t _vwidth, _vheight;
   // 是否加载完成
   bool is_done{false};
+  std::shared_ptr<TextureMeta> _defmeta;
   // 纹理元数据集
   std::unordered_map<std::string, std::shared_ptr<TextureMeta>> _texmetas;
   // 纹理数据集
   std::unordered_map<std::shared_ptr<TextureMeta>, unsigned char *> _texdatas;
 
+  friend class Mesh;
+
 public:
   // 构造Texturepool
   // 直接读取纹理文件夹
-  Texturepool(const char *texturedir, Shader *shader);
+  Texturepool(std::string &texturedir, Shader *shader);
   // 析构Texturepool
   virtual ~Texturepool();
 
@@ -51,7 +54,7 @@ public:
   void unbind();
 
   // 加载纹理文件或文件夹
-  void loadtexture(const char *texturedir);
+  void loadtexture(std::string &texturedir);
 
   // 构造图集
   void creatatlas();

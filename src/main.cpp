@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
   // 启用 最大 MSAA
   glfwWindowHint(GLFW_SAMPLES, maxSamples);
   // 禁用V-Sync
-  glfwSwapInterval(0);
+  // glfwSwapInterval(0);
 
   // 绑定窗口大小回调函数
   glfwSetFramebufferSizeCallback(w, framebuffer_size_callback);
@@ -130,13 +130,10 @@ int main(int argc, char *argv[]) {
   // glBindTexture(GL_TEXTURE_2D, mesh.deftexture->texture);
 
   // 初始化网格
-  Mesh mesh(shader, maxTextureUnits);
+  std::string texpath = "../assets/texture/";
+  Mesh mesh(shader, texpath);
   mesh.bind();
   // 初始化纹理池
-  Texturepool texpool("../assets/texture/", shader);
-  texpool.creatatlas();
-  mesh.addtexpool(texpool);
-  mesh.usetexpool(0);
   int framecount = 1;
   // 渲染循环
   while (!glfwWindowShouldClose(w)) {
@@ -169,6 +166,7 @@ int main(int argc, char *argv[]) {
     // mesh.drawquad({-200, 20}, 50, 300, -25, {0.2, 0.9, 0.5, 1.0},
     // screensize); mesh.drawquad({300, -200}, 100, 150, 70, {0.0, 1.0,
     // 0.0, 1.0}, screensize);
+    // float rotation = asin(sin(glfwGetTime())) / M_PI * 180.0f;
     mesh.drawquad({0, 0}, 512, 512, 0, {1.0, 1.0, 1.0, 1.0}, screensize);
     mesh.finish();
     glfwSwapBuffers(w);

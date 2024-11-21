@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 project(xgl2d)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 # 设置默认构建类型为 Debug
 set(CMAKE_BUILD_TYPE
     Debug

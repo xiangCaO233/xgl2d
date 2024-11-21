@@ -4,13 +4,13 @@
 #include <string>
 #include <vector>
 
-Mesh::Mesh(Shader *shader, int max_texture_unit, int initial_quad_count)
-    : _shader(shader), _max_texture_unit(max_texture_unit),
-      max_quad_count(initial_quad_count) {
+Mesh::Mesh(Shader *shader, std::string &texture_dir, int initial_quad_count)
+    : _shader(shader), max_quad_count(initial_quad_count) {
   // 初始化缓冲对象
   glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);
   glGenBuffers(1, &instanceVBO);
+  glGenBuffers(6, instancedVBO);
   // glGenBuffers(1, &FBO);
   // 变换前原始矩形(1x1像素)
   // 初始化默认纹理
@@ -40,70 +40,69 @@ Mesh::Mesh(Shader *shader, int max_texture_unit, int initial_quad_count)
                         (void *)(3 * sizeof(float)));
 
   // 实例数据
-  glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-  glBufferData(GL_ARRAY_BUFFER, max_quad_count * 19 * sizeof(float), nullptr,
+  glBindBuffer(GL_ARRAY_BUFFER, instancedVBO[0]);
+  glBufferData(GL_ARRAY_BUFFER, max_quad_count * 2 * sizeof(float), nullptr,
                GL_DYNAMIC_DRAW);
   // 描述location3 为2*float
   glEnableVertexAttribArray(2);
-  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 19 * sizeof(float), nullptr);
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), nullptr);
   // 每个实例变化一次
   glVertexAttribDivisor(2, 1);
 
   // 绑定尺寸缓冲(x和y的缩放倍率)
+  glBindBuffer(GL_ARRAY_BUFFER, instancedVBO[1]);
+  glBufferData(GL_ARRAY_BUFFER, max_quad_count * 2 * sizeof(float), nullptr,
+               GL_DYNAMIC_DRAW);
   // 描述location3 为2*float
   glEnableVertexAttribArray(3);
-  glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 19 * sizeof(float),
-                        (void *)(2 * sizeof(float)));
+  glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), nullptr);
   // 每个实例变化一次
   glVertexAttribDivisor(3, 1);
 
   // 绑定旋转角缓冲
+  glBindBuffer(GL_ARRAY_BUFFER, instancedVBO[2]);
+  glBufferData(GL_ARRAY_BUFFER, max_quad_count * sizeof(float), nullptr,
+               GL_DYNAMIC_DRAW);
   // 描述location4 为float
   glEnableVertexAttribArray(4);
-  glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, 19 * sizeof(float),
-                        (void *)(4 * sizeof(float)));
+  glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(float), nullptr);
   // 每个实例变化一次
   glVertexAttribDivisor(4, 1);
 
   // 绑定颜色缓冲
+  glBindBuffer(GL_ARRAY_BUFFER, instancedVBO[3]);
+  glBufferData(GL_ARRAY_BUFFER, max_quad_count * 4 * sizeof(float), nullptr,
+               GL_DYNAMIC_DRAW);
   // 描述location5 为4*float
   glEnableVertexAttribArray(5);
-  glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 19 * sizeof(float),
-                        (void *)(5 * sizeof(float)));
+  glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), nullptr);
   // 每个实例变化一次
   glVertexAttribDivisor(5, 1);
 
-  // 绑定纹理索引缓冲
+  // 绑定纹理元数据索引缓冲
+  glBindBuffer(GL_ARRAY_BUFFER, instancedVBO[4]);
+  glBufferData(GL_ARRAY_BUFFER, max_quad_count * sizeof(float), nullptr,
+               GL_DYNAMIC_DRAW);
   // 描述location6 为float
   glEnableVertexAttribArray(6);
-  glVertexAttribPointer(6, 1, GL_FLOAT, GL_FALSE, 19 * sizeof(float),
-                        (void *)(9 * sizeof(float)));
+  glVertexAttribPointer(6, 1, GL_FLOAT, GL_FALSE, sizeof(float), nullptr);
   // 每个实例变化一次
   glVertexAttribDivisor(6, 1);
 
-  // 绑定纹理坐标缓冲
-  // 绑定纹理坐标缓冲 (拆分 mat3 为 3 个 vec3)
-  // 描述 location 7 为 3 * float (第 1 列)
+  // 绑定纹理填充选项缓冲
+  glBindBuffer(GL_ARRAY_BUFFER, instancedVBO[5]);
+  glBufferData(GL_ARRAY_BUFFER, max_quad_count * sizeof(float), nullptr,
+               GL_DYNAMIC_DRAW);
+  // 描述 location7 为 float
   glEnableVertexAttribArray(7);
-  glVertexAttribPointer(7, 3, GL_FLOAT, GL_FALSE, 19 * sizeof(float),
-                        (void *)(10 * sizeof(float)));
+  glVertexAttribPointer(7, 1, GL_FLOAT, GL_FALSE, sizeof(float), nullptr);
   glVertexAttribDivisor(7, 1);
 
-  // 描述 location 8 为 3 * float (第 2 列)
-  glEnableVertexAttribArray(8);
-  glVertexAttribPointer(8, 3, GL_FLOAT, GL_FALSE, 19 * sizeof(float),
-                        (void *)(13 * sizeof(float)));
-  glVertexAttribDivisor(8, 1);
-
-  // 描述 location 9 为 3 * float (第 3 列)
-  glEnableVertexAttribArray(9);
-  glVertexAttribPointer(9, 3, GL_FLOAT, GL_FALSE, 19 * sizeof(float),
-                        (void *)(16 * sizeof(float)));
-  glVertexAttribDivisor(9, 1);
-
-  // 绑定默认1*1白色纹理到纹理槽0
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, _deftexture->texture);
+  // 初始化纹理池
+  _texpool = new Texturepool(texture_dir, shader);
+  _texpool->creatatlas();
+  // 绑定纹理池
+  _texpool->bind();
 
   // 解绑结束构造
   glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -127,134 +126,141 @@ void Mesh::unbind() {
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
-void Mesh::addtexpool(Texturepool &pool) { _texpools.push_back(pool); }
-void Mesh::usetexpool(int index) { _texpools.at(index).bind(); }
-void Mesh::updateinstanceoffset(int instance_offset) {
-  uintptr_t offset = 19 * sizeof(float) * instance_offset;
-
-  // 描述location3 为2*float
-  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 19 * sizeof(float),
-                        (void *)offset);
-
-  // 绑定尺寸缓冲(x和y的缩放倍率)
-  glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 19 * sizeof(float),
-                        (void *)(2 * sizeof(float) + offset));
-
-  // 绑定旋转角缓冲
-  glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, 19 * sizeof(float),
-                        (void *)(4 * sizeof(float) + offset));
-
-  // 绑定颜色缓冲
-  glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 19 * sizeof(float),
-                        (void *)(5 * sizeof(float) + offset));
-
-  // 绑定纹理索引缓冲
-  glVertexAttribPointer(6, 1, GL_FLOAT, GL_FALSE, 19 * sizeof(float),
-                        (void *)(9 * sizeof(float) + offset));
-
-  // 绑定纹理缓冲
-  glVertexAttribPointer(7, 3, GL_FLOAT, GL_FALSE, 19 * sizeof(float),
-                        (void *)(10 * sizeof(float) + offset));
-  glVertexAttribPointer(8, 3, GL_FLOAT, GL_FALSE, 19 * sizeof(float),
-                        (void *)(13 * sizeof(float) + offset));
-  glVertexAttribPointer(9, 3, GL_FLOAT, GL_FALSE, 19 * sizeof(float),
-                        (void *)(16 * sizeof(float) + offset));
-}
-
-void Mesh::updatequadbatch(std::shared_ptr<Quad> &quad) {
-  // 批处理部分
-  // 临时矩形列表
-  std::shared_ptr<QuadBatch> tempbatch;
-  if (_all_batchs.empty()) {
-    // 所有批数为空(直接新建批次)
-    tempbatch = std::make_shared<QuadBatch>();
-    tempbatch->batch.push_back(quad);
-    tempbatch->texture_batch_index = quad->_tex->texid / _max_texture_unit;
-    // 将新批次加入全部批次
-    _all_batchs.push_back(tempbatch);
-  } else {
-    // 已有批次
-    int last_texture_batch_index =
-        _all_batchs.at(_all_batchs.size() - 1)->texture_batch_index;
-    int this_quad_texture_batch_index = quad->_tex->texid / _max_texture_unit;
-    if (this_quad_texture_batch_index == last_texture_batch_index)
-      // 和上一批texture_batch_index相同
-      _all_batchs.at(_all_batchs.size() - 1)->batch.push_back(quad);
-    else {
-      tempbatch = std::make_shared<QuadBatch>();
-      tempbatch->batch.push_back(quad);
-      tempbatch->texture_batch_index = this_quad_texture_batch_index;
-      _all_batchs.push_back(tempbatch);
-    }
-  }
-}
 
 // 绘制矩形
 void Mesh::drawquad(glm::vec2 &cp, float w, float h, float rotation,
-                    glm::vec4 &color, std::shared_ptr<Texture> &texture,
+                    glm::vec4 &color, std::shared_ptr<TextureMeta> &texmeta,
                     TexType texture_type, glm::vec2 &screen_size) {
+  rotation = -rotation;
   // debug
   // std::cout << "---------------------------------------------------"
   //          << std::endl;
   // 记录下每一段需要更新的连续的内存,也可以只有一份数据
-  std::vector<std::shared_ptr<Quad>> *consequent_quads = nullptr;
-  std::vector<float> *consequent_quads_data = nullptr;
+  std::vector<std::shared_ptr<Quad>> *consequent_quads_pos = nullptr;
+  std::vector<float> *consequent_quads_pos_data = nullptr;
+  std::vector<std::shared_ptr<Quad>> *consequent_quads_size = nullptr;
+  std::vector<float> *consequent_quads_size_data = nullptr;
+  std::vector<std::shared_ptr<Quad>> *consequent_quads_rotation = nullptr;
+  std::vector<float> *consequent_quads_rotation_data = nullptr;
+  std::vector<std::shared_ptr<Quad>> *consequent_quads_color = nullptr;
+  std::vector<float> *consequent_quads_color_data = nullptr;
+  std::vector<std::shared_ptr<Quad>> *consequent_quads_texmeta = nullptr;
+  std::vector<float> *consequent_quads_texmeta_data = nullptr;
+  std::vector<std::shared_ptr<Quad>> *consequent_quads_uvarg = nullptr;
+  std::vector<float> *consequent_quads_uvarg_data = nullptr;
   // 判断当前缓存矩形列表是否到达末尾
   if (_current_handle_index == _quads.size()) {
     // 初始化此矩形
     std::shared_ptr<Quad> quad = std::make_shared<Quad>(
-        cp, w, h, rotation, color, texture, texture_type);
+        cp, w, h, rotation, color, texmeta, texture_type);
     quad->_draw_order = _current_handle_index;
     // 设置模型数据偏移点
     // 内存偏移
-    quad->model_data_offset = _current_handle_index * 19 * sizeof(float);
+    // posdata
+    quad->model_data_offset[0] = _current_handle_index * 2 * sizeof(float);
+    // sizedata
+    quad->model_data_offset[1] = _current_handle_index * 2 * sizeof(float);
+    // rotationdata
+    quad->model_data_offset[2] = _current_handle_index * sizeof(float);
+    // colordata
+    quad->model_data_offset[3] = _current_handle_index * 4 * sizeof(float);
+    // texmetadata
+    quad->model_data_offset[4] = _current_handle_index * sizeof(float);
+    // uvargdata
+    quad->model_data_offset[5] = _current_handle_index * sizeof(float);
     // 直接加入更新列表和缓存
     _quads.push_back(quad);
 
     // 更新数据
-    update_consecutive(_update_consequent_quads, consequent_quads,
-                       _update_consequent_quads_datas, consequent_quads_data,
-                       quad);
-    updatequadbatch(quad);
+    update_consecutive(_update_consequent_quads_poss, consequent_quads_pos,
+                       _update_consequent_quads_pos_datas,
+                       consequent_quads_pos_data, quad, Datatype::POSITION);
+    update_consecutive(_update_consequent_quads_sizes, consequent_quads_size,
+                       _update_consequent_quads_size_datas,
+                       consequent_quads_size_data, quad, Datatype::SIZE);
+    update_consecutive(
+        _update_consequent_quads_rotations, consequent_quads_rotation,
+        _update_consequent_quads_rotation_datas, consequent_quads_rotation_data,
+        quad, Datatype::ROTATION);
+    update_consecutive(_update_consequent_quads_colors, consequent_quads_color,
+                       _update_consequent_quads_color_datas,
+                       consequent_quads_color_data, quad, Datatype::COLOR);
+    update_consecutive(_update_consequent_quads_texmetas,
+                       consequent_quads_texmeta,
+                       _update_consequent_quads_texmeta_datas,
+                       consequent_quads_texmeta_data, quad, Datatype::TEXMETA);
+    update_consecutive(_update_consequent_quads_uvargs, consequent_quads_uvarg,
+                       _update_consequent_quads_uvarg_datas,
+                       consequent_quads_uvarg_data, quad, Datatype::UVARG);
   } else {
     // 当前没有处理到结尾处
     // 获取当前位置矩形
     std::shared_ptr<Quad> _handle_quad = _quads[_current_handle_index];
     // 检查当前绘制到的矩形内容是否一致
-    if (!_handle_quad->equals(cp, w, h, rotation, color, texture,
-                              texture_type)) {
-      // 不一致,更新矩形数据
+    if (!_handle_quad->is_cp_equal(cp)) {
       _handle_quad->_cp = cp;
-      _handle_quad->_tex = texture;
-      _handle_quad->_rotation = rotation;
-      _handle_quad->_color = color;
-      _handle_quad->settextyppe(texture_type);
-      update_consecutive(_update_consequent_quads, consequent_quads,
-                         _update_consequent_quads_datas, consequent_quads_data,
-                         _handle_quad);
+      update_consecutive(_update_consequent_quads_poss, consequent_quads_pos,
+                         _update_consequent_quads_pos_datas,
+                         consequent_quads_pos_data, _handle_quad,
+                         Datatype::POSITION);
     };
-    updatequadbatch(_handle_quad);
+    if (!_handle_quad->is_size_equal(w, h)) {
+      _handle_quad->_w = w;
+      _handle_quad->_h = h;
+      update_consecutive(_update_consequent_quads_sizes, consequent_quads_size,
+                         _update_consequent_quads_size_datas,
+                         consequent_quads_size_data, _handle_quad,
+                         Datatype::SIZE);
+    };
+    if (!_handle_quad->is_rotation_equal(rotation)) {
+      _handle_quad->_rotation = rotation;
+      update_consecutive(
+          _update_consequent_quads_rotations, consequent_quads_rotation,
+          _update_consequent_quads_rotation_datas,
+          consequent_quads_rotation_data, _handle_quad, Datatype::ROTATION);
+    };
+    if (!_handle_quad->is_color_equal(color)) {
+      _handle_quad->_color = color;
+      update_consecutive(
+          _update_consequent_quads_colors, consequent_quads_color,
+          _update_consequent_quads_color_datas, consequent_quads_color_data,
+          _handle_quad, Datatype::COLOR);
+    };
+    if (!_handle_quad->is_tex_equal(texmeta)) {
+      _handle_quad->_texmeta = texmeta;
+      update_consecutive(
+          _update_consequent_quads_texmetas, consequent_quads_texmeta,
+          _update_consequent_quads_texmeta_datas, consequent_quads_texmeta_data,
+          _handle_quad, Datatype::TEXMETA);
+    };
+    if (!_handle_quad->is_textype_equal(texture_type)) {
+      _handle_quad->_textype = texture_type;
+      update_consecutive(
+          _update_consequent_quads_uvargs, consequent_quads_uvarg,
+          _update_consequent_quads_uvarg_datas, consequent_quads_uvarg_data,
+          _handle_quad, Datatype::UVARG);
+    };
   }
   _current_handle_index++;
 };
 void Mesh::drawquad(glm::vec2 &&cp, float w, float h, float rotation,
-                    glm::vec4 &color, std::shared_ptr<Texture> &texture,
+                    glm::vec4 &color, std::shared_ptr<TextureMeta> &texture,
                     TexType texture_type, glm::vec2 &screen_size) {
   drawquad(cp, w, h, rotation, color, texture, texture_type, screen_size);
 };
 void Mesh::drawquad(glm::vec2 &cp, float w, float h, float rotation,
-                    glm::vec4 &&color, std::shared_ptr<Texture> &texture,
+                    glm::vec4 &&color, std::shared_ptr<TextureMeta> &texture,
                     TexType texture_type, glm::vec2 &screen_size) {
   drawquad(cp, w, h, rotation, color, texture, texture_type, screen_size);
 };
 void Mesh::drawquad(glm::vec2 &&cp, float w, float h, float rotation,
-                    glm::vec4 &&color, std::shared_ptr<Texture> &texture,
+                    glm::vec4 &&color, std::shared_ptr<TextureMeta> &texture,
                     TexType texture_type, glm::vec2 &screen_size) {
   drawquad(cp, w, h, rotation, color, texture, texture_type, screen_size);
 };
 void Mesh::drawquad(glm::vec2 &cp, float w, float h, float rotation,
                     glm::vec4 &color, glm::vec2 &screen_size) {
-  drawquad(cp, w, h, rotation, color, _deftexture, FILL, screen_size);
+  drawquad(cp, w, h, rotation, color, _texpool->_defmeta, FILL, screen_size);
 };
 void Mesh::drawquad(glm::vec2 &&cp, float w, float h, float rotation,
                     glm::vec4 &color, glm::vec2 &screen_size) {
@@ -269,13 +275,13 @@ void Mesh::drawquad(glm::vec2 &&cp, float w, float h, float rotation,
   drawquad(cp, w, h, rotation, color, screen_size);
 };
 void Mesh::drawquad(glm::vec2 &cp, float w, float h, float rotation,
-                    std::shared_ptr<Texture> &texture, TexType texture_type,
+                    std::shared_ptr<TextureMeta> &texture, TexType texture_type,
                     glm::vec2 &screen_size) {
   drawquad(cp, w, h, rotation, {1.0f, 1.0f, 1.0f, 1.0f}, texture, texture_type,
            screen_size);
 };
 void Mesh::drawquad(glm::vec2 &&cp, float w, float h, float rotation,
-                    std::shared_ptr<Texture> &texture, TexType texture_type,
+                    std::shared_ptr<TextureMeta> &texture, TexType texture_type,
                     glm::vec2 &screen_size) {
   drawquad(cp, w, h, rotation, texture, texture_type, screen_size);
 };
@@ -286,7 +292,7 @@ void Mesh::update_consecutive(
     std::vector<std::shared_ptr<Quad>> *current_consequent_list,
     std::vector<std::vector<float>> &update_consequent_data_list,
     std::vector<float> *current_consequent_data,
-    std::shared_ptr<Quad> &handle_quad) const {
+    const std::shared_ptr<Quad> &handle_quad, Datatype type) const {
   // 检查并更新此矩形到正确位置
   if (!update_consequent_list.empty()) {
     // 获取最后一个连续更新段
@@ -319,21 +325,37 @@ void Mesh::update_consecutive(
   current_consequent_list->push_back(handle_quad);
   // std::cout << "current_consequent_list:" << current_consequent_list
   //           << std::endl;
-  //  更新数据(按照VAO布局更新数据)
-  current_consequent_data->push_back(handle_quad->_cp.x);
-  current_consequent_data->push_back(handle_quad->_cp.y);
-  current_consequent_data->push_back(handle_quad->_w);
-  current_consequent_data->push_back(handle_quad->_h);
-  current_consequent_data->push_back(handle_quad->_rotation);
-  current_consequent_data->push_back(handle_quad->_color.r);
-  current_consequent_data->push_back(handle_quad->_color.g);
-  current_consequent_data->push_back(handle_quad->_color.b);
-  current_consequent_data->push_back(handle_quad->_color.a);
-  current_consequent_data->push_back(handle_quad->_tex->texid);
-  for (int i = 0; i < 3; i++) {
-    for (int j = 0; j < 3; j++) {
-      current_consequent_data->push_back(handle_quad->_uvtransform[i][j]);
-    }
+  //  更新数据
+  switch (type) {
+  case Datatype::POSITION: {
+    current_consequent_data->push_back(handle_quad->_cp.x);
+    current_consequent_data->push_back(handle_quad->_cp.y);
+    break;
+  }
+  case Datatype::SIZE: {
+    current_consequent_data->push_back(handle_quad->_w);
+    current_consequent_data->push_back(handle_quad->_h);
+    break;
+  }
+  case Datatype::ROTATION: {
+    current_consequent_data->push_back(handle_quad->_rotation);
+    break;
+  }
+  case Datatype::COLOR: {
+    current_consequent_data->push_back(handle_quad->_color.r);
+    current_consequent_data->push_back(handle_quad->_color.g);
+    current_consequent_data->push_back(handle_quad->_color.b);
+    current_consequent_data->push_back(handle_quad->_color.a);
+    break;
+  }
+  case Datatype::TEXMETA: {
+    current_consequent_data->push_back(handle_quad->_texmeta->metaid);
+    break;
+  }
+  case Datatype::UVARG: {
+    current_consequent_data->push_back(handle_quad->_textype);
+    break;
+  }
   }
 }
 
@@ -352,31 +374,109 @@ void Mesh::finish() {
   //   std::cout << std::to_string(d) << ",";
   // }
   //   更新连续的矩形数据
-  if (!_update_consequent_quads.empty()) {
-    // 需要更新矩形数据
-    for (int i = 0; i < _update_consequent_quads.size(); i++) {
-      auto quads = _update_consequent_quads[i];
+  if (!_update_consequent_quads_poss.empty()) {
+    // 需要更新矩形位置数据
+    for (int i = 0; i < _update_consequent_quads_poss.size(); i++) {
+      auto quads = _update_consequent_quads_poss[i];
       // 计算连续显存的起始偏移
-      uint32_t consequent_data_start_offset = quads.front()->model_data_offset;
+      uint32_t consequent_data_start_offset =
+          quads.front()->model_data_offset[0];
       // 计算连续的显存大小
-      uint32_t consequent_data_size = quads.back()->model_data_offset -
+      uint32_t consequent_data_size = quads.back()->model_data_offset[0] -
                                       consequent_data_start_offset +
-                                      19 * sizeof(float);
+                                      2 * sizeof(float);
       // 更新那一段显存
-      glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+      glBindBuffer(GL_ARRAY_BUFFER, instancedVBO[0]);
       glBufferSubData(GL_ARRAY_BUFFER, consequent_data_start_offset,
                       consequent_data_size,
-                      _update_consequent_quads_datas[i].data());
+                      _update_consequent_quads_pos_datas[i].data());
+    }
+  }
+  if (!_update_consequent_quads_sizes.empty()) {
+    for (int i = 0; i < _update_consequent_quads_sizes.size(); i++) {
+      auto quads = _update_consequent_quads_sizes[i];
+      uint32_t consequent_data_start_offset =
+          quads.front()->model_data_offset[1];
+      uint32_t consequent_data_size = quads.back()->model_data_offset[1] -
+                                      consequent_data_start_offset +
+                                      2 * sizeof(float);
+      glBindBuffer(GL_ARRAY_BUFFER, instancedVBO[1]);
+      glBufferSubData(GL_ARRAY_BUFFER, consequent_data_start_offset,
+                      consequent_data_size,
+                      _update_consequent_quads_size_datas[i].data());
+    }
+  }
+  if (!_update_consequent_quads_rotations.empty()) {
+    for (int i = 0; i < _update_consequent_quads_rotations.size(); i++) {
+      auto quads = _update_consequent_quads_rotations[i];
+      uint32_t consequent_data_start_offset =
+          quads.front()->model_data_offset[2];
+      uint32_t consequent_data_rotation = quads.back()->model_data_offset[2] -
+                                          consequent_data_start_offset +
+                                          sizeof(float);
+      glBindBuffer(GL_ARRAY_BUFFER, instancedVBO[2]);
+      glBufferSubData(GL_ARRAY_BUFFER, consequent_data_start_offset,
+                      consequent_data_rotation,
+                      _update_consequent_quads_rotation_datas[i].data());
+    }
+  }
+  if (!_update_consequent_quads_colors.empty()) {
+    for (int i = 0; i < _update_consequent_quads_colors.size(); i++) {
+      auto quads = _update_consequent_quads_colors[i];
+      uint32_t consequent_data_start_offset =
+          quads.front()->model_data_offset[3];
+      uint32_t consequent_data_color = quads.back()->model_data_offset[3] -
+                                       consequent_data_start_offset +
+                                       4 * sizeof(float);
+      glBindBuffer(GL_ARRAY_BUFFER, instancedVBO[3]);
+      glBufferSubData(GL_ARRAY_BUFFER, consequent_data_start_offset,
+                      consequent_data_color,
+                      _update_consequent_quads_color_datas[i].data());
+    }
+  }
+  if (!_update_consequent_quads_texmetas.empty()) {
+    for (int i = 0; i < _update_consequent_quads_texmetas.size(); i++) {
+      auto quads = _update_consequent_quads_texmetas[i];
+      uint32_t consequent_data_start_offset =
+          quads.front()->model_data_offset[4];
+      uint32_t consequent_data_texmeta = quads.back()->model_data_offset[4] -
+                                         consequent_data_start_offset +
+                                         sizeof(float);
+      glBindBuffer(GL_ARRAY_BUFFER, instancedVBO[4]);
+      glBufferSubData(GL_ARRAY_BUFFER, consequent_data_start_offset,
+                      consequent_data_texmeta,
+                      _update_consequent_quads_texmeta_datas[i].data());
+    }
+  }
+  if (!_update_consequent_quads_uvargs.empty()) {
+    for (int i = 0; i < _update_consequent_quads_uvargs.size(); i++) {
+      auto quads = _update_consequent_quads_uvargs[i];
+      uint32_t consequent_data_start_offset =
+          quads.front()->model_data_offset[5];
+      uint32_t consequent_data_uvarg = quads.back()->model_data_offset[5] -
+                                       consequent_data_start_offset +
+                                       sizeof(float);
+      glBindBuffer(GL_ARRAY_BUFFER, instancedVBO[5]);
+      glBufferSubData(GL_ARRAY_BUFFER, consequent_data_start_offset,
+                      consequent_data_uvarg,
+                      _update_consequent_quads_uvarg_datas[i].data());
     }
   }
   // 直接全部绘制
   glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, (int)(_quads.size()));
-  updateinstanceoffset();
   //  恢复处理索引
   _current_handle_index = 0;
-  // 清空批次
-  _all_batchs.clear();
   // 清除需要更新的内容
-  _update_consequent_quads.clear();
-  _update_consequent_quads_datas.clear();
+  _update_consequent_quads_poss.clear();
+  _update_consequent_quads_pos_datas.clear();
+  _update_consequent_quads_sizes.clear();
+  _update_consequent_quads_size_datas.clear();
+  _update_consequent_quads_rotations.clear();
+  _update_consequent_quads_rotation_datas.clear();
+  _update_consequent_quads_colors.clear();
+  _update_consequent_quads_color_datas.clear();
+  _update_consequent_quads_texmetas.clear();
+  _update_consequent_quads_texmeta_datas.clear();
+  _update_consequent_quads_uvargs.clear();
+  _update_consequent_quads_uvarg_datas.clear();
 }

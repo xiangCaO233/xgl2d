@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <string>
 
-Texturepool::Texturepool(const char *texturedir, Shader *shader)
+Texturepool::Texturepool(std::string &texturedir, Shader *shader)
     : _shader(shader) {
   glGenBuffers(1, &TBO);
   glGenTextures(1, &texture_atlas);
@@ -22,21 +22,30 @@ Texturepool::Texturepool(const char *texturedir, Shader *shader)
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   // 反转y轴,合乎gl礼
   stbi_set_flip_vertically_on_load(true);
+
+  // 生成默认白色纹理
+  // RGBA(255, 255, 255, 255)
+  unsigned char whitePixel[4] = {255, 255, 255, 255};
+  _defmeta = std::make_shared<TextureMeta>("defmeta", 1, 1, 0, 0);
+  _texmetas[_defmeta->name] = _defmeta;
+  _texdatas[_defmeta] = whitePixel;
+
+  // 加载纹理文件夹
   loadtexture(texturedir);
 }
 Texturepool::~Texturepool() {
+  glBindTexture(GL_TEXTURE_2D, 0);
   glDeleteTextures(1, &texture_atlas);
   glDeleteBuffers(1, &TBO);
 }
 void Texturepool::bind() {
-  glBindTexture(GL_TEXTURE_2D, TBO);
-  glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_2D, texture_atlas);
-  _shader->set_sampler(("samplers[" + std::to_string(1) + "]").c_str(), 1);
+  glActiveTexture(GL_TEXTURE0);
+  _shader->set_sampler("sampler", 0);
 };
 void Texturepool::unbind() { glBindTexture(GL_TEXTURE_2D, 0); };
 
-void Texturepool::loadtexture(const char *texturedir) {
+void Texturepool::loadtexture(std::string &texturedir) {
   if (!is_done) {
     if (!std::filesystem::exists(texturedir)) {
       // 非法路径
@@ -54,7 +63,7 @@ void Texturepool::loadtexture(const char *texturedir) {
       meta->height = theight;
       meta->woffset = 0;
       meta->hoffset = 0;
-      meta->texid = _texmetas.size();
+      meta->metaid = _texmetas.size();
       _texmetas[texturedir] = meta;
       _texdatas[meta] = data;
     } else if (std::filesystem::is_directory(texturedir)) {
@@ -76,7 +85,7 @@ void Texturepool::loadtexture(const char *texturedir) {
           meta->height = theight;
           meta->woffset = 0;
           meta->hoffset = 0;
-          meta->texid = _texmetas.size();
+          meta->metaid = _texmetas.size();
           _texmetas[entry.path().c_str()] = meta;
           _texdatas[meta] = data;
         }
