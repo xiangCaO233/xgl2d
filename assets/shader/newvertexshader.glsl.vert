@@ -86,15 +86,13 @@ void main(){
     vertex_color = shape_color;
 
 		// 计算归一化的纹理坐标
-		// texcoord.x 范围应在 [0, w]
-		float u = (x ) / atlas_width;  
-		// texcoord.y 范围应在 [0, h]
-		float v = (y ) / atlas_height; 
+		float u = (x + vuv.x * w ) / atlas_width;  
+		float v = (y + vuv.y * h ) / atlas_height; 
 
 		vec2 uv = vec2(u,v);
 
-		texcoord = vuv * uv;
+		texcoord = uv;
 
 		//texcoord = (shape_uvtransform * vec3(vuv, 1.0)).xy;
-		debug_var = textureMetas[metaid].width;
+		debug_var = textureMetas[metaid].hoffset;
 }

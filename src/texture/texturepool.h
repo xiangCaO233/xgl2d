@@ -57,6 +57,7 @@ class Texturepool {
   std::shared_ptr<TextureMeta> _defmeta;
   // 纹理元数据集
   std::unordered_map<std::string, std::shared_ptr<TextureMeta>> _texmetas;
+  std::unordered_map<int, std::shared_ptr<TextureMeta>> _texmetas_by_index;
   std::vector<std::shared_ptr<TextureMeta>> _metalist;
   // 纹理数据集
   std::unordered_map<std::shared_ptr<TextureMeta>, unsigned char *> _texdatas;
@@ -84,10 +85,20 @@ public:
     std::string metaname = std::string(name);
     auto it = _texmetas.find(metaname);
     if (it != _texmetas.end()) {
-      std::cout << "找到meta:[" << name << "]" << std::endl;
+      // std::cout << "找到meta:[" << name << "]" << std::endl;
       return it->second;
     } else {
       std::cout << "无法找到[" << name << "]" << std::endl;
+      return _defmeta;
+    }
+  }
+  std::shared_ptr<TextureMeta> operator[](int index) {
+    auto it = _texmetas_by_index.find(index);
+    if (it != _texmetas_by_index.end()) {
+      // std::cout << "找到meta:[" << it->second->name << "]" << std::endl;
+      return it->second;
+    } else {
+      std::cout << "无法找到[" << index << "]" << std::endl;
       return _defmeta;
     }
   }

@@ -19,7 +19,7 @@ void main() {
 
 	// 混合采样器颜色与顶点颜色
 	// FragColor = textureColor;
-	// FragColor = vec4(debug_var /1500);
+	// FragColor = vec4(debug_var / (3072 * 2));
 	FragColor = textureColor * vertex_color;
 	// FragColor = vertex_color;
 }

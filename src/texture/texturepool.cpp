@@ -113,23 +113,33 @@ void Texturepool::creatatlas() {
   std::cout << "usage:[" + std::to_string(pack.Occupancy()) + "]" << std::endl;
   std::cout << "start generate TBO" << std::endl;
 
-  // 生成TBO纹理元数据
+  // 生成UTBO纹理元数据
   glGenBuffers(1, &UTBO);
   glBindBuffer(GL_UNIFORM_BUFFER, UTBO);
   std::vector<float> utbodata;
   utbodata.push_back(_vwidth);
   utbodata.push_back(_vheight);
+  utbodata.push_back(0);
+  utbodata.push_back(0);
+  utbodata.push_back(_defmeta->woffset);
+  utbodata.push_back(_defmeta->hoffset);
+  utbodata.push_back(_defmeta->width);
+  utbodata.push_back(_defmeta->height);
   for (auto &meta : _metalist) {
     std::cout << "导入meta:[" + meta->name + "],id[" +
                      std::to_string(meta->metaid) + "]"
               << std::endl;
+    _texmetas_by_index[meta->metaid] = meta;
     utbodata.push_back(meta->woffset);
     utbodata.push_back(meta->hoffset);
     utbodata.push_back(meta->width);
     utbodata.push_back(meta->height);
   }
+  std::cout << "metas size:[" + std::to_string(_metalist.size()) + "]"
+            << std::endl;
   // 为 UTBO 分配数据空间
-  glBufferData(GL_UNIFORM_BUFFER, 65536, utbodata.data(), GL_STATIC_DRAW);
+  glBufferData(GL_UNIFORM_BUFFER, utbodata.size() * sizeof(float),
+               utbodata.data(), GL_STATIC_DRAW);
 
   // 将 UTBO 绑定到绑定点 0
   glBindBufferBase(GL_UNIFORM_BUFFER, 0, UTBO);

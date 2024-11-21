@@ -81,6 +81,9 @@ public:
   std::shared_ptr<TextureMeta> gettexmeta(const char *name) {
     return (*_texpool)[name];
   }
+  std::shared_ptr<TextureMeta> gettexmeta(int index) {
+    return (*_texpool)[index];
+  }
   // 绑定mesh缓冲
   void bind();
   // 解绑mesh缓冲
