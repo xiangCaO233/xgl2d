@@ -4,6 +4,7 @@
 #include "../../include/core/glcore.h"
 #include "quad.h"
 #include "shader/shader.h"
+#include "texture/texturepool.h"
 #include <cstdint>
 #include <memory>
 #include <vector>
@@ -54,8 +55,8 @@ class Mesh {
   Shader *_shader;
   // 矩形批次
   std::vector<std::shared_ptr<QuadBatch>> _all_batchs;
-  int _max_texid{0};
   int _max_texture_unit;
+  std::vector<Texturepool> _texpools;
   // 包含的图形
   std::vector<std::shared_ptr<Quad>> _quads;
   // 每一段要更新的连续的矩形和数据
@@ -82,6 +83,8 @@ public:
   // 解绑mesh缓冲
   void unbind();
 
+  void addtexpool(Texturepool &pool);
+  void usetexpool(int index);
   // 绘制矩形(材质默认混合颜色并填充到矩形)
   void drawquad(glm::vec2 &cp, float w, float h, float rotation,
                 glm::vec4 &color, std::shared_ptr<Texture> &texture,

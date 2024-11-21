@@ -16,4 +16,4 @@
 - 优化:
   ![finish占用](finish.jpg)
 - 纹理图集生成:
-  ![usage](atlasusage.jpg)
+  ![usage](atlasexample.jpg)

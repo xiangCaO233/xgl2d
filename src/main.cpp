@@ -128,13 +128,15 @@ int main(int argc, char *argv[]) {
   //  应用正交投影
   shader->set_unfmat4f("projmat", proj);
   // glBindTexture(GL_TEXTURE_2D, mesh.deftexture->texture);
-  // 初始化纹理池
-  Texturepool texpool("../assets/texture/", shader);
-  texpool.creatatlas();
 
   // 初始化网格
   Mesh mesh(shader, maxTextureUnits);
   mesh.bind();
+  // 初始化纹理池
+  Texturepool texpool("../assets/texture/", shader);
+  texpool.creatatlas();
+  mesh.addtexpool(texpool);
+  mesh.usetexpool(0);
   int framecount = 1;
   // 渲染循环
   while (!glfwWindowShouldClose(w)) {
@@ -167,6 +169,7 @@ int main(int argc, char *argv[]) {
     // mesh.drawquad({-200, 20}, 50, 300, -25, {0.2, 0.9, 0.5, 1.0},
     // screensize); mesh.drawquad({300, -200}, 100, 150, 70, {0.0, 1.0,
     // 0.0, 1.0}, screensize);
+    mesh.drawquad({0, 0}, 512, 512, 0, {1.0, 1.0, 1.0, 1.0}, screensize);
     mesh.finish();
     glfwSwapBuffers(w);
     // 获取代码执行后的时间点

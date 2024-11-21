@@ -127,6 +127,8 @@ void Mesh::unbind() {
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
+void Mesh::addtexpool(Texturepool &pool) { _texpools.push_back(pool); }
+void Mesh::usetexpool(int index) { _texpools.at(index).bind(); }
 void Mesh::updateinstanceoffset(int instance_offset) {
   uintptr_t offset = 19 * sizeof(float) * instance_offset;
 
@@ -203,10 +205,6 @@ void Mesh::drawquad(glm::vec2 &cp, float w, float h, float rotation,
     std::shared_ptr<Quad> quad = std::make_shared<Quad>(
         cp, w, h, rotation, color, texture, texture_type);
     quad->_draw_order = _current_handle_index;
-    // 更新最大纹理id
-    if (_max_texid < quad->_tex->texid) {
-      _max_texid = quad->_tex->texid;
-    }
     // 设置模型数据偏移点
     // 内存偏移
     quad->model_data_offset = _current_handle_index * 19 * sizeof(float);
@@ -371,36 +369,9 @@ void Mesh::finish() {
                       _update_consequent_quads_datas[i].data());
     }
   }
-  if (_max_texid == 0) {
-    // 都是默认纹理
-    // 直接全部绘制
-    glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, (int)(_quads.size()));
-  } else {
-    // 有非默认纹理绑定,批处理多纹理
-    // std::cout << "批数:" << std::to_string(_all_batchs.size()) << std::endl;
-    for (auto &quadBatch : _all_batchs) {
-      int texture_batch_index = quadBatch->texture_batch_index;
-      auto size = Texture::textures.size();
-      auto currentbatchtexturecount = size < 15 ? size
-                                      : size < (texture_batch_index + 1) * 15
-                                          ? size - texture_batch_index * 15
-                                          : 15;
-      // 激活绑定此批次的全部纹理单元
-      for (int j = 0; j < currentbatchtexturecount; j++) {
-        glActiveTexture(GL_TEXTURE1 + j);
-        glBindTexture(GL_TEXTURE_2D,
-                      Texture::textures[j + texture_batch_index * 15]->texture);
-        _shader->set_sampler(
-            ("samplers[" + std::to_string(j + 1) + "]").c_str(), j + 1);
-      }
-
-      updateinstanceoffset(quadBatch->batch.front()->_draw_order);
-      // 批绘制矩形
-      glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4,
-                            (int)(quadBatch->batch.size()));
-    }
-    updateinstanceoffset();
-  }
+  // 直接全部绘制
+  glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, (int)(_quads.size()));
+  updateinstanceoffset();
   //  恢复处理索引
   _current_handle_index = 0;
   // 清空批次

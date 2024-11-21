@@ -47,10 +47,11 @@ void main(){
     gl_Position = projmat * vec4(final_pos, 0.0, 1.0);
     // 传递颜色、UV和纹理ID到片段着色器
     vertex_color = shape_color;
-		mat3 shape_uvtransform  = mat3(
-				shape_uvtransforml1,
-				shape_uvtransforml2,
-				shape_uvtransforml3);
-		texcoord = (shape_uvtransform * vec3(vuv, 1.0)).xy;
+		//mat3 shape_uvtransform  = mat3(
+		//		shape_uvtransforml1,
+		//		shape_uvtransforml2,
+		//		shape_uvtransforml3);
+		//texcoord = (shape_uvtransform * vec3(vuv, 1.0)).xy;
+		texcoord = vuv;
 		texid = shape_texid;
 }
