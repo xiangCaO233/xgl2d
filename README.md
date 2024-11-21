@@ -13,7 +13,7 @@
 
 - main.cpp 示例
   ![涩涩不叫我.png](./sample.jpg)
-- 优化:
-  ![finish占用](finish.jpg)
 - 纹理图集生成:
   ![usage](atlasexample.jpg)
+- 无限旋转测试
+  ![rotate](rotatetest.jpg)

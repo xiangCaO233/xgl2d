@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
   // 启用 最大 MSAA
   glfwWindowHint(GLFW_SAMPLES, maxSamples);
   // 禁用V-Sync
-  // glfwSwapInterval(0);
+  glfwSwapInterval(0);
 
   // 绑定窗口大小回调函数
   glfwSetFramebufferSizeCallback(w, framebuffer_size_callback);
@@ -166,8 +166,8 @@ int main(int argc, char *argv[]) {
     // mesh.drawquad({-200, 20}, 50, 300, -25, {0.2, 0.9, 0.5, 1.0},
     // screensize); mesh.drawquad({300, -200}, 100, 150, 70, {0.0, 1.0,
     // 0.0, 1.0}, screensize);
-    // float rotation = asin(sin(glfwGetTime())) / M_PI * 180.0f;
-    mesh.drawquad({0, 0}, 512, 512, 0, {1.0, 1.0, 1.0, 1.0}, screensize);
+    float rotation = asin(sin(glfwGetTime())) / M_PI * 180.0f;
+    mesh.drawquad({0, 0}, 512, 512, rotation, {1.0, 1.0, 1.0, 1.0}, screensize);
     mesh.finish();
     glfwSwapBuffers(w);
     // 获取代码执行后的时间点
