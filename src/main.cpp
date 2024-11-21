@@ -1,15 +1,11 @@
 #include "mesh/mesh.h"
 #include "shader/shader.h"
-#include "texture/texturepool.h"
 #include <chrono>
 #include <core/glcore.h>
-#include <cstdint>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
-#include <memory>
 #include <string>
-#include <vector>
 
 glm::mat4 proj;
 int windowWidth, windowHeight;
@@ -77,8 +73,11 @@ int main(int argc, char *argv[]) {
   int maxTextureUnits = 0;
   glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
   std::cout << "最大材质插槽数: " << maxTextureUnits << std::endl;
-  shader = new Shader("../assets/shader/newvertexshader.glsl",
-                      "../assets/shader/newfragmentshader.glsl");
+  int maxUBOSize;
+  glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &maxUBOSize);
+  std::cout << "最大UBO块容量: " << maxUBOSize << std::endl;
+  shader = new Shader("../assets/shader/newvertexshader.glsl.vert",
+                      "../assets/shader/newfragmentshader.glsl.frag");
   shader->use();
 
   // 计算正交投影矩阵
@@ -133,6 +132,7 @@ int main(int argc, char *argv[]) {
   std::string texpath = "../assets/texture/";
   Mesh mesh(shader, texpath);
   mesh.bind();
+  auto meta = mesh.gettexmeta("beierfasite.png");
   // 初始化纹理池
   int framecount = 1;
   // 渲染循环
@@ -167,7 +167,8 @@ int main(int argc, char *argv[]) {
     // screensize); mesh.drawquad({300, -200}, 100, 150, 70, {0.0, 1.0,
     // 0.0, 1.0}, screensize);
     float rotation = asin(sin(glfwGetTime())) / M_PI * 180.0f;
-    mesh.drawquad({0, 0}, 512, 512, rotation, {1.0, 1.0, 1.0, 1.0}, screensize);
+    mesh.drawquad({0, 0}, 512, 512, rotation, {1.0, 1.0, 1.0, 1.0}, meta,
+                  REAPEAT_BY_CENTER, screensize);
     mesh.finish();
     glfwSwapBuffers(w);
     // 获取代码执行后的时间点
@@ -175,8 +176,8 @@ int main(int argc, char *argv[]) {
     // 计算时间差
     auto duration =
         std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-    // std::cout << "frame time:" << std::to_string(duration.count()) << "us"
-    //           << std::endl;
+    std::cout << "frame time:" << std::to_string(duration.count()) << "us"
+              << std::endl;
 
     glfwPollEvents();
     // 读取错误信息

@@ -6,10 +6,10 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 Texturepool::Texturepool(std::string &texturedir, Shader *shader)
     : _shader(shader) {
-  glGenBuffers(1, &TBO);
   glGenTextures(1, &texture_atlas);
   glBindTexture(GL_TEXTURE_2D, texture_atlas);
   // 为当前绑定的纹理对象设置环绕、过滤方式
@@ -36,7 +36,7 @@ Texturepool::Texturepool(std::string &texturedir, Shader *shader)
 Texturepool::~Texturepool() {
   glBindTexture(GL_TEXTURE_2D, 0);
   glDeleteTextures(1, &texture_atlas);
-  glDeleteBuffers(1, &TBO);
+  glDeleteBuffers(1, &UTBO);
 }
 void Texturepool::bind() {
   glBindTexture(GL_TEXTURE_2D, texture_atlas);
@@ -51,44 +51,30 @@ void Texturepool::loadtexture(std::string &texturedir) {
       // 非法路径
       throw std::runtime_error("illegal texture file");
     } else if (std::filesystem::is_regular_file(texturedir)) {
-      std::cout << "读取纹理: " << std::filesystem::absolute(texturedir);
+      std::cout << "读取纹理: " << std::filesystem::absolute(texturedir)
+                << std::endl;
       int twidth, theight, nrChannels;
       unsigned char *data =
           stbi_load(std::filesystem::absolute(texturedir).c_str(), &twidth,
                     &theight, &nrChannels, 0);
       // 读取到表中
       auto meta = std::make_shared<TextureMeta>();
-      meta->name = texturedir;
+      auto filename = std::filesystem::path(texturedir).filename().string();
+      meta->name = filename;
       meta->width = twidth;
       meta->height = theight;
       meta->woffset = 0;
       meta->hoffset = 0;
       meta->metaid = _texmetas.size();
-      _texmetas[texturedir] = meta;
+      _texmetas[filename] = meta;
       _texdatas[meta] = data;
+      _metalist.push_back(meta);
     } else if (std::filesystem::is_directory(texturedir)) {
-      // 遍历目录中的所有文件和文件夹
+      // 递归遍历目录中的所有文件和文件夹
       for (const auto &entry :
-           std::filesystem::recursive_directory_iterator(texturedir)) {
-        if (std::filesystem::is_regular_file(entry)) {
-          // 获取文件的绝对路径
-          std::cout << "读取纹理: " << std::filesystem::absolute(entry.path())
-                    << std::endl;
-          int twidth, theight, nrChannels;
-          unsigned char *data =
-              stbi_load(std::filesystem::absolute(entry.path()).c_str(),
-                        &twidth, &theight, &nrChannels, 0);
-          // 读取到表中
-          auto meta = std::make_shared<TextureMeta>();
-          meta->name = entry.path();
-          meta->width = twidth;
-          meta->height = theight;
-          meta->woffset = 0;
-          meta->hoffset = 0;
-          meta->metaid = _texmetas.size();
-          _texmetas[entry.path().c_str()] = meta;
-          _texdatas[meta] = data;
-        }
+           std::filesystem::directory_iterator(texturedir)) {
+        auto child_path = entry.path().string();
+        loadtexture(child_path);
       }
     } else {
       std::cout << "dir empty" << std::endl;
@@ -112,7 +98,7 @@ void Texturepool::creatatlas() {
   // 填充并释放纹理数据
   for (auto &pair : _texmetas) {
     std::cout << pair.first
-              << "res tex pos:[x:" + std::to_string(pair.second->woffset) +
+              << "\t---res tex pos:[x:" + std::to_string(pair.second->woffset) +
                      ",y:" + std::to_string(pair.second->hoffset) + "]"
               << std::endl;
     // 放置纹理到atlas
@@ -125,6 +111,31 @@ void Texturepool::creatatlas() {
                    std::to_string(pack.binHeight) + "]"
             << std::endl;
   std::cout << "usage:[" + std::to_string(pack.Occupancy()) + "]" << std::endl;
+  std::cout << "start generate TBO" << std::endl;
+
+  // 生成TBO纹理元数据
+  glGenBuffers(1, &UTBO);
+  glBindBuffer(GL_UNIFORM_BUFFER, UTBO);
+  std::vector<float> utbodata;
+  utbodata.push_back(_vwidth);
+  utbodata.push_back(_vheight);
+  for (auto &meta : _metalist) {
+    std::cout << "导入meta:[" + meta->name + "],id[" +
+                     std::to_string(meta->metaid) + "]"
+              << std::endl;
+    utbodata.push_back(meta->woffset);
+    utbodata.push_back(meta->hoffset);
+    utbodata.push_back(meta->width);
+    utbodata.push_back(meta->height);
+  }
+  // 为 UTBO 分配数据空间
+  glBufferData(GL_UNIFORM_BUFFER, 65536, utbodata.data(), GL_STATIC_DRAW);
+
+  // 将 UTBO 绑定到绑定点 0
+  glBindBufferBase(GL_UNIFORM_BUFFER, 0, UTBO);
+
+  // 解除绑定
+  glBindBuffer(GL_UNIFORM_BUFFER, 0);
   std::cout << "generate done" << std::endl;
   is_done = true;
 };

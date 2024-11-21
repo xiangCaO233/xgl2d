@@ -17,3 +17,5 @@
   ![usage](atlasexample.jpg)
 - 无限旋转测试
   ![rotate](rotatetest.jpg)
+- 纹理集性能测试(帧时间从2000us提升到400us,五倍)
+  ![atalstest](sampletest.jpg)

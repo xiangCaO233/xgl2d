@@ -78,6 +78,9 @@ public:
   // 析构Mesh
   virtual ~Mesh();
 
+  std::shared_ptr<TextureMeta> gettexmeta(const char *name) {
+    return (*_texpool)[name];
+  }
   // 绑定mesh缓冲
   void bind();
   // 解绑mesh缓冲

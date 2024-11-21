@@ -5,7 +5,7 @@ in vec4 vertex_color;
 in vec2 texcoord;
 
 //debug
-in float is_update;
+in float debug_var;
 
 // 纹理采样器
 uniform sampler2D sampler;
@@ -19,7 +19,7 @@ void main() {
 
 	// 混合采样器颜色与顶点颜色
 	// FragColor = textureColor;
-	// FragColor = vec4(texid / 24.0);
+	// FragColor = vec4(debug_var /1500);
 	FragColor = textureColor * vertex_color;
 	// FragColor = vertex_color;
 }
