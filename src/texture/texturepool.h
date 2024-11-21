@@ -2,16 +2,12 @@
 #define TEXTUREPOOL_H
 
 #include "../../include/core/glcore.h"
+#include "shader/shader.h"
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <unordered_map>
-#include <vector>
-struct Rect {
-  int x, y, width, height;
 
-  Rect(int x, int y, int width, int height)
-      : x(x), y(y), width(width), height(height) {}
-};
 struct TextureMeta {
   // 纹理文件名
   std::string name;
@@ -32,25 +28,21 @@ struct TextureMeta {
 class Texturepool {
   // 纹理缓冲对象
   GLuint TBO, texture_atlas;
+  // 对应着色器
+  Shader *_shader;
   // 虚拟纹理尺寸
-  uint32_t _vwidth{1024}, _vheight{1024};
-  int _max_tex_count{128};
+  uint32_t _vwidth, _vheight;
   // 是否加载完成
   bool is_done{false};
   // 纹理元数据集
-  std::unordered_map<std::string, TextureMeta *> _texmetas;
+  std::unordered_map<std::string, std::shared_ptr<TextureMeta>> _texmetas;
   // 纹理数据集
-  std::unordered_map<TextureMeta *, unsigned char *> _texdatas;
-  // 合并纹理集算法
-  std::vector<Rect> freeDimensions;
-  bool insert(TextureMeta *tex);
-  void expandAtlas();
+  std::unordered_map<std::shared_ptr<TextureMeta>, unsigned char *> _texdatas;
 
 public:
   // 构造Texturepool
-  Texturepool(int max_tex_count);
   // 直接读取纹理文件夹
-  Texturepool(const char *texturedir);
+  Texturepool(const char *texturedir, Shader *shader);
   // 析构Texturepool
   virtual ~Texturepool();
 

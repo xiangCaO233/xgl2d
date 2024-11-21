@@ -15,3 +15,5 @@
   ![涩涩不叫我.png](./sample.jpg)
 - 优化:
   ![finish占用](finish.jpg)
+- 纹理图集生成:
+  ![usage](atlasusage.jpg)

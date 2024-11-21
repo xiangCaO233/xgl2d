@@ -1,8 +1,9 @@
 #include "mesh/mesh.h"
-#include "mesh/texturepool.h"
 #include "shader/shader.h"
+#include "texture/texturepool.h"
 #include <chrono>
 #include <core/glcore.h>
+#include <cstdint>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
@@ -128,7 +129,7 @@ int main(int argc, char *argv[]) {
   shader->set_unfmat4f("projmat", proj);
   // glBindTexture(GL_TEXTURE_2D, mesh.deftexture->texture);
   // 初始化纹理池
-  Texturepool texpool("../assets/texture/");
+  Texturepool texpool("../assets/texture/", shader);
   texpool.creatatlas();
 
   // 初始化网格
@@ -140,6 +141,10 @@ int main(int argc, char *argv[]) {
     glClearColor(0.23f, 0.23f, 0.23f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     // 获取当前时间点
+    // arm处理器获取时钟周期
+    //__asm__ volatile("mrs %0, CNTVCT_EL0" : "=r"(tsc));
+    // std::cout << std::to_string(tsc) << std::endl;
+
     auto start = std::chrono::high_resolution_clock::now();
     // for (int i = 0; i < 6; i++) {
     //   for (int j = 0; j < 4; j++) {
@@ -158,9 +163,10 @@ int main(int argc, char *argv[]) {
     // }
     // mesh.drawquad({0, 0}, 512, 512, 0, {1.0, 1.0, 1.0, 1.0}, texs[0], FILL,
     //              screensize);
-    mesh.drawquad({100, 100}, 200, 80, 45, {1.0, 1.0, 0.0, 1.0}, screensize);
-    mesh.drawquad({-200, 20}, 50, 300, -25, {0.2, 0.9, 0.5, 1.0}, screensize);
-    mesh.drawquad({300, -200}, 100, 150, 70, {0.0, 1.0, 0.0, 1.0}, screensize);
+    // mesh.drawquad({100, 100}, 200, 80, 45, {1.0, 1.0, 0.0, 1.0}, screensize);
+    // mesh.drawquad({-200, 20}, 50, 300, -25, {0.2, 0.9, 0.5, 1.0},
+    // screensize); mesh.drawquad({300, -200}, 100, 150, 70, {0.0, 1.0,
+    // 0.0, 1.0}, screensize);
     mesh.finish();
     glfwSwapBuffers(w);
     // 获取代码执行后的时间点

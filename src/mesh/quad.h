@@ -2,6 +2,7 @@
 #define QUAD_H
 
 #include "../texture/texture.h"
+#include "texture/texturepool.h"
 #include <memory>
 
 class Quad {
@@ -12,6 +13,7 @@ class Quad {
   float _rotation{0.0f};
   glm::vec4 _color;
   std::shared_ptr<Texture> _tex;
+  std::shared_ptr<TextureMeta> _texmeta;
   // 纹理变换矩阵
   glm::mat3 _uvtransform = glm::mat3(1.0f);
   TexType _textype;
