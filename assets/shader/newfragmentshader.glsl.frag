@@ -70,7 +70,8 @@ void main() {
     		// 计算归一化 UV，相对于纹理中心进行对称调整
     		vec2 centeredUV = (texcoord - textureCenter) / vec2(texnormalizedw, texnormalizedh);
     		// 以中心为基准对 UV 进行 repeat
-    		vec2 repeatUV = fract(centeredUV + 0.5) - 0.5;  // 保持对称，UV范围 [-0.5, 0.5]
+				// 保持对称，UV范围 [-0.5, 0.5]
+    		vec2 repeatUV = fract(centeredUV + 0.5) - 0.5;  
     		// 转回到纹理集中实际的UV
     		vec2 finalUV;
     		finalUV.x = textureCenter.x + repeatUV.x * texnormalizedw;
@@ -100,7 +101,8 @@ void main() {
     		// 计算归一化 UV，相对于纹理中心进行对称调整
     		vec2 centeredUV = (texcoord - textureCenter) / vec2(texnormalizedw, texnormalizedh);
     		// 以中心为基准对 UV 进行 repeat
-    		vec2 repeatUV = fract(centeredUV + 0.5) - 0.5;  // 保持对称，UV范围 [-0.5, 0.5]
+				// 保持对称，UV范围 [-0.5, 0.5]
+    		vec2 repeatUV = fract(centeredUV + 0.5) - 0.5;  
     		// 转回到纹理集中实际的UV
     		vec2 finalUV;
     		finalUV.x = textureCenter.x + repeatUV.x * texnormalizedw;

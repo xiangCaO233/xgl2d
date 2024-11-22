@@ -168,8 +168,8 @@ void main(){
 					float xratio = shape_size.x / meta.width;
     			float transformedTexHeight = meta.height * xratio;
     			// 计算相对中心点的偏移量
-    			float relativeCenterX = (vuv.x - 0.5) * shape_size.x;  // 适应宽度
-    			float relativeCenterY = (vuv.y - 0.5) * shape_size.y / transformedTexHeight;  // 适应高度
+    			float relativeCenterX = (vuv.x - 0.5) * shape_size.x;
+    			float relativeCenterY = (vuv.y - 0.5) * shape_size.y / transformedTexHeight;  
     			// 计算纹理在纹理集中的实际坐标
 					// 计算新的X坐标，考虑宽度适配
     			float cx = x + 0.5 * w + relativeCenterX;  
