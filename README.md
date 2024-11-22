@@ -19,5 +19,7 @@
   ![rotate](rotatetest.jpg)
 - 纹理集性能测试(帧时间从2000us提升到400us,五倍)
   ![atalstest](sampletest.jpg)
+- linux测试(差太远了)(旁边预加载纹理的固定消耗)
+  ![linux](linuxcputime.jpg)
 - 实现纹理集内重采样
   ![resample](resample.jpg)
