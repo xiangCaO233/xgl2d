@@ -12,11 +12,14 @@ class Quad {
   float _rotation{0.0f};
   glm::vec4 _color;
   std::shared_ptr<TextureMeta> _texmeta;
+  // 是否为椭圆
+  bool _isoval;
   // 纹理类型
   TexType _textype;
 
   // 绘制顺序
   uint32_t _draw_order{0};
+  int updateindexlist{0}, updateindexelement{0};
 
   // 在模型缓冲区中的偏移
   uint32_t model_data_offset[6]{0};
@@ -26,9 +29,10 @@ class Quad {
 public:
   // 构造Quad
   Quad(glm::vec2 &cp, float w, float h, float rotation, glm::vec4 &color,
-       std::shared_ptr<TextureMeta> &tex, TexType texture_type)
+       std::shared_ptr<TextureMeta> &tex, TexType texture_type,
+       bool isoval = false)
       : _cp(cp), _w(w), _h(h), _rotation(rotation), _color(color),
-        _texmeta(tex), _textype(texture_type){};
+        _texmeta(tex), _textype(texture_type), _isoval(isoval){};
   // 析构Quad
   virtual ~Quad() = default;
 
@@ -36,14 +40,16 @@ public:
   inline bool operator==(const Quad &q) const {
     return _cp == q._cp && _w == q._w && _h == q._h &&
            _rotation == q._rotation && _color == q._color &&
-           _texmeta == q._texmeta && _textype == q._textype;
+           _texmeta == q._texmeta && _textype == q._textype &&
+           _isoval == q._isoval;
   };
   inline bool equals(const glm::vec2 &cp, const float w, const float h,
                      const float rotation, const glm::vec4 &color,
                      const std::shared_ptr<TextureMeta> &tex,
-                     const TexType texture_type) {
+                     const TexType texture_type, bool isoval) {
     return _cp == cp && _w == w && _h == h && _rotation == rotation &&
-           _color == color && _texmeta == tex && _textype == texture_type;
+           _color == color && _texmeta == tex && _textype == texture_type &&
+           _isoval == isoval;
   }
 
   inline bool is_cp_equal(const glm::vec2 &cp) { return _cp == cp; }
@@ -60,5 +66,6 @@ public:
   inline bool is_textype_equal(const TexType &texture_type) {
     return _textype == texture_type;
   }
+  inline bool is_oval_equal(const bool &isoval) { return _isoval == isoval; }
 };
 #endif /* QUAD_H */

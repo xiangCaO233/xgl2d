@@ -162,6 +162,7 @@ int main(int argc, char *argv[]) {
     // mesh.drawquad({-200, 20}, 50, 300, -25, {0.2, 0.9, 0.5, 1.0},
     // screensize); mesh.drawquad({300, -200}, 100, 150, 70, {0.0, 1.0,
     // 0.0, 1.0}, screensize);
+    // float rotation = 30;
     float rotation = asin(sin(glfwGetTime())) / M_PI * 180.0f;
     // auto meta = mesh.gettexmeta(rand() % 25 + 1);
     auto meta = mesh.gettexmeta(10);
@@ -180,6 +181,10 @@ int main(int argc, char *argv[]) {
                   REAPEAT_BY_CENTER, screensize);
     mesh.drawquad({100, 100}, 128, 345, rotation, {1.0f, 1.0f, 1.0f, 1.0f},
                   meta, FIT_WIDTH_AND_REPEAT, screensize);
+    mesh.drawoval({0, 0}, 600, 600, 0, {1.0, 1.0, 1.0, 1.0}, meta, FILL,
+                  screensize);
+    mesh.drawoval({300, -100}, 200, 100, rotation, {1.0, 1.0, 1.0, 1.0}, meta,
+                  FIT_HEIGHT_AND_REPEAT_BY_CENTER, screensize);
     mesh.finish();
     glfwSwapBuffers(w);
     // 获取代码执行后的时间点
@@ -195,7 +200,8 @@ int main(int argc, char *argv[]) {
     while (GLenum error = glGetError()) {
       std::cerr << "OpenGL Error: " << error << std::endl;
     }
-    // std::cout << "frame[" + std::to_string(framecount++) + "]" << std::endl;
+    // std::cout << "frame[" + std::to_string(framecount++) + "]"
+    // << std::endl;
   }
   shader->unuse();
   glfwTerminate();

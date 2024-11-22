@@ -11,14 +11,8 @@
   - 实现网格对象，存储各种图形对象，使用增量合并更新显存
   - 使用实例化渲染图形 + 实例化纹理贴图变换和矩形变换
 
-- main.cpp 示例
-  ![涩涩不叫我.png](./sample.jpg)
-- 纹理图集生成:
-  ![usage](atlasexample.jpg)
-- 无限旋转测试
-  ![rotate](rotatetest.jpg)
-- 纹理集性能测试(帧时间从2000us提升到400us,五倍)
-  ![atalstest](sampletest.jpg)
+- 绘制椭圆和矩形统一化了(好像真又是同一种东西Oval类直接删了)
+  ![oval](ovaltest.jpg)
 - linux测试(差太远了)(旁边预加载纹理的固定消耗)
   ![linux](linuxcputime.jpg)
 - 实现纹理集内重采样

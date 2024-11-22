@@ -147,6 +147,6 @@ void main() {
 		FragColor = textureColor * vertex_color;
 		// FragColor = textureColor;
 		// FragColor = vec4(texcoord.y , 0.0, 0.0, 1.0);
-		// FragColor = vertex_color;
+		// FragColor = vec4(is_textured);
 	}
 }
