@@ -58,6 +58,7 @@ const int FIT_HEIGHT_AND_REPEAT_BY_CENTER = 6;
 out vec4 vertex_color;
 // 所使用的纹理在纹理集中的位置uv
 out vec2 texcoord;
+out vec2 shapesize;
 out float texuvarg;
 out float is_textured;
 out float texnormalizedx;
@@ -78,6 +79,7 @@ void main(){
 
     // 平移到指定中心点
     vec2 final_pos = rotated_pos + shape_cp;
+		shapesize = shape_size;
     // 应用视图和投影矩阵
     gl_Position = projmat * vec4(final_pos, 0.0, 1.0);
     vertex_color = shape_color;
@@ -132,6 +134,80 @@ void main(){
 					float ru = (x + vuv.x * xratio * w ) / atlas_width;  
 					float rv = (y + vuv.y * yratio * h ) / atlas_height; 
 					texcoord  = vec2(ru, rv);
+					break;
+				}
+				case REAPEAT_BY_CENTER:{
+					// 计算当前顶点矩形的中心点偏移
+					float centerX = x + w * 0.5;
+    			float centerY = y + h * 0.5;
+    			// 计算相对中心点的归一化坐标
+    			float relativeX = (vuv.x - 0.5) * (shape_size.x / meta.width);
+    			float relativeY = (vuv.y - 0.5) * (shape_size.y / meta.height);
+    			// 将相对坐标映射回实际纹理集坐标
+    			float cx = centerX + relativeX * w;
+    			float cy = centerY + relativeY * h;
+    			// 归一化回纹理集的 UV 坐标
+    			float u = cx / atlas_width;
+    			float v = cy / atlas_height;
+    			texcoord = vec2(u, v);
+    			break;
+				}
+				case FIT_WIDTH_AND_REPEAT:{
+					// 适应宽并在纵向repeat
+					float xratio = shape_size.x / meta.width;
+					float transformedtexheight = meta.height * xratio;
+					float yratio = shape_size.y / transformedtexheight;
+					float ru = uv.x;  
+					float rv = (y + vuv.y * yratio * h ) / atlas_height; 
+					texcoord = vec2(ru, rv);
+					break;
+				}
+				case FIT_WIDTH_AND_REPEAT_BY_CENTER:{
+					// 适应宽并相对中心向外重复采样
+					// 计算适应宽度的缩放比例
+					float xratio = shape_size.x / meta.width;
+    			float transformedTexHeight = meta.height * xratio;
+    			// 计算相对中心点的偏移量
+    			float relativeCenterX = (vuv.x - 0.5) * shape_size.x;  // 适应宽度
+    			float relativeCenterY = (vuv.y - 0.5) * shape_size.y / transformedTexHeight;  // 适应高度
+    			// 计算纹理在纹理集中的实际坐标
+					// 计算新的X坐标，考虑宽度适配
+    			float cx = x + 0.5 * w + relativeCenterX;  
+					// 计算新的Y坐标，考虑高度适配
+    			float cy = y + 0.5 * h + relativeCenterY * h;  
+    			// 归一化回纹理集的 UV 坐标
+    			float u = uv.x;
+    			float v = cy / atlas_height;
+    			texcoord = vec2(u, v);
+					break;
+				}
+				case FIT_HEIGHT_AND_REPEAT:{
+					// 适应高并在横向repeat
+					float yratio = shape_size.y / meta.height;
+					float transformedtexwidth = meta.width * yratio;
+					float xratio = shape_size.x / transformedtexwidth;
+					float ru = (x + vuv.x * xratio * w ) / atlas_width; 
+					float rv = uv.y;  
+					texcoord = vec2(ru, rv);
+					break;
+				}
+				case FIT_HEIGHT_AND_REPEAT_BY_CENTER:{
+					// 适应高并相对中心向外重复采样
+					// 计算适应宽度的缩放比例
+					float yratio = shape_size.y / meta.height;
+    			float transformedTexWidth = meta.width * yratio;
+    			// 计算相对中心点的偏移量
+    			float relativeCenterX = (vuv.x - 0.5) * shape_size.x / transformedTexWidth;
+    			float relativeCenterY = (vuv.y - 0.5) * shape_size.y;  
+    			// 计算纹理在纹理集中的实际坐标
+					// 计算新的X坐标，考虑高度适配
+    			float cx = x + 0.5 * w + relativeCenterX * w;  
+					// 计算新的Y坐标，考虑宽度适配
+    			float cy = y + 0.5 * h + relativeCenterY;  
+    			// 归一化回纹理集的 UV 坐标
+    			float u = cx / atlas_width;
+    			float v = uv.y;
+    			texcoord = vec2(u, v);
 					break;
 				}
 			}

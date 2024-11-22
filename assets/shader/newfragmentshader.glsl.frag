@@ -3,6 +3,7 @@
 // 接收光栅化结果
 in vec4 vertex_color;
 in vec2 texcoord;
+in vec2 shapesize;
 in float is_textured;
 in float texuvarg;
 in float texnormalizedx;
@@ -60,12 +61,90 @@ void main() {
 				textureColor = texture(sampler, finalUV);
 				break;
 			}
+			case REAPEAT_BY_CENTER:{
+				// 当前纹理的中心在纹理集中的归一化坐标
+				vec2 textureCenter = vec2(
+    		    texnormalizedx + 0.5 * texnormalizedw,
+    		    texnormalizedy + 0.5 * texnormalizedh
+    		);
+    		// 计算归一化 UV，相对于纹理中心进行对称调整
+    		vec2 centeredUV = (texcoord - textureCenter) / vec2(texnormalizedw, texnormalizedh);
+    		// 以中心为基准对 UV 进行 repeat
+    		vec2 repeatUV = fract(centeredUV + 0.5) - 0.5;  // 保持对称，UV范围 [-0.5, 0.5]
+    		// 转回到纹理集中实际的UV
+    		vec2 finalUV;
+    		finalUV.x = textureCenter.x + repeatUV.x * texnormalizedw;
+    		finalUV.y = textureCenter.y + repeatUV.y * texnormalizedh;
+    		// 使用最终 UV 进行采样
+    		textureColor = texture(sampler, finalUV);
+    		break;
+			}
+			case FIT_WIDTH_AND_REPEAT:{
+				// 适应宽并在纵向repeat
+				// 归一化 UV：得到相对于当前指定纹理的归一化坐标 repeatUV
+  			vec2 repeatUV = fract((texcoord - vec2(texnormalizedx, texnormalizedy)) / vec2(texnormalizedw, texnormalizedh));
+				// 转化为纹理集中的实际位置 finalUV
+				vec2 finalUV;
+				finalUV.x = texcoord.x;
+				finalUV.y = texnormalizedy + repeatUV.y * texnormalizedh;
+				textureColor = texture(sampler, finalUV);
+				break;
+			}
+			case FIT_WIDTH_AND_REPEAT_BY_CENTER:{
+				// 适应宽并相对中心向外重复采样
+				// 当前纹理的中心在纹理集中的归一化坐标
+				vec2 textureCenter = vec2(
+    		    texnormalizedx + 0.5 * texnormalizedw,
+    		    texnormalizedy + 0.5 * texnormalizedh
+    		);
+    		// 计算归一化 UV，相对于纹理中心进行对称调整
+    		vec2 centeredUV = (texcoord - textureCenter) / vec2(texnormalizedw, texnormalizedh);
+    		// 以中心为基准对 UV 进行 repeat
+    		vec2 repeatUV = fract(centeredUV + 0.5) - 0.5;  // 保持对称，UV范围 [-0.5, 0.5]
+    		// 转回到纹理集中实际的UV
+    		vec2 finalUV;
+    		finalUV.x = textureCenter.x + repeatUV.x * texnormalizedw;
+    		finalUV.y = textureCenter.y + repeatUV.y * texnormalizedh;
+    		// 使用最终 UV 进行采样
+    		textureColor = texture(sampler, finalUV);
+				break;
+			}
+			case FIT_HEIGHT_AND_REPEAT:{
+				// 适应宽并在纵向repeat
+				// 归一化 UV：得到相对于当前指定纹理的归一化坐标 repeatUV
+  			vec2 repeatUV = fract((texcoord - vec2(texnormalizedx, texnormalizedy)) / vec2(texnormalizedw, texnormalizedh));
+				// 转化为纹理集中的实际位置 finalUV
+				vec2 finalUV;
+				finalUV.x = texnormalizedx + repeatUV.x * texnormalizedw;
+				finalUV.y = texcoord.y;
+				textureColor = texture(sampler, finalUV);
+				break;
+			}
+			case FIT_HEIGHT_AND_REPEAT_BY_CENTER:{
+				// 适应高并相对中心向外重复采样
+				// 当前纹理的中心在纹理集中的归一化坐标
+				vec2 textureCenter = vec2(
+    		    texnormalizedx + 0.5 * texnormalizedw,
+    		    texnormalizedy + 0.5 * texnormalizedh
+    		);
+    		// 计算归一化 UV，相对于纹理中心进行对称调整
+    		vec2 centeredUV = (texcoord - textureCenter) / vec2(texnormalizedw, texnormalizedh);
+    		// 以中心为基准对 UV 进行 repeat
+				// 保持对称，UV范围 [-0.5, 0.5]
+    		vec2 repeatUV = fract(centeredUV + 0.5) - 0.5;  
+    		// 转回到纹理集中实际的UV
+    		vec2 finalUV;
+    		finalUV.x = textureCenter.x + repeatUV.x * texnormalizedw;
+    		finalUV.y = textureCenter.y + repeatUV.y * texnormalizedh;
+    		// 使用最终 UV 进行采样
+    		textureColor = texture(sampler, finalUV);
+			}
 		}
 
 		// 混合采样器颜色与顶点颜色
+		FragColor = textureColor * vertex_color;
 		// FragColor = textureColor;
 		// FragColor = vec4(texcoord.y , 0.0, 0.0, 1.0);
-		FragColor = textureColor * vertex_color;
 		// FragColor = vertex_color;
 	}
 }
