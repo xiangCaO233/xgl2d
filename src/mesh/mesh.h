@@ -40,7 +40,7 @@ class Mesh {
   GLuint VBO{0}, VAO{0}, instanceVBO{0}, FBO{0};
   // 最大矩形数量
   int max_quad_count;
-  int max_oval_count;
+  // 椭圆采样点数
   int _oval_segment;
   // 绑定的着色器
   Shader *_shader;
@@ -48,34 +48,34 @@ class Mesh {
   Texturepool *_texpool;
   // 包含的图形
   std::vector<std::vector<std::shared_ptr<Quad>>> _consequent_shapes;
-  std::vector<std::shared_ptr<Quad>> _quads;
+  std::vector<std::shared_ptr<Quad>> _shapes;
   // 每一段要更新的连续的矩形和数据
-  std::vector<std::vector<std::shared_ptr<Quad>>> _update_consequent_quads_poss;
-  std::vector<std::vector<float>> _update_consequent_quads_pos_datas;
+  std::vector<std::vector<std::shared_ptr<Quad>>> _update_consequent_shapes_poss;
+  std::vector<std::vector<float>> _update_consequent_shapes_pos_datas;
   std::vector<std::vector<std::shared_ptr<Quad>>>
-      _update_consequent_quads_sizes;
-  std::vector<std::vector<float>> _update_consequent_quads_size_datas;
+      _update_consequent_shapes_sizes;
+  std::vector<std::vector<float>> _update_consequent_shapes_size_datas;
   std::vector<std::vector<std::shared_ptr<Quad>>>
-      _update_consequent_quads_rotations;
-  std::vector<std::vector<float>> _update_consequent_quads_rotation_datas;
+      _update_consequent_shapes_rotations;
+  std::vector<std::vector<float>> _update_consequent_shapes_rotation_datas;
   std::vector<std::vector<std::shared_ptr<Quad>>>
-      _update_consequent_quads_colors;
-  std::vector<std::vector<float>> _update_consequent_quads_color_datas;
+      _update_consequent_shapes_colors;
+  std::vector<std::vector<float>> _update_consequent_shapes_color_datas;
   std::vector<std::vector<std::shared_ptr<Quad>>>
-      _update_consequent_quads_texmetas;
-  std::vector<std::vector<float>> _update_consequent_quads_texmeta_datas;
+      _update_consequent_shapes_texmetas;
+  std::vector<std::vector<float>> _update_consequent_shapes_texmeta_datas;
   std::vector<std::vector<std::shared_ptr<Quad>>>
-      _update_consequent_quads_uvargs;
-  std::vector<std::vector<float>> _update_consequent_quads_uvarg_datas;
+      _update_consequent_shapes_uvargs;
+  std::vector<std::vector<float>> _update_consequent_shapes_uvarg_datas;
   // 当前正在处理的矩形下标
   uint32_t _current_handle_index{0};
 
-  void updateVAOpointer(uintptr_t shapecount);
+  void updateVAOpointer(uintptr_t shapecount) const;
 
 public:
   // 构造Mesh
   explicit Mesh(Shader *shader, std::string &texdir, int oval_segment = 128,
-                int initial_oval_count = 1024, int initial_quad_count = 4096);
+                 int initial_shape_count = 4096);
   // 析构Mesh
   virtual ~Mesh();
 
@@ -86,9 +86,9 @@ public:
     return (*_texpool)[index];
   }
   // 绑定mesh缓冲
-  void bind();
+  void bind() const;
   // 解绑mesh缓冲
-  void unbind();
+  static void unbind();
 
   // 绘制矩形(材质默认混合颜色并填充到矩形)
   void drawquad(glm::vec2 &cp, float w, float h, float rotation,

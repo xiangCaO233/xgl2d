@@ -7,7 +7,7 @@
 enum SType { SHADER_COMPILE, PROGRAM_LINK };
 
 class Shader {
-  GLuint program;
+  GLuint program{};
   std::unordered_map<const char *, GLuint> uniform_locs;
 
   friend class Xmesh;
@@ -20,12 +20,12 @@ public:
   virtual ~Shader();
 
   // 使用此Shader
-  void use();
+  void use() const;
   // 取消使用此Shader
-  void unuse();
+  void unuse() const;
 
   // 设置uniform变量
-  void set_sampler(const char *name, int value);
+  void set_sampler(const char *name, int value) const;
   void set_unfm1f(const char *name, float value);
   void set_unfm1i(const char *name, int value);
   void set_unfm2f(const char *name, float value1, float value2);
@@ -39,7 +39,7 @@ private:
   GLuint shader_program{0};
 
   // 检查着色器及链接器编译或链接错误
-  void check_error(GLuint val, SType error_type);
+  static void check_error(GLuint val, SType error_type);
   // 获取统一变量location
   GLint uniform_loc(const char *name);
 };

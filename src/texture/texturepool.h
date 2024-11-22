@@ -47,11 +47,11 @@ struct TextureMeta {
 // 纹理图集
 class Texturepool {
   // 纹理缓冲对象
-  GLuint UTBO, texture_atlas;
+  GLuint UTBO{}, texture_atlas{};
   // 对应着色器
   Shader *_shader;
   // 虚拟纹理尺寸
-  uint32_t _vwidth, _vheight;
+  uint32_t _vwidth{}, _vheight{};
   // 是否加载完成
   bool is_done{false};
   std::shared_ptr<TextureMeta> _defmeta;

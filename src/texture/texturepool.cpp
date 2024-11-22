@@ -48,7 +48,7 @@ void Texturepool::bind() {
   glBindTexture(GL_TEXTURE_2D, texture_atlas);
   glActiveTexture(GL_TEXTURE0);
   _shader->set_sampler("sampler", 0);
-};
+}
 void Texturepool::unbind() { glBindTexture(GL_TEXTURE_2D, 0); };
 
 void Texturepool::loadtexture(std::string &texturedir) {
@@ -71,7 +71,7 @@ void Texturepool::loadtexture(std::string &texturedir) {
       meta->height = theight;
       meta->woffset = 0;
       meta->hoffset = 0;
-      meta->metaid = _texmetas.size();
+      meta->metaid = (float)(_texmetas.size());
       _texmetas[filename] = meta;
       _texdatas[meta] = data;
       _metalist.push_back(meta);
@@ -127,29 +127,29 @@ void Texturepool::creatatlas() {
   glGenBuffers(1, &UTBO);
   glBindBuffer(GL_UNIFORM_BUFFER, UTBO);
   std::vector<float> utbodata;
-  utbodata.push_back(_vwidth);
-  utbodata.push_back(_vheight);
+  utbodata.push_back((float)_vwidth);
+  utbodata.push_back((float)_vheight);
   utbodata.push_back(0);
   utbodata.push_back(0);
-  utbodata.push_back(_defmeta->woffset);
-  utbodata.push_back(_defmeta->hoffset);
-  utbodata.push_back(_defmeta->width);
-  utbodata.push_back(_defmeta->height);
+  utbodata.push_back((float)_defmeta->woffset);
+  utbodata.push_back((float)_defmeta->hoffset);
+  utbodata.push_back((float)_defmeta->width);
+  utbodata.push_back((float)_defmeta->height);
   _texmetas_by_index[0] = _defmeta;
   for (auto &meta : _metalist) {
     std::cout << "导入meta:[" + meta->name + "],id[" +
                      std::to_string(meta->metaid) + "]"
               << std::endl;
-    _texmetas_by_index[meta->metaid] = meta;
-    utbodata.push_back(meta->woffset);
-    utbodata.push_back(meta->hoffset);
-    utbodata.push_back(meta->width);
-    utbodata.push_back(meta->height);
+    _texmetas_by_index[(int)meta->metaid] = meta;
+    utbodata.push_back((float)meta->woffset);
+    utbodata.push_back((float)meta->hoffset);
+    utbodata.push_back((float)meta->width);
+    utbodata.push_back((float)meta->height);
   }
   std::cout << "all metas size:[" + std::to_string(_texmetas.size()) + "]"
             << std::endl;
   // 为 UTBO 分配数据空间
-  glBufferData(GL_UNIFORM_BUFFER, utbodata.size() * sizeof(float),
+  glBufferData(GL_UNIFORM_BUFFER, (int)(utbodata.size() * sizeof(float)),
                utbodata.data(), GL_STATIC_DRAW);
 
   // 将 UTBO 绑定到绑定点 0
@@ -159,4 +159,4 @@ void Texturepool::creatatlas() {
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
   std::cout << "generate done" << std::endl;
   is_done = true;
-};
+}

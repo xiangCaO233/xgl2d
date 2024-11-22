@@ -29,13 +29,13 @@ Shader::Shader(const char *verglslfile, const char *fragglslfile) {
   GLuint fragment_shader;
 
   vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertex_shader, 1, &(vertex_source), NULL);
+  glShaderSource(vertex_shader, 1, &(vertex_source), nullptr);
   glCompileShader(vertex_shader);
   // check for shader compile errors
   check_error(vertex_shader, SType::SHADER_COMPILE);
 
   fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragment_shader, 1, &(fragment_source), NULL);
+  glShaderSource(fragment_shader, 1, &(fragment_source), nullptr);
   glCompileShader(fragment_shader);
   // check for shader compile errors
   check_error(fragment_shader, SType::SHADER_COMPILE);
@@ -50,11 +50,11 @@ Shader::Shader(const char *verglslfile, const char *fragglslfile) {
   // clear shaders
   glDeleteShader(vertex_shader);
   glDeleteShader(fragment_shader);
-};
+}
 Shader::~Shader() {
   // free shader program
   glDeleteProgram(shader_program);
-};
+}
 
 void Shader::check_error(GLuint val, SType error_type) {
   int success;
@@ -82,16 +82,16 @@ void Shader::check_error(GLuint val, SType error_type) {
 GLint Shader::uniform_loc(const char *name) {
   auto it = uniform_locs.find(name);
   if (it != uniform_locs.end()) {
-    return uniform_locs[name];
+    return (int)uniform_locs[name];
   }
   auto loc = glGetUniformLocation(shader_program, name);
   uniform_locs[name] = loc;
   return loc;
 }
 
-void Shader::set_sampler(const char *name, int value) {
+void Shader::set_sampler(const char *name, int value) const {
   glUniform1i(glGetUniformLocation(shader_program, name), value);
-};
+}
 void Shader::set_unfm1f(const char *name, float value) {
   glUniform1f(uniform_loc(name), value);
 }
@@ -117,6 +117,6 @@ void Shader::set_unfmat4f(const char *name, glm::mat4 &mat) {
   glUniformMatrix4fv(uniform_loc(name), 1, GL_FALSE, &mat[0][0]);
 }
 
-void Shader::use() { glUseProgram(shader_program); };
+void Shader::use() const { glUseProgram(shader_program); }
 
-void Shader::unuse() { glUseProgram(0); };
+void Shader::unuse() const { glUseProgram(0); }

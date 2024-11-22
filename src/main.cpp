@@ -9,6 +9,7 @@
 #include <string>
 
 glm::mat4 proj;
+glm::mat4 view;
 int windowWidth, windowHeight;
 glm::vec2 screensize = {windowWidth, windowHeight};
 // 初始化着色器
@@ -21,6 +22,10 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
   proj = glm::ortho(-(float)windowWidth / 2.0f, (float)windowWidth / 2.0f,
                     -(float)windowHeight / 2.0f, (float)windowHeight / 2.0f,
                     -1.0f, 1.0f);
+  // proj =
+  //    glm::perspective(glm::radians(45.0f),
+  //                     (float)windowWidth / (float)windowHeight, 0.1f,
+  //                     100.0f);
   // 应用正交投影
   shader->set_unfmat4f("projmat", proj);
 }
@@ -61,7 +66,7 @@ int main(int argc, char *argv[]) {
   // 启用 最大 MSAA
   glfwWindowHint(GLFW_SAMPLES, maxSamples);
   // 禁用V-Sync
-  glfwSwapInterval(0);
+  // glfwSwapInterval(0);
 
   // 绑定窗口大小回调函数
   glfwSetFramebufferSizeCallback(w, framebuffer_size_callback);
@@ -85,47 +90,28 @@ int main(int argc, char *argv[]) {
   proj = glm::ortho(-(float)windowWidth / 2.0f, (float)windowWidth / 2.0f,
                     -(float)windowHeight / 2.0f, (float)windowHeight / 2.0f,
                     -1.0f, 1.0f);
+  // 透视投影
+  // proj =
+  //    glm::perspective(glm::radians(45.0f),
+  //                     (float)windowWidth / (float)windowHeight, 0.1f,
+  //                     100.0f);
+  //// 摄像机
+  // glm::vec3 camera = glm::vec3(0.0f, 0.0f, 3.0f);
+  //// 摄像机指向
+  // glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, -1.0f);
+  //// 归一化朝向
+  // glm::vec3 cameraDirection = glm::normalize(camera - cameraTarget);
+  //// 上(相对摄像机)
+  // glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+  //// 右轴
+  // glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
+  //// 上轴
+  // glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
+  // view = glm::lookAt(camera, camera + cameraTarget, up);
+  //// 应用视图矩阵
+  // shader->set_unfmat4f("viewmat", view);
 
-  // 加载纹理
-  // std::cout << "加载纹理..." << std::endl;
-  // std::vector<std::shared_ptr<Texture>> texs;
-  // texs.push_back(std::make_shared<Texture>("../assets/texture/aijier.png"));
-  // texs.push_back(std::make_shared<Texture>("../assets/texture/aimudeng.png"));
-  // texs.push_back(
-  //    std::make_shared<Texture>("../assets/texture/beierfasite.png"));
-  // texs.push_back(std::make_shared<Texture>("../assets/texture/bisimai.png"));
-
-  // texs.push_back(std::make_shared<Texture>("../assets/texture/bunao.png"));
-  // texs.push_back(std::make_shared<Texture>("../assets/texture/dafeng.png"));
-  // texs.push_back(std::make_shared<Texture>("../assets/texture/daiduo.png"));
-  // texs.push_back(std::make_shared<Texture>("../assets/texture/dujiaoshou.png"));
-
-  // texs.push_back(std::make_shared<Texture>("../assets/texture/guanghui.png"));
-  // texs.push_back(std::make_shared<Texture>("../assets/texture/jiahe.png"));
-  // texs.push_back(std::make_shared<Texture>("../assets/texture/kewei.png"));
-  // texs.push_back(std::make_shared<Texture>("../assets/texture/nengdai.png"));
-
-  // texs.push_back(
-  //     std::make_shared<Texture>("../assets/texture/ougenqinwang.png"));
-  // texs.push_back(std::make_shared<Texture>("../assets/texture/qiabayefu.png"));
-  // texs.push_back(
-  //     std::make_shared<Texture>("../assets/texture/qibolinbojue.png"));
-  // texs.push_back(std::make_shared<Texture>("../assets/texture/shengli.png"));
-
-  // texs.push_back(std::make_shared<Texture>("../assets/texture/sikula.png"));
-  // texs.push_back(std::make_shared<Texture>("../assets/texture/tiancheng.png"));
-  // texs.push_back(
-  //     std::make_shared<Texture>("../assets/texture/tianlangxing.png"));
-  // texs.push_back(std::make_shared<Texture>("../assets/texture/wuzang.png"));
-
-  // texs.push_back(
-  //     std::make_shared<Texture>("../assets/texture/xingdengbao.png"));
-  // texs.push_back(std::make_shared<Texture>("../assets/texture/xinnong.png"));
-  // texs.push_back(std::make_shared<Texture>("../assets/texture/xinzexi.png"));
-  // texs.push_back(std::make_shared<Texture>("../assets/texture/yuanchou.png"));
-
-  // std::cout << "加载纹理完成" << std::endl;
-  //  应用正交投影
+  //  应用投影
   shader->set_unfmat4f("projmat", proj);
   // glBindTexture(GL_TEXTURE_2D, mesh.deftexture->texture);
 
@@ -165,22 +151,25 @@ int main(int argc, char *argv[]) {
     // float rotation = 30;
     float rotation = asin(sin(glfwGetTime())) / M_PI * 180.0f;
     // auto meta = mesh.gettexmeta(rand() % 25 + 1);
-    auto meta = mesh.gettexmeta(10);
-    mesh.drawquad({0, 0}, windowWidth, windowHeight, rotation,
-                  {1.0, 0.1, 0.6, 1.0}, meta, FIT_HEIGHT_AND_REPEAT_BY_CENTER,
-                  screensize);
-    mesh.drawquad({400, 200}, 300, 80, rotation, {0.5, 0.5, 0.5, 1.0}, meta,
-                  FIT_HEIGHT_AND_REPEAT_BY_CENTER, screensize);
-    mesh.drawquad({0, -300}, 400, 200, rotation, {0.0, 1.0, 1.0, 1.0}, meta,
-                  REAPEAT, screensize);
-    mesh.drawquad({500, -200}, 328, 328, rotation, {1.0, 0.0, 1.0, 1.0}, meta,
-                  FILL, screensize);
-    mesh.drawquad({-400, 100}, 400, 146, rotation, {1.0, 1.0, 0.0, 1.0}, meta,
-                  FIT_HEIGHT_AND_REPEAT, screensize);
-    mesh.drawquad({-400, -150}, 520, 276, rotation, {0.0, 1.0, 0.0, 1.0}, meta,
-                  REAPEAT_BY_CENTER, screensize);
-    mesh.drawquad({100, 100}, 128, 345, rotation, {1.0f, 1.0f, 1.0f, 1.0f},
-                  meta, FIT_WIDTH_AND_REPEAT, screensize);
+    auto meta = mesh.gettexmeta("shengli.png");
+    // mesh.drawquad({0, 0}, windowWidth, windowHeight, rotation,
+    //               {1.0, 0.1, 0.6, 1.0}, meta,
+    //               FIT_HEIGHT_AND_REPEAT_BY_CENTER, screensize);
+    // mesh.drawquad({400, 200}, 300, 80, rotation, {0.5, 0.5, 0.5, 1.0}, meta,
+    //               FIT_HEIGHT_AND_REPEAT_BY_CENTER, screensize);
+    // mesh.drawquad({0, -300}, 400, 200, rotation, {0.0, 1.0, 1.0, 1.0}, meta,
+    //               REAPEAT, screensize);
+    // mesh.drawquad({500, -200}, 328, 328, rotation, {1.0, 0.0, 1.0, 1.0},
+    // meta,
+    //               FILL, screensize);
+    // mesh.drawquad({-400, 100}, 400, 146, rotation, {1.0, 1.0, 0.0, 1.0},
+    // meta,
+    //               FIT_HEIGHT_AND_REPEAT, screensize);
+    // mesh.drawquad({-400, -150}, 520, 276, rotation, {0.0, 1.0, 0.0, 1.0},
+    // meta,
+    //               REAPEAT_BY_CENTER, screensize);
+    // mesh.drawquad({100, 100}, 128, 345, rotation, {1.0f, 1.0f, 1.0f, 1.0f},
+    //            meta, FIT_WIDTH_AND_REPEAT, screensize);
     mesh.drawoval({0, 0}, 600, 600, 0, {1.0, 1.0, 1.0, 1.0}, meta, FILL,
                   screensize);
     mesh.drawoval({300, -100}, 200, 100, rotation, {1.0, 1.0, 1.0, 1.0}, meta,

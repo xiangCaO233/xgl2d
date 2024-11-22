@@ -39,7 +39,7 @@ void MaxRectsBinPack::Expand(float rate) {
   freeRectangles.clear();
 
   freeRectangles.push_back(n);
-};
+}
 void MaxRectsBinPack::Insert(shared_ptr<TextureMeta> meta,
                              FreeRectChoiceHeuristic method) {
   std::cout << "insert [" + meta->name + "]" << std::endl;
@@ -65,7 +65,7 @@ void MaxRectsBinPack::Insert(shared_ptr<TextureMeta> meta,
     meta->hoffset = res.y;
     restex.push_back(meta);
   }
-};
+}
 Rect MaxRectsBinPack::Insert(int width, int height,
                              FreeRectChoiceHeuristic method) {
   Rect newNode;
