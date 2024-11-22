@@ -59,6 +59,7 @@ out vec4 vertex_color;
 // 所使用的纹理在纹理集中的位置uv
 out vec2 texcoord;
 out float texuvarg;
+out float is_textured;
 out float texnormalizedx;
 out float texnormalizedy;
 out float texnormalizedw;
@@ -80,55 +81,60 @@ void main(){
     // 应用视图和投影矩阵
     gl_Position = projmat * vec4(final_pos, 0.0, 1.0);
     vertex_color = shape_color;
-		texuvarg = shape_uvarg;
+		debug_var = shape_uvarg;
     // UV
 		// 元数据id,定义了当前图元绑定纹理在纹理集中的宽高偏移和大小
 		int metaid = int(shape_texmetaid + 0.5);
-		TextureMeta meta = textureMetas[metaid];
-		
-		// 纹理具体属性元数据
-		float x = meta.woffset;
-		float y = meta.hoffset;
-		float w = meta.width;
-		float h = meta.height;
-		float normalizedx = x / atlas_width;
-		float normalizedy = y / atlas_width;
-		float normalizedw = w / atlas_width;
-		float normalizedh = h / atlas_width;
-		texnormalizedx = normalizedx;
-		texnormalizedy = normalizedy;
-		texnormalizedw = normalizedw;
-		texnormalizedh = normalizedh;
+		is_textured = metaid;
+		if(metaid == 0){
+			return;
+		}else{
+			texuvarg = shape_uvarg;
+			TextureMeta meta = textureMetas[metaid];
+			
+			// 纹理具体属性元数据
+			float x = meta.woffset;
+			float y = meta.hoffset;
+			float w = meta.width;
+			float h = meta.height;
+			// 归一化元数据
+			float normalizedx = x / atlas_width;
+			float normalizedy = y / atlas_width;
+			float normalizedw = w / atlas_width;
+			float normalizedh = h / atlas_width;
+			// 传递给片段着色器
+			texnormalizedx = normalizedx;
+			texnormalizedy = normalizedy;
+			texnormalizedw = normalizedw;
+			texnormalizedh = normalizedh;
 
-		// 计算归一化的纹理坐标
-		float u = vuv.x * normalizedw + normalizedx;  
-		float v = vuv.y * normalizedh + normalizedy;  
-		// 计算纹理归一化相对尺寸
-		float tu = w / atlas_width;
-		float tv = h / atlas_height;
-		// 当前顶点对应纹理无视宽高在纹理集中一一对应位置(直接使用就是填充到整个矩形)
-		vec2 uv = vec2(u,v);
-		// 当前顶点对应纹理在纹理集中的相对尺寸
-		vec2 tuv = vec2(tu, tv);
+			// 计算归一化的纹理坐标
+			float u = vuv.x * normalizedw + normalizedx;  
+			float v = vuv.y * normalizedh + normalizedy;  
+			// 当前顶点对应纹理无视宽高在纹理集中一一对应位置(直接使用就是填充到整个矩形)
+			vec2 uv = vec2(u,v);
+			// 当前顶点对应纹理在纹理集中的相对尺寸
+			vec2 tuv = vec2(normalizedw, normalizedh);
 
-		// 填充方式参数
-		int uvarg = int(shape_uvarg + 0.5);
-		// 选择填充方式
-		switch(uvarg){
-			case FILL:{
-				texcoord = uv;
-				break;
-			}
-			case REAPEAT:{
-				float xratio = shape_size.x / meta.width;
-				float yratio = shape_size.y / meta.height;
-				float ru = (x + vuv.x * xratio * w ) / atlas_width;  
-				float rv = (y + vuv.y * yratio * h ) / atlas_height; 
-				texcoord  = vec2(ru, rv);
-				break;
+			// 填充方式参数
+			int uvarg = int(shape_uvarg + 0.5);
+			// 选择填充方式
+			switch(uvarg){
+				case FILL:{
+					// 直接使用归一化uv
+					texcoord = uv;
+					break;
+				}
+				case REAPEAT:{
+					// 传递超出边界的uv
+					float xratio = shape_size.x / meta.width;
+					float yratio = shape_size.y / meta.height;
+					float ru = (x + vuv.x * xratio * w ) / atlas_width;  
+					float rv = (y + vuv.y * yratio * h ) / atlas_height; 
+					texcoord  = vec2(ru, rv);
+					break;
+				}
 			}
 		}
 
-		//texcoord = (shape_uvtransform * vec3(vuv, 1.0)).xy;
-		debug_var = shape_uvarg;
 }

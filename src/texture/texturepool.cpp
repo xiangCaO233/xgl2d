@@ -25,7 +25,12 @@ Texturepool::Texturepool(std::string &texturedir, Shader *shader)
 
   // 生成默认白色纹理
   // RGBA(255, 255, 255, 255)
-  unsigned char whitePixel[4] = {255, 255, 255, 255};
+  static unsigned char whitePixel[4 * 9] = {
+      255,
+      255,
+      255,
+      255,
+  };
   _defmeta = std::make_shared<TextureMeta>("defmeta", 1, 1, 0, 0);
   _texmetas[_defmeta->name] = _defmeta;
   _texdatas[_defmeta] = whitePixel;
@@ -107,6 +112,10 @@ void Texturepool::creatatlas() {
                     pair.second->height, GL_RGBA, GL_UNSIGNED_BYTE,
                     _texdatas[pair.second]);
   }
+  // 绘制默认meta纹理
+  glTexSubImage2D(GL_TEXTURE_2D, 0, _defmeta->woffset, _defmeta->hoffset,
+                  _defmeta->width, _defmeta->height, GL_RGBA, GL_UNSIGNED_BYTE,
+                  _texdatas[_defmeta]);
   std::cout << "res atlas size:[" + std::to_string(pack.binWidth) + "x" +
                    std::to_string(pack.binHeight) + "]"
             << std::endl;
@@ -125,6 +134,7 @@ void Texturepool::creatatlas() {
   utbodata.push_back(_defmeta->hoffset);
   utbodata.push_back(_defmeta->width);
   utbodata.push_back(_defmeta->height);
+  _texmetas_by_index[0] = _defmeta;
   for (auto &meta : _metalist) {
     std::cout << "导入meta:[" + meta->name + "],id[" +
                      std::to_string(meta->metaid) + "]"
@@ -135,7 +145,7 @@ void Texturepool::creatatlas() {
     utbodata.push_back(meta->width);
     utbodata.push_back(meta->height);
   }
-  std::cout << "metas size:[" + std::to_string(_metalist.size()) + "]"
+  std::cout << "all metas size:[" + std::to_string(_texmetas.size()) + "]"
             << std::endl;
   // 为 UTBO 分配数据空间
   glBufferData(GL_UNIFORM_BUFFER, utbodata.size() * sizeof(float),

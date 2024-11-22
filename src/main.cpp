@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
   // Apple平台前向适配
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-  windowWidth = 1200, windowHeight = 720;
+  windowWidth = 720, windowHeight = 720;
   // 创建窗口
   GLFWwindow *w =
       glfwCreateWindow(windowWidth, windowHeight, "example", nullptr, nullptr);
@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
   // 启用 最大 MSAA
   glfwWindowHint(GLFW_SAMPLES, maxSamples);
   // 禁用V-Sync
-  // glfwSwapInterval(0);
+  glfwSwapInterval(0);
 
   // 绑定窗口大小回调函数
   glfwSetFramebufferSizeCallback(w, framebuffer_size_callback);
@@ -144,29 +144,28 @@ int main(int argc, char *argv[]) {
     // std::cout << std::to_string(tsc) << std::endl;
 
     auto start = std::chrono::high_resolution_clock::now();
-    // for (int i = 0; i < 5; i++) {
-    //   for (int j = 0; j < 5; j++) {
-    //     auto meta = mesh.gettexmeta(5 * i + j + 1);
-    //     mesh.drawquad(
-    //         {-windowWidth / 2.0f + i * windowWidth / 5.0f + windowWidth
-    //         / 10.0f,
-    //          windowHeight / 2.0 - j * windowHeight / 5.0f -
-    //              windowHeight / 10.0f},
-    //         windowWidth / 5.0f, windowHeight / 5.0f, 0, {1.0, 1.0, 1.0, 1.0},
-    //         meta, TexType::FILL, screensize);
-    //   }
-    // }
-    //  mesh.drawquad({0, 0}, 512, 512, 0, {1.0, 1.0, 1.0, 1.0}, texs[0], FILL,
-    //               screensize);
-    //  mesh.drawquad({100, 100}, 200, 80, 45, {1.0, 1.0, 0.0, 1.0},
-    //  screensize); mesh.drawquad({-200, 20}, 50, 300, -25, {0.2, 0.9,
-    //  0.5, 1.0}, screensize); mesh.drawquad({300, -200}, 100, 150, 70,
-    //  {0.0, 1.0, 0.0, 1.0}, screensize);
-    float rotation = asin(sin(glfwGetTime())) / M_PI * 180.0f;
-    // auto meta = mesh.gettexmeta(rand() % 25 + 1);
-    auto meta = mesh.gettexmeta(1);
-    mesh.drawquad({0, 0}, windowWidth, windowHeight, 0, {1.0, 1.0, 1.0, 1.0},
-                  meta, REAPEAT, screensize);
+    for (int i = 0; i < 5; i++) {
+      for (int j = 0; j < 5; j++) {
+        float rotation = asin(sin(glfwGetTime())) / M_PI * 180.0f;
+        auto meta = mesh.gettexmeta(5 * i + j + 1);
+        mesh.drawquad(
+            {-windowWidth / 2.0f + i * windowWidth / 5.0f + windowWidth / 10.0f,
+             windowHeight / 2.0 - j * windowHeight / 5.0f -
+                 windowHeight / 10.0f},
+            windowWidth / 5.0f, windowHeight / 5.0f, 0, {1.0, 1.0, 1.0, 1.0},
+            meta, TexType::FILL, screensize);
+      }
+    }
+    // mesh.drawquad({100, 100}, 200, 80, 45, {1.0, 1.0, 0.0, 1.0}, screensize);
+    // mesh.drawquad({-200, 20}, 50, 300, -25, {0.2, 0.9, 0.5, 1.0},
+    // screensize); mesh.drawquad({300, -200}, 100, 150, 70, {0.0, 1.0,
+    // 0.0, 1.0}, screensize);
+    //  float rotation = asin(sin(glfwGetTime())) / M_PI * 180.0f;
+    //// auto meta = mesh.gettexmeta(rand() % 25 + 1);
+    // auto meta = mesh.gettexmeta(20);
+    // mesh.drawquad({0, 0}, windowWidth, windowHeight, 0, {1.0, 0.1,
+    // 0.55, 1.0},
+    //               meta, REAPEAT, screensize);
     mesh.finish();
     glfwSwapBuffers(w);
     // 获取代码执行后的时间点
@@ -174,8 +173,8 @@ int main(int argc, char *argv[]) {
     // 计算时间差
     auto duration =
         std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-    // std::cout << "frame time:" << std::to_string(duration.count()) << "us"
-    //           << std::endl;
+    std::cout << "frame time:" << std::to_string(duration.count()) << "us"
+              << std::endl;
 
     glfwPollEvents();
     // 读取错误信息
