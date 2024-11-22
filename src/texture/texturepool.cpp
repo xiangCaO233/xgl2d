@@ -1,3 +1,4 @@
+#define STB_IMAGE_IMPLEMENTATION
 #include "texturepool.h"
 #include "MaxRectsBinPack.h"
 #include "stb_image.h"

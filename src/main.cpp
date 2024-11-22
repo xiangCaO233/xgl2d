@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
   // 启用 最大 MSAA
   glfwWindowHint(GLFW_SAMPLES, maxSamples);
   // 禁用V-Sync
-  // glfwSwapInterval(0);
+  glfwSwapInterval(0);
 
   // 绑定窗口大小回调函数
   glfwSetFramebufferSizeCallback(w, framebuffer_size_callback);

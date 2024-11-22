@@ -10,11 +10,9 @@ Mesh::Mesh(Shader *shader, std::string &texture_dir, int initial_quad_count)
   glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);
   glGenBuffers(1, &instanceVBO);
-  glGenBuffers(6, instancedVBO);
   // glGenBuffers(1, &FBO);
   // 变换前原始矩形(1x1像素)
   // 初始化默认纹理
-  _deftexture = std::make_shared<Texture>();
   float basic_quad_data[20] = {
       -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, // v1
       1.0f,  -1.0f, 0.0f, 1.0f, 0.0f, // v2
@@ -34,68 +32,59 @@ Mesh::Mesh(Shader *shader, std::string &texture_dir, int initial_quad_count)
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
 
-  // 描述location2 顶点缓冲3~4float为float类型数据(用vec2接收为默认uv坐标)
+  // 描述location1 顶点缓冲3~4float为float类型数据(用vec2接收为默认uv坐标)
   glEnableVertexAttribArray(1);
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
                         (void *)(3 * sizeof(float)));
 
   // 实例数据
-  glBindBuffer(GL_ARRAY_BUFFER, instancedVBO[0]);
-  glBufferData(GL_ARRAY_BUFFER, max_quad_count * 2 * sizeof(float), nullptr,
+  glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+  glBufferData(GL_ARRAY_BUFFER, max_quad_count * 11 * sizeof(float), nullptr,
                GL_DYNAMIC_DRAW);
-  // 描述location3 为2*float
+  // 描述location3 为2*float(0~max_quad_count * 2float内存块)
   glEnableVertexAttribArray(2);
   glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), nullptr);
   // 每个实例变化一次
   glVertexAttribDivisor(2, 1);
 
   // 绑定尺寸缓冲(x和y的缩放倍率)
-  glBindBuffer(GL_ARRAY_BUFFER, instancedVBO[1]);
-  glBufferData(GL_ARRAY_BUFFER, max_quad_count * 2 * sizeof(float), nullptr,
-               GL_DYNAMIC_DRAW);
-  // 描述location3 为2*float
+  // 描述location3 为2*float(max_quad_count * 2 ~ max_quad_count * 4float内存块)
   glEnableVertexAttribArray(3);
-  glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), nullptr);
+  glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
+                        (void *)(max_quad_count * 2 * sizeof(float)));
   // 每个实例变化一次
   glVertexAttribDivisor(3, 1);
 
   // 绑定旋转角缓冲
-  glBindBuffer(GL_ARRAY_BUFFER, instancedVBO[2]);
-  glBufferData(GL_ARRAY_BUFFER, max_quad_count * sizeof(float), nullptr,
-               GL_DYNAMIC_DRAW);
-  // 描述location4 为float
+  // 描述location4 为float(max_quad_count * 4 ~ max_quad_count * 5float内存块)
   glEnableVertexAttribArray(4);
-  glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(float), nullptr);
+  glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(float),
+                        (void *)(max_quad_count * 4 * sizeof(float)));
   // 每个实例变化一次
   glVertexAttribDivisor(4, 1);
 
   // 绑定颜色缓冲
-  glBindBuffer(GL_ARRAY_BUFFER, instancedVBO[3]);
-  glBufferData(GL_ARRAY_BUFFER, max_quad_count * 4 * sizeof(float), nullptr,
-               GL_DYNAMIC_DRAW);
-  // 描述location5 为4*float
+  // 描述location5 为4*float(max_quad_count * 5 ~ max_quad_count * 9float内存块)
   glEnableVertexAttribArray(5);
-  glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), nullptr);
+  glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
+                        (void *)(max_quad_count * 5 * sizeof(float)));
   // 每个实例变化一次
   glVertexAttribDivisor(5, 1);
 
   // 绑定纹理元数据索引缓冲
-  glBindBuffer(GL_ARRAY_BUFFER, instancedVBO[4]);
-  glBufferData(GL_ARRAY_BUFFER, max_quad_count * sizeof(float), nullptr,
-               GL_DYNAMIC_DRAW);
-  // 描述location6 为float
+  // 描述location6 为float(max_quad_count * 9 ~ max_quad_count * 10float内存块)
   glEnableVertexAttribArray(6);
-  glVertexAttribPointer(6, 1, GL_FLOAT, GL_FALSE, sizeof(float), nullptr);
+  glVertexAttribPointer(6, 1, GL_FLOAT, GL_FALSE, sizeof(float),
+                        (void *)(max_quad_count * 9 * sizeof(float)));
   // 每个实例变化一次
   glVertexAttribDivisor(6, 1);
 
   // 绑定纹理填充选项缓冲
-  glBindBuffer(GL_ARRAY_BUFFER, instancedVBO[5]);
-  glBufferData(GL_ARRAY_BUFFER, max_quad_count * sizeof(float), nullptr,
-               GL_DYNAMIC_DRAW);
-  // 描述 location7 为 float
+  // 描述 location7 为 float(max_quad_count * 10 ~ max_quad_count *
+  // 11float内存块)
   glEnableVertexAttribArray(7);
-  glVertexAttribPointer(7, 1, GL_FLOAT, GL_FALSE, sizeof(float), nullptr);
+  glVertexAttribPointer(7, 1, GL_FLOAT, GL_FALSE, sizeof(float),
+                        (void *)(max_quad_count * 10 * sizeof(float)));
   glVertexAttribDivisor(7, 1);
 
   // 初始化纹理池
@@ -159,15 +148,20 @@ void Mesh::drawquad(glm::vec2 &cp, float w, float h, float rotation,
     // posdata
     quad->model_data_offset[0] = _current_handle_index * 2 * sizeof(float);
     // sizedata
-    quad->model_data_offset[1] = _current_handle_index * 2 * sizeof(float);
+    quad->model_data_offset[1] = max_quad_count * 2 * sizeof(float) +
+                                 _current_handle_index * 2 * sizeof(float);
     // rotationdata
-    quad->model_data_offset[2] = _current_handle_index * sizeof(float);
+    quad->model_data_offset[2] = max_quad_count * 4 * sizeof(float) +
+                                 _current_handle_index * sizeof(float);
     // colordata
-    quad->model_data_offset[3] = _current_handle_index * 4 * sizeof(float);
+    quad->model_data_offset[3] = max_quad_count * 5 * sizeof(float) +
+                                 _current_handle_index * 4 * sizeof(float);
     // texmetadata
-    quad->model_data_offset[4] = _current_handle_index * sizeof(float);
+    quad->model_data_offset[4] = max_quad_count * 9 * sizeof(float) +
+                                 _current_handle_index * sizeof(float);
     // uvargdata
-    quad->model_data_offset[5] = _current_handle_index * sizeof(float);
+    quad->model_data_offset[5] = max_quad_count * 10 * sizeof(float) +
+                                 _current_handle_index * sizeof(float);
     // 直接加入更新列表和缓存
     _quads.push_back(quad);
 
@@ -374,6 +368,7 @@ void Mesh::finish() {
   //   std::cout << std::to_string(d) << ",";
   // }
   //   更新连续的矩形数据
+  glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
   if (!_update_consequent_quads_poss.empty()) {
     // 需要更新矩形位置数据
     for (int i = 0; i < _update_consequent_quads_poss.size(); i++) {
@@ -386,7 +381,6 @@ void Mesh::finish() {
                                       consequent_data_start_offset +
                                       2 * sizeof(float);
       // 更新那一段显存
-      glBindBuffer(GL_ARRAY_BUFFER, instancedVBO[0]);
       glBufferSubData(GL_ARRAY_BUFFER, consequent_data_start_offset,
                       consequent_data_size,
                       _update_consequent_quads_pos_datas[i].data());
@@ -400,7 +394,6 @@ void Mesh::finish() {
       uint32_t consequent_data_size = quads.back()->model_data_offset[1] -
                                       consequent_data_start_offset +
                                       2 * sizeof(float);
-      glBindBuffer(GL_ARRAY_BUFFER, instancedVBO[1]);
       glBufferSubData(GL_ARRAY_BUFFER, consequent_data_start_offset,
                       consequent_data_size,
                       _update_consequent_quads_size_datas[i].data());
@@ -414,7 +407,6 @@ void Mesh::finish() {
       uint32_t consequent_data_rotation = quads.back()->model_data_offset[2] -
                                           consequent_data_start_offset +
                                           sizeof(float);
-      glBindBuffer(GL_ARRAY_BUFFER, instancedVBO[2]);
       glBufferSubData(GL_ARRAY_BUFFER, consequent_data_start_offset,
                       consequent_data_rotation,
                       _update_consequent_quads_rotation_datas[i].data());
@@ -428,7 +420,6 @@ void Mesh::finish() {
       uint32_t consequent_data_color = quads.back()->model_data_offset[3] -
                                        consequent_data_start_offset +
                                        4 * sizeof(float);
-      glBindBuffer(GL_ARRAY_BUFFER, instancedVBO[3]);
       glBufferSubData(GL_ARRAY_BUFFER, consequent_data_start_offset,
                       consequent_data_color,
                       _update_consequent_quads_color_datas[i].data());
@@ -442,7 +433,6 @@ void Mesh::finish() {
       uint32_t consequent_data_texmeta = quads.back()->model_data_offset[4] -
                                          consequent_data_start_offset +
                                          sizeof(float);
-      glBindBuffer(GL_ARRAY_BUFFER, instancedVBO[4]);
       glBufferSubData(GL_ARRAY_BUFFER, consequent_data_start_offset,
                       consequent_data_texmeta,
                       _update_consequent_quads_texmeta_datas[i].data());
@@ -456,7 +446,6 @@ void Mesh::finish() {
       uint32_t consequent_data_uvarg = quads.back()->model_data_offset[5] -
                                        consequent_data_start_offset +
                                        sizeof(float);
-      glBindBuffer(GL_ARRAY_BUFFER, instancedVBO[5]);
       glBufferSubData(GL_ARRAY_BUFFER, consequent_data_start_offset,
                       consequent_data_uvarg,
                       _update_consequent_quads_uvarg_datas[i].data());

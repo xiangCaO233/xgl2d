@@ -1,7 +1,6 @@
 #ifndef QUAD_H
 #define QUAD_H
 
-#include "../texture/texture.h"
 #include "texture/texturepool.h"
 #include <memory>
 

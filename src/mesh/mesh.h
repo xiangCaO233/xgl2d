@@ -30,14 +30,14 @@ class Mesh {
   // VAO:顶点数组缓冲对象
   // FBO:帧缓冲对象
   // (
-  // quad_instanceVBOs[0]:x,y中心坐标,
-  // quad_instanceVBOs[1]:尺寸
-  // quad_instanceVBOs[2]:旋转角度,
-  // quad_instanceVBOs[3]:r,g,b,a颜色,
-  // quad_instanceVBOs[4]:texid贴图元数据id
-  // quad_instanceVBOs[5]:u,v变换使用参数(自动计算矩阵)
+  // instanceVBO[0]:x,y中心坐标,
+  // instanceVBO[1]:尺寸
+  // instanceVBO[2]:旋转角度,
+  // instanceVBO[3]:r,g,b,a颜色,
+  // instanceVBO[4]:texid贴图元数据id
+  // instanceVBO[5]:u,v变换使用参数(自动计算矩阵)
   // )
-  GLuint VBO{0}, VAO{0}, instancedVBO[6], instanceVBO, FBO{0};
+  GLuint VBO{0}, VAO{0}, instanceVBO{0}, FBO{0};
   // 最大矩形数量
   int max_quad_count;
   // 绑定的着色器
@@ -68,8 +68,6 @@ class Mesh {
   std::vector<std::vector<float>> _update_consequent_quads_uvarg_datas;
   // 当前正在处理的矩形下标
   uint32_t _current_handle_index{0};
-  // 默认1*1白色纹理
-  std::shared_ptr<Texture> _deftexture;
 
 public:
   // 构造Mesh

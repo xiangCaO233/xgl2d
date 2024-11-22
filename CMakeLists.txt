@@ -19,7 +19,7 @@ include_directories(include)
 include_directories(src)
 
 set(LIB_SOURCES src/texture/texturepool.cpp src/texture/MaxRectsBinPack.cpp
-                src/texture/texture.cpp src/shader/shader.cpp src/mesh/mesh.cpp)
+                src/shader/shader.cpp src/mesh/mesh.cpp)
 
 set(TEST_SOURCES src/main.cpp)
 
