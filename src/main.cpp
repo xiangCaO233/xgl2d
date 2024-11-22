@@ -162,23 +162,24 @@ int main(int argc, char *argv[]) {
     // mesh.drawquad({-200, 20}, 50, 300, -25, {0.2, 0.9, 0.5, 1.0},
     // screensize); mesh.drawquad({300, -200}, 100, 150, 70, {0.0, 1.0,
     // 0.0, 1.0}, screensize);
-    //   float rotation = asin(sin(glfwGetTime())) / M_PI * 180.0f;
+    float rotation = asin(sin(glfwGetTime())) / M_PI * 180.0f;
     // auto meta = mesh.gettexmeta(rand() % 25 + 1);
-    auto meta = mesh.gettexmeta(20);
-    mesh.drawquad({0, 0}, windowWidth, windowHeight, 0, {1.0, 0.1, 0.6, 1.0},
-                  meta, FIT_HEIGHT_AND_REPEAT_BY_CENTER, screensize);
-    mesh.drawquad({400, 200}, 300, 80, 0, {0.5, 0.5, 0.5, 1.0}, meta,
+    auto meta = mesh.gettexmeta(10);
+    mesh.drawquad({0, 0}, windowWidth, windowHeight, rotation,
+                  {1.0, 0.1, 0.6, 1.0}, meta, FIT_HEIGHT_AND_REPEAT_BY_CENTER,
+                  screensize);
+    mesh.drawquad({400, 200}, 300, 80, rotation, {0.5, 0.5, 0.5, 1.0}, meta,
                   FIT_HEIGHT_AND_REPEAT_BY_CENTER, screensize);
-    mesh.drawquad({0, -300}, 400, 200, 0, {0.0, 1.0, 1.0, 1.0}, meta, REAPEAT,
-                  screensize);
-    mesh.drawquad({500, -200}, 328, 328, 0, {1.0, 0.0, 1.0, 1.0}, meta, FILL,
-                  screensize);
-    mesh.drawquad({-400, 100}, 400, 146, 0, {1.0, 1.0, 0.0, 1.0}, meta,
+    mesh.drawquad({0, -300}, 400, 200, rotation, {0.0, 1.0, 1.0, 1.0}, meta,
+                  REAPEAT, screensize);
+    mesh.drawquad({500, -200}, 328, 328, rotation, {1.0, 0.0, 1.0, 1.0}, meta,
+                  FILL, screensize);
+    mesh.drawquad({-400, 100}, 400, 146, rotation, {1.0, 1.0, 0.0, 1.0}, meta,
                   FIT_HEIGHT_AND_REPEAT, screensize);
-    mesh.drawquad({-400, -150}, 520, 276, 0, {0.0, 1.0, 0.0, 1.0}, meta,
+    mesh.drawquad({-400, -150}, 520, 276, rotation, {0.0, 1.0, 0.0, 1.0}, meta,
                   REAPEAT_BY_CENTER, screensize);
-    mesh.drawquad({100, 100}, 128, 345, 0, {1.0f, 1.0f, 1.0f, 1.0f}, meta,
-                  FIT_WIDTH_AND_REPEAT, screensize);
+    mesh.drawquad({100, 100}, 128, 345, rotation, {1.0f, 1.0f, 1.0f, 1.0f},
+                  meta, FIT_WIDTH_AND_REPEAT, screensize);
     mesh.finish();
     glfwSwapBuffers(w);
     // 获取代码执行后的时间点

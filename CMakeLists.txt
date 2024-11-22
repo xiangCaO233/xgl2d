@@ -21,7 +21,7 @@ include_directories(src)
 set(LIB_SOURCES src/texture/texturepool.cpp src/texture/MaxRectsBinPack.cpp
                 src/texture/texture.cpp src/shader/shader.cpp src/mesh/mesh.cpp)
 
-set(TEST_SOURCES src/main.cpp ${LIB_SOURCES})
+set(TEST_SOURCES src/main.cpp)
 
 add_library(libxgl2d STATIC ${LIB_SOURCES})
 add_library(xgl2d SHARED ${LIB_SOURCES})
