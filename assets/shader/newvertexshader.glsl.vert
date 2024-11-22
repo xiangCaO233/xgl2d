@@ -56,7 +56,13 @@ const int FIT_WIDTH_AND_REPEAT_BY_CENTER = 5;
 const int FIT_HEIGHT_AND_REPEAT_BY_CENTER = 6;
 
 out vec4 vertex_color;
+// 所使用的纹理在纹理集中的位置uv
 out vec2 texcoord;
+out float texuvarg;
+out float texnormalizedx;
+out float texnormalizedy;
+out float texnormalizedw;
+out float texnormalizedh;
 out float debug_var;
 
 void main(){
@@ -73,26 +79,56 @@ void main(){
     vec2 final_pos = rotated_pos + shape_cp;
     // 应用视图和投影矩阵
     gl_Position = projmat * vec4(final_pos, 0.0, 1.0);
+    vertex_color = shape_color;
+		texuvarg = shape_uvarg;
     // UV
 		// 元数据id,定义了当前图元绑定纹理在纹理集中的宽高偏移和大小
 		int metaid = int(shape_texmetaid + 0.5);
 		TextureMeta meta = textureMetas[metaid];
 		
+		// 纹理具体属性元数据
 		float x = meta.woffset;
 		float y = meta.hoffset;
 		float w = meta.width;
 		float h = meta.height;
-
-    vertex_color = shape_color;
+		float normalizedx = x / atlas_width;
+		float normalizedy = y / atlas_width;
+		float normalizedw = w / atlas_width;
+		float normalizedh = h / atlas_width;
+		texnormalizedx = normalizedx;
+		texnormalizedy = normalizedy;
+		texnormalizedw = normalizedw;
+		texnormalizedh = normalizedh;
 
 		// 计算归一化的纹理坐标
-		float u = (x + vuv.x * w ) / atlas_width;  
-		float v = (y + vuv.y * h ) / atlas_height; 
-
+		float u = vuv.x * normalizedw + normalizedx;  
+		float v = vuv.y * normalizedh + normalizedy;  
+		// 计算纹理归一化相对尺寸
+		float tu = w / atlas_width;
+		float tv = h / atlas_height;
+		// 当前顶点对应纹理无视宽高在纹理集中一一对应位置(直接使用就是填充到整个矩形)
 		vec2 uv = vec2(u,v);
+		// 当前顶点对应纹理在纹理集中的相对尺寸
+		vec2 tuv = vec2(tu, tv);
 
-		texcoord = uv;
+		// 填充方式参数
+		int uvarg = int(shape_uvarg + 0.5);
+		// 选择填充方式
+		switch(uvarg){
+			case FILL:{
+				texcoord = uv;
+				break;
+			}
+			case REAPEAT:{
+				float xratio = shape_size.x / meta.width;
+				float yratio = shape_size.y / meta.height;
+				float ru = (x + vuv.x * xratio * w ) / atlas_width;  
+				float rv = (y + vuv.y * yratio * h ) / atlas_height; 
+				texcoord  = vec2(ru, rv);
+				break;
+			}
+		}
 
 		//texcoord = (shape_uvtransform * vec3(vuv, 1.0)).xy;
-		debug_var = textureMetas[metaid].hoffset;
+		debug_var = shape_uvarg;
 }

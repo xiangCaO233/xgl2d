@@ -19,3 +19,5 @@
   ![rotate](rotatetest.jpg)
 - 纹理集性能测试(帧时间从2000us提升到400us,五倍)
   ![atalstest](sampletest.jpg)
+- 实现纹理集内重采样
+  ![resample](resample.jpg)

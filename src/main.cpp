@@ -32,15 +32,15 @@ int main(int argc, char *argv[]) {
     return -1;
   }
   // 配置glfw参数
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   glfwWindowHint(GLFW_REFRESH_RATE, 240);
 #ifdef __APPLE__
   // Apple平台前向适配
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-  windowWidth = 720, windowHeight = 720;
+  windowWidth = 1200, windowHeight = 720;
   // 创建窗口
   GLFWwindow *w =
       glfwCreateWindow(windowWidth, windowHeight, "example", nullptr, nullptr);
@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
   // 启用 最大 MSAA
   glfwWindowHint(GLFW_SAMPLES, maxSamples);
   // 禁用V-Sync
-  glfwSwapInterval(0);
+  // glfwSwapInterval(0);
 
   // 绑定窗口大小回调函数
   glfwSetFramebufferSizeCallback(w, framebuffer_size_callback);
@@ -132,7 +132,6 @@ int main(int argc, char *argv[]) {
   std::string texpath = "../assets/texture/";
   Mesh mesh(shader, texpath);
   mesh.bind();
-  auto meta = mesh.gettexmeta("beierfasite.png");
   // 初始化纹理池
   int framecount = 1;
   // 渲染循环
@@ -164,8 +163,10 @@ int main(int argc, char *argv[]) {
     //  0.5, 1.0}, screensize); mesh.drawquad({300, -200}, 100, 150, 70,
     //  {0.0, 1.0, 0.0, 1.0}, screensize);
     float rotation = asin(sin(glfwGetTime())) / M_PI * 180.0f;
-    mesh.drawquad({0, 0}, 512, 512, rotation, {1.0, 1.0, 1.0, 1.0}, meta,
-                  REAPEAT_BY_CENTER, screensize);
+    // auto meta = mesh.gettexmeta(rand() % 25 + 1);
+    auto meta = mesh.gettexmeta(1);
+    mesh.drawquad({0, 0}, windowWidth, windowHeight, 0, {1.0, 1.0, 1.0, 1.0},
+                  meta, REAPEAT, screensize);
     mesh.finish();
     glfwSwapBuffers(w);
     // 获取代码执行后的时间点
