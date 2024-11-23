@@ -50,7 +50,8 @@ class Mesh {
   std::vector<std::vector<std::shared_ptr<Quad>>> _consequent_shapes;
   std::vector<std::shared_ptr<Quad>> _shapes;
   // 每一段要更新的连续的矩形和数据
-  std::vector<std::vector<std::shared_ptr<Quad>>> _update_consequent_shapes_poss;
+  std::vector<std::vector<std::shared_ptr<Quad>>>
+      _update_consequent_shapes_poss;
   std::vector<std::vector<float>> _update_consequent_shapes_pos_datas;
   std::vector<std::vector<std::shared_ptr<Quad>>>
       _update_consequent_shapes_sizes;
@@ -74,8 +75,8 @@ class Mesh {
 
 public:
   // 构造Mesh
-  explicit Mesh(Shader *shader, std::string &texdir, int oval_segment = 128,
-                 int initial_shape_count = 4096);
+  explicit Mesh(Shader *shader, std::string &texdir, int oval_segment = 32,
+                int initial_shape_count = 4096);
   // 析构Mesh
   virtual ~Mesh();
 
@@ -94,7 +95,7 @@ public:
   void drawquad(glm::vec2 &cp, float w, float h, float rotation,
                 glm::vec4 &color, std::shared_ptr<TextureMeta> &texture,
                 TexType texture_type, glm::vec2 &screen_size,
-                bool isoval = false);
+                ShapeType shapetype = QUAD);
   void drawquad(glm::vec2 &&cp, float w, float h, float rotation,
                 glm::vec4 &color, std::shared_ptr<TextureMeta> &texture,
                 TexType texture_type, glm::vec2 &screen_size);
@@ -156,6 +157,9 @@ public:
   void drawoval(glm::vec2 &&cp, float rx, float ry, float rotation,
                 std::shared_ptr<TextureMeta> &texture, TexType texture_type,
                 glm::vec2 &screen_size);
+  void drawtext(glm::vec2 &pos, const char *characters, float fontsize,
+                STYLE fontstyle, float rotation, glm::vec4 &color,
+                glm::vec2 &screensize);
 
   void finish();
 };

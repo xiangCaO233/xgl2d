@@ -152,28 +152,27 @@ int main(int argc, char *argv[]) {
     float rotation = asin(sin(glfwGetTime())) / M_PI * 180.0f;
     // auto meta = mesh.gettexmeta(rand() % 25 + 1);
     auto meta = mesh.gettexmeta("shengli.png");
-    // mesh.drawquad({0, 0}, windowWidth, windowHeight, rotation,
-    //               {1.0, 0.1, 0.6, 1.0}, meta,
-    //               FIT_HEIGHT_AND_REPEAT_BY_CENTER, screensize);
-    // mesh.drawquad({400, 200}, 300, 80, rotation, {0.5, 0.5, 0.5, 1.0}, meta,
-    //               FIT_HEIGHT_AND_REPEAT_BY_CENTER, screensize);
-    // mesh.drawquad({0, -300}, 400, 200, rotation, {0.0, 1.0, 1.0, 1.0}, meta,
-    //               REAPEAT, screensize);
-    // mesh.drawquad({500, -200}, 328, 328, rotation, {1.0, 0.0, 1.0, 1.0},
-    // meta,
-    //               FILL, screensize);
-    // mesh.drawquad({-400, 100}, 400, 146, rotation, {1.0, 1.0, 0.0, 1.0},
-    // meta,
-    //               FIT_HEIGHT_AND_REPEAT, screensize);
-    // mesh.drawquad({-400, -150}, 520, 276, rotation, {0.0, 1.0, 0.0, 1.0},
-    // meta,
-    //               REAPEAT_BY_CENTER, screensize);
-    // mesh.drawquad({100, 100}, 128, 345, rotation, {1.0f, 1.0f, 1.0f, 1.0f},
-    //            meta, FIT_WIDTH_AND_REPEAT, screensize);
+    mesh.drawquad({0, 0}, windowWidth, windowHeight, rotation,
+                  {1.0, 0.1, 0.6, 1.0}, meta, FIT_HEIGHT_AND_REPEAT_BY_CENTER,
+                  screensize);
+    mesh.drawquad({400, 200}, 300, 80, rotation, {0.5, 0.5, 0.5, 1.0}, meta,
+                  FIT_HEIGHT_AND_REPEAT_BY_CENTER, screensize);
+    mesh.drawquad({0, -300}, 400, 200, rotation, {0.0, 1.0, 1.0, 1.0}, meta,
+                  REAPEAT, screensize);
+    mesh.drawquad({500, -200}, 328, 328, rotation, {1.0, 0.0, 1.0, 1.0}, meta,
+                  FILL, screensize);
+    mesh.drawquad({-400, 100}, 400, 146, rotation, {1.0, 1.0, 0.0, 1.0}, meta,
+                  FIT_HEIGHT_AND_REPEAT, screensize);
+    mesh.drawquad({-400, -150}, 520, 276, rotation, {0.0, 1.0, 0.0, 1.0}, meta,
+                  REAPEAT_BY_CENTER, screensize);
+    mesh.drawquad({100, 100}, 128, 345, rotation, {1.0f, 1.0f, 1.0f, 1.0f},
+                  meta, FIT_WIDTH_AND_REPEAT, screensize);
     mesh.drawoval({0, 0}, 600, 600, 0, {1.0, 1.0, 1.0, 1.0}, meta, FILL,
                   screensize);
     mesh.drawoval({300, -100}, 200, 100, rotation, {1.0, 1.0, 1.0, 1.0}, meta,
                   FIT_HEIGHT_AND_REPEAT_BY_CENTER, screensize);
+    // mesh.drawtext({120, 120}, "nmsl", 14, STYLE::NORMAL, rotation,
+    //               {1.0f, 1.0f, 1.0f, 1.0f}, screensize);
     mesh.finish();
     glfwSwapBuffers(w);
     // 获取代码执行后的时间点

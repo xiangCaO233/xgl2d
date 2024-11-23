@@ -4,6 +4,9 @@
 #include "texture/texturepool.h"
 #include <memory>
 
+enum ShapeType { QUAD, OVAL, TEXT };
+enum STYLE { NORMAL, BOLD, ITALIC };
+
 class Quad {
 
   // 基本数据
@@ -12,8 +15,7 @@ class Quad {
   float _rotation{0.0f};
   glm::vec4 _color;
   std::shared_ptr<TextureMeta> _texmeta;
-  // 是否为椭圆
-  bool _isoval;
+  ShapeType _shapetype;
   // 纹理类型
   TexType _textype;
 
@@ -30,9 +32,9 @@ public:
   // 构造Quad
   Quad(glm::vec2 &cp, float w, float h, float rotation, glm::vec4 &color,
        std::shared_ptr<TextureMeta> &tex, TexType texture_type,
-       bool isoval = false)
+       ShapeType shapetype)
       : _cp(cp), _w(w), _h(h), _rotation(rotation), _color(color),
-        _texmeta(tex), _textype(texture_type), _isoval(isoval){};
+        _texmeta(tex), _textype(texture_type), _shapetype(shapetype){};
   // 析构Quad
   virtual ~Quad() = default;
 
@@ -41,15 +43,15 @@ public:
     return _cp == q._cp && _w == q._w && _h == q._h &&
            _rotation == q._rotation && _color == q._color &&
            _texmeta == q._texmeta && _textype == q._textype &&
-           _isoval == q._isoval;
+           _shapetype == q._shapetype;
   };
   inline bool equals(const glm::vec2 &cp, const float w, const float h,
                      const float rotation, const glm::vec4 &color,
                      const std::shared_ptr<TextureMeta> &tex,
-                     const TexType texture_type, bool isoval) {
+                     const TexType texture_type, ShapeType shapetype) {
     return _cp == cp && _w == w && _h == h && _rotation == rotation &&
            _color == color && _texmeta == tex && _textype == texture_type &&
-           _isoval == isoval;
+           _shapetype == shapetype;
   }
 
   inline bool is_cp_equal(const glm::vec2 &cp) { return _cp == cp; }
@@ -66,6 +68,8 @@ public:
   inline bool is_textype_equal(const TexType &texture_type) {
     return _textype == texture_type;
   }
-  inline bool is_oval_equal(const bool &isoval) { return _isoval == isoval; }
+  inline bool is_shape_equal(ShapeType shapetype) {
+    return _shapetype == shapetype;
+  }
 };
 #endif /* QUAD_H */
