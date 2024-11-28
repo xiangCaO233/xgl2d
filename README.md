@@ -4,14 +4,16 @@
 
 ## 源码文件夹 
 - Shader
-  - 读取”assets/shader/“目录下的 glsl 着色器源代码文件简单实现了 uniform 变量的编辑
+  - 读取”assets/shader/“目录下的 glsl 着色器源代码文件简单实现 uniform 变量的编辑
 - Texture
-  - 单独实现了纹理文件的读取,类中保留可访问 gpu 的 GLuint 纹理对象
+  - 单独实现纹理文件的读取,类中保留可访问 gpu 的 GLuint 纹理对象
 - Mesh
   - 实现网格对象，存储各种图形对象，使用增量合并更新显存
   - 使用实例化渲染图形 + 实例化纹理贴图变换和矩形变换
 
-- 绘制椭圆和矩形统一化了(好像真又是同一种东西Oval类直接删了)
+- 日志系统
+  ![log](loggertest.jpg)
+- 统一化绘制椭圆和矩形(好像真又是同一种东西Oval类直接删了)
   ![oval](ovaltest.jpg)
 - linux测试(差太远了)(旁边预加载纹理的固定消耗)
   ![linux](linuxcputime.jpg)
