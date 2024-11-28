@@ -1,5 +1,6 @@
 #include "logger.h"
 #include <iostream>
+#include <string>
 /*
 \033[37;41m 设置白色文本（37）和红色背景（41）。
 \033[30;43m 设置黑色文本（30）和黄色背景（43）。
@@ -47,6 +48,7 @@ void CustomFormatter::format(const spdlog::details::log_msg &msg,
   std::string message_color_code;
   std::string message_forge_color_code;
   std::string log_level_str;
+  bool should_show_file = false;
   switch (msg.level) {
   case spdlog::level::critical:
     // 黑背景
@@ -55,12 +57,14 @@ void CustomFormatter::format(const spdlog::details::log_msg &msg,
     message_color_code = "\033[34;41m";
     message_forge_color_code = "\033[1;31;40m";
     log_level_str = "CRITICAL";
+    should_show_file = true;
     break;
   case spdlog::level::err:
     bg_color_code = "\033[40m";
     message_color_code = "\033[37;41m";
     message_forge_color_code = "\033[1;31;40m";
     log_level_str = "ERROR";
+    should_show_file = true;
     break;
   case spdlog::level::warn:
     bg_color_code = "\033[40m";
@@ -68,6 +72,7 @@ void CustomFormatter::format(const spdlog::details::log_msg &msg,
     message_color_code = "\033[0;30;43m";
     message_forge_color_code = "\033[1;33;40m";
     log_level_str = "WARN";
+    should_show_file = true;
     break;
   case spdlog::level::info:
     bg_color_code = "\033[40m";
@@ -82,6 +87,7 @@ void CustomFormatter::format(const spdlog::details::log_msg &msg,
     message_color_code = "\033[0;97;44m";
     message_forge_color_code = "\033[1;34;40m";
     log_level_str = "DEBUG";
+    should_show_file = true;
     break;
   case spdlog::level::trace:
     bg_color_code = "\033[40m";           // 白色背景
@@ -105,11 +111,13 @@ void CustomFormatter::format(const spdlog::details::log_msg &msg,
   fmt::format_to(std::back_inserter(dest), "{}\033[36;1m[{}] \033[0m",
                  bg_color_code, formatted_time);
   // 添加日志等级，使用背景色当做前景色
-  fmt::format_to(std::back_inserter(dest), "{}[{}] {}",
-                 message_forge_color_code, log_level_str, bg_color_code);
-  // 添加文件和行号
-  fmt::format_to(std::back_inserter(dest), "{}[{}:{}]{}", file_color_code,
-                 msg.source.filename, msg.source.line, "\033[0m");
+  fmt::format_to(std::back_inserter(dest), "{}[{}]{}", message_forge_color_code,
+                 log_level_str, bg_color_code);
+  if (should_show_file) {
+    // 添加文件和行号
+    fmt::format_to(std::back_inserter(dest), "{} [{}:{}]{}", file_color_code,
+                   msg.source.filename, msg.source.line, "\033[0m");
+  }
   // 添加函数名并确保背景色生效
   fmt::format_to(std::back_inserter(dest), "{}{}-{}-> {}", bg_color_code,
                  function_color_code, msg.source.funcname, bg_color_code);
@@ -131,11 +139,24 @@ std::unique_ptr<spdlog::formatter> CustomFormatter::clone() const {
 };
 
 size_t CustomFormatter::get_terminal_width() {
-  struct winsize w;
-  if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == 0) {
-    return w.ws_col;
+#ifdef _WIN32
+  CONSOLE_SCREEN_BUFFER_INFO csbi;
+  if (!GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
+    LOG_ERROR("获取控制台宽度失败");
+    return 80;
   }
+  return csbi.dwSize.X;
+#elif __unix__ || __APPLE__
+  struct winsize w;
+  if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == -1) {
+    LOG_ERROR("获取控制台宽度失败");
+    return 80;
+  }
+  // std::cout << "终端宽度:[" + std::to_string(w.ws_col) + "]" << std::endl;
+  return w.ws_col;
+#else
   return 80;
+#endif
 };
 size_t
 CustomFormatter::calculate_display_width(const spdlog::memory_buf_t &buf) {
@@ -181,25 +202,6 @@ CustomFormatter::calculate_display_width(const spdlog::memory_buf_t &buf) {
   }
   return width;
 };
-int get_console_width() {
-#ifdef _WIN32
-  CONSOLE_SCREEN_BUFFER_INFO csbi;
-  if (!GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
-    LOG_ERROR("获取控制台宽度失败");
-    return 80;
-  }
-  return csbi.dwSize.X;
-#elif __unix__ || __APPLE__
-  struct winsize w;
-  if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == -1) {
-    LOG_ERROR("获取控制台宽度失败");
-    return 80;
-  }
-  return w.ws_col;
-#else
-  return 80;
-#endif
-}
 std::shared_ptr<spdlog::logger> XLogger::_logger;
 // 包装的日志函数，带有调用者信息
 void XLogger::log(spdlog::level::level_enum level,
