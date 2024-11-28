@@ -111,11 +111,12 @@ void CustomFormatter::format(const spdlog::details::log_msg &msg,
   fmt::format_to(std::back_inserter(dest), "{}\033[36;1m[{}] \033[0m",
                  bg_color_code, formatted_time);
   // 添加日志等级，使用背景色当做前景色
-  fmt::format_to(std::back_inserter(dest), "{}[{}/{}", message_forge_color_code,
-                 log_level_str, bg_color_code);
+  fmt::format_to(std::back_inserter(dest), "\033[1;97;40m[{}{}\033[1;97;40m/{}",
+                 message_forge_color_code, log_level_str, bg_color_code);
   // 添加函数名
-  fmt::format_to(std::back_inserter(dest), "{}{}{}]: {}", bg_color_code,
-                 function_color_code, msg.source.funcname, bg_color_code);
+  fmt::format_to(std::back_inserter(dest), "{}{}{}\033[1;97;40m]: {}",
+                 bg_color_code, function_color_code, msg.source.funcname,
+                 bg_color_code);
   // 文本消息
   fmt::format_to(std::back_inserter(dest), "{}{}{}", message_color_code,
                  msg.payload, bg_color_code);
