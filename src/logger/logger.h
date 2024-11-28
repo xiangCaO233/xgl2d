@@ -15,63 +15,74 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 #include <string>
+
 #ifdef _WIN32
 #include <windows.h>
 #elif __unix__ || __APPLE__
+
 #include <sys/ioctl.h>
 #include <unistd.h>
+
 #endif
 
 class CustomFormatter : public spdlog::formatter {
 public:
-  void format(const spdlog::details::log_msg &msg,
-              spdlog::memory_buf_t &dest) override;
+    void format(const spdlog::details::log_msg &msg, spdlog::memory_buf_t &dest) override;
 
-  std::unique_ptr<spdlog::formatter> clone() const override;
+    std::unique_ptr<spdlog::formatter> clone() const override;
 
 private:
-  size_t get_terminal_width();
-  size_t calculate_display_width(const spdlog::memory_buf_t &buf);
+    size_t get_terminal_width();
+
+    size_t calculate_display_width(const spdlog::memory_buf_t &buf);
 };
 
 class XLogger {
-  static std::shared_ptr<spdlog::logger> _logger;
-  // 自定义每个日志级别的颜色代码
-  static std::string get_level_color(spdlog::level::level_enum level);
-  // 包装的日志函数，带有调用者信息
-  static void log(spdlog::level::level_enum level,
-                  const spdlog::source_loc &loc, const std::string &msg);
+    static std::shared_ptr<spdlog::logger> _logger;
+
+    // 自定义每个日志级别的颜色代码
+    static std::string get_level_color(spdlog::level::level_enum level);
+
+    // 包装的日志函数，带有调用者信息
+    static void log(spdlog::level::level_enum level, const spdlog::source_loc &loc, const std::string &msg);
 
 public:
-  // 获取文件名
-  inline static const char *get_relative_file_path(const char *full_path) {
-    if (!full_path || *full_path == '\0') {
-      return "unknown";
+    // 获取文件名
+    inline static const char *get_relative_file_path(const char *full_path) {
+        if (!full_path || *full_path == '\0') {
+            return "unknown";
+        }
+
+        static thread_local std::string relative_path;
+        std::string path(full_path);
+        size_t pos;
+#ifdef _WIN32
+        pos = path.find_last_of("\\");
+#else
+        pos = path.find_last_of("/\\");
+#endif
+        if (pos != std::string::npos) {
+            relative_path = path.substr(pos + 1);
+        } else {
+            relative_path = path;
+        }
+        return relative_path.c_str();
     }
 
-    static thread_local std::string relative_path;
-    std::string path(full_path);
-    size_t pos;
-#ifdef _WIN32
-    pos = path.find_last_of("\\");
-#else
-    pos = path.find_last_of("/\\");
-#endif
-    if (pos != std::string::npos) {
-      relative_path = path.substr(pos + 1);
-    } else {
-      relative_path = path;
-    }
-    return relative_path.c_str();
-  }
-  static void init();
-  // 包装器的日志类型函数
-  static void trace(const spdlog::source_loc &loc, const std::string &msg);
-  static void debug(const spdlog::source_loc &loc, const std::string &msg);
-  static void info(const spdlog::source_loc &loc, const std::string &msg);
-  static void warn(const spdlog::source_loc &loc, const std::string &msg);
-  static void error(const spdlog::source_loc &loc, const std::string &msg);
-  static void critical(const spdlog::source_loc &loc, const std::string &msg);
+    static void init();
+
+    // 包装器的日志类型函数
+    static void trace(const spdlog::source_loc &loc, const std::string &msg);
+
+    static void debug(const spdlog::source_loc &loc, const std::string &msg);
+
+    static void info(const spdlog::source_loc &loc, const std::string &msg);
+
+    static void warn(const spdlog::source_loc &loc, const std::string &msg);
+
+    static void error(const spdlog::source_loc &loc, const std::string &msg);
+
+    static void critical(const spdlog::source_loc &loc, const std::string &msg);
 };
 
 // 定义自定义的 LOG_LOC 宏
