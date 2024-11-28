@@ -111,19 +111,19 @@ void CustomFormatter::format(const spdlog::details::log_msg &msg,
   fmt::format_to(std::back_inserter(dest), "{}\033[36;1m[{}] \033[0m",
                  bg_color_code, formatted_time);
   // 添加日志等级，使用背景色当做前景色
-  fmt::format_to(std::back_inserter(dest), "{}[{}]{}", message_forge_color_code,
+  fmt::format_to(std::back_inserter(dest), "{}[{}/{}", message_forge_color_code,
                  log_level_str, bg_color_code);
-  if (should_show_file) {
-    // 添加文件和行号
-    fmt::format_to(std::back_inserter(dest), "{} [{}:{}]{}", file_color_code,
-                   msg.source.filename, msg.source.line, "\033[0m");
-  }
-  // 添加函数名并确保背景色生效
-  fmt::format_to(std::back_inserter(dest), "{}{}-{}-> {}", bg_color_code,
+  // 添加函数名
+  fmt::format_to(std::back_inserter(dest), "{}{}{}]: {}", bg_color_code,
                  function_color_code, msg.source.funcname, bg_color_code);
   // 文本消息
   fmt::format_to(std::back_inserter(dest), "{}{}{}", message_color_code,
                  msg.payload, bg_color_code);
+  if (should_show_file) {
+    // 添加文件和行号
+    fmt::format_to(std::back_inserter(dest), "{} [{}:{}]{}", file_color_code,
+                   msg.source.filename, msg.source.line, bg_color_code);
+  }
   // 补齐背景色到终端宽度
   size_t current_length = calculate_display_width(dest);
   size_t padding_length = terminal_width - current_length;

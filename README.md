@@ -12,7 +12,7 @@
   - 使用实例化渲染图形 + 实例化纹理贴图变换和矩形变换
 
 - 日志系统
-  ![log](loggertest.jpg)
+  ![log](logger.jpg)
 - 统一化绘制椭圆和矩形(好像真又是同一种东西Oval类直接删了)
   ![oval](ovaltest.jpg)
 - linux测试(差太远了)(旁边预加载纹理的固定消耗)
