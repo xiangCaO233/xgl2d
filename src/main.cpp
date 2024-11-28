@@ -31,11 +31,14 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
 }
 
 int main(int argc, char *argv[]) {
-  std::cout << "活了" << std::endl;
+  std::cout << "初始化日志" << std::endl;
+  XLogger::init();
   srand(time(nullptr));
   if (!glfwInit()) {
-    std::cout << "glfw初始化失败" << std::endl;
+    LOG_CRITICAL("初始化glfw失败,程序退出");
     return -1;
+  } else {
+    LOG_INFO("初始化glfw完成");
   }
   // 配置glfw参数
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -44,6 +47,7 @@ int main(int argc, char *argv[]) {
   glfwWindowHint(GLFW_REFRESH_RATE, 240);
 #ifdef __APPLE__
   // Apple平台前向适配
+  LOG_INFO("当前为Apple平台,启用opengl前向兼容");
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
   windowWidth = 1440, windowHeight = 820;
@@ -51,18 +55,19 @@ int main(int argc, char *argv[]) {
   GLFWwindow *w =
       glfwCreateWindow(windowWidth, windowHeight, "example", nullptr, nullptr);
   if (w == nullptr) {
-    std::cout << "创建窗口失败" << std::endl;
+    LOG_CRITICAL("创建窗口失败,程序退出");
     glfwTerminate();
     return -1;
   }
   // 创建opengl上下文
   glfwMakeContextCurrent(w);
   const GLubyte *version = glGetString(GL_VERSION);
-  std::cout << "OpenGL Version: " << version << std::endl;
+  LOG_DEBUG("OpenGL Version: " +
+            std::string(reinterpret_cast<const char *>(version)));
   // 查询最大支持抗锯齿MSAA倍率
   GLint maxSamples;
   glGetIntegerv(GL_MAX_SAMPLES, &maxSamples);
-  printf("最大抗锯齿倍率: %d\n", maxSamples);
+  LOG_DEBUG("启用最大抗锯齿倍率: " + std::to_string(maxSamples));
   // 启用 最大 MSAA
   glfwWindowHint(GLFW_SAMPLES, maxSamples);
   // 禁用V-Sync
@@ -72,16 +77,16 @@ int main(int argc, char *argv[]) {
   glfwSetFramebufferSizeCallback(w, framebuffer_size_callback);
   // 初始化glew显卡opengl api(显卡驱动实现)
   if (glewInit()) {
-    std::cout << "初始化GLFW失败" << std::endl;
+    LOG_CRITICAL("初始化GLEW失败");
     return -1;
   }
 
   int maxTextureUnits = 0;
   glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
-  std::cout << "最大材质插槽数: " << maxTextureUnits << std::endl;
+  LOG_DEBUG("最大材质插槽数: " + std::to_string(maxTextureUnits));
   int maxUBOSize;
   glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &maxUBOSize);
-  std::cout << "最大UBO块容量: " << maxUBOSize << std::endl;
+  LOG_DEBUG("最大UBO块容量: " + std::to_string(maxUBOSize));
   shader = new Shader("../assets/shader/newvertexshader.glsl.vert",
                       "../assets/shader/newfragmentshader.glsl.frag");
   shader->use();
@@ -119,7 +124,6 @@ int main(int argc, char *argv[]) {
   std::string texpath = "../assets/texture/";
   Mesh mesh(shader, texpath);
   mesh.bind();
-  // 初始化纹理池
   int framecount = 1;
   // 渲染循环
   while (!glfwWindowShouldClose(w)) {
@@ -180,13 +184,13 @@ int main(int argc, char *argv[]) {
     // 计算时间差
     auto duration =
         std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-    std::cout << "frame time:" << std::to_string(duration.count()) << "us"
-              << std::endl;
+    // std::cout << "frame time:" << std::to_string(duration.count()) << "us"
+    //           << std::endl;
 
     glfwPollEvents();
     // 读取错误信息
     while (GLenum error = glGetError()) {
-      std::cerr << "OpenGL Error: " << error << std::endl;
+      LOG_ERROR("OpenGL Error: " + std::to_string(error));
     }
     // std::cout << "frame[" + std::to_string(framecount++) + "]"
     // << std::endl;

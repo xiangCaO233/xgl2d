@@ -13,7 +13,9 @@ Shader::Shader(const char *verglslfile, const char *fragglslfile) {
   vsource_file.open(verglslfile);
   fsource_file.open(fragglslfile);
 
+  LOG_INFO("读取顶点着色器文件[" + std::string(verglslfile) + "]");
   vsstr << vsource_file.rdbuf();
+  LOG_INFO("读取片段着色器文件[" + std::string(fragglslfile) + "]");
   fsstr << fsource_file.rdbuf();
 
   vsource_file.close();
@@ -30,12 +32,14 @@ Shader::Shader(const char *verglslfile, const char *fragglslfile) {
 
   vertex_shader = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(vertex_shader, 1, &(vertex_source), nullptr);
+  LOG_INFO("开始编译顶点着色器");
   glCompileShader(vertex_shader);
   // check for shader compile errors
   check_error(vertex_shader, SType::SHADER_COMPILE);
 
   fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(fragment_shader, 1, &(fragment_source), nullptr);
+  LOG_INFO("开始编译片段着色器");
   glCompileShader(fragment_shader);
   // check for shader compile errors
   check_error(fragment_shader, SType::SHADER_COMPILE);
@@ -58,21 +62,23 @@ Shader::~Shader() {
 
 void Shader::check_error(GLuint val, SType error_type) {
   int success;
-  char infoLog[512];
+  char infoLog[1024];
   switch (error_type) {
   case SHADER_COMPILE: {
     glGetShaderiv(val, GL_COMPILE_STATUS, &success);
     if (!success) {
-      glGetShaderInfoLog(val, 512, nullptr, infoLog);
-      std::cerr << "shader compile failed:" << infoLog << std::endl;
+      glGetShaderInfoLog(val, 1024, nullptr, infoLog);
+      LOG_ERROR("着色器编译失败");
+      LOG_ERROR(infoLog);
     }
     break;
   }
   case PROGRAM_LINK: {
     glGetProgramiv(val, GL_LINK_STATUS, &success);
     if (!success) {
-      glGetProgramInfoLog(val, 512, nullptr, infoLog);
-      std::cerr << "link failed:" << infoLog << std::endl;
+      glGetProgramInfoLog(val, 1024, nullptr, infoLog);
+      LOG_ERROR("着色器链接失败");
+      LOG_ERROR(infoLog);
     }
     break;
   }

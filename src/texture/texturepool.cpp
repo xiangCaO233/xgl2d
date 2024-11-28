@@ -55,10 +55,11 @@ void Texturepool::loadtexture(std::string &texturedir) {
   if (!is_done) {
     if (!std::filesystem::exists(texturedir)) {
       // 非法路径
+      LOG_CRITICAL("非法纹理文件(路径)");
       throw std::runtime_error("illegal texture file");
     } else if (std::filesystem::is_regular_file(texturedir)) {
-      std::cout << "读取纹理: " << std::filesystem::absolute(texturedir)
-                << std::endl;
+      LOG_INFO("读取纹理:[" + std::filesystem::absolute(texturedir).string() +
+               "]");
       int twidth, theight, nrChannels;
       unsigned char *data =
           stbi_load(std::filesystem::absolute(texturedir).c_str(), &twidth,
@@ -83,10 +84,11 @@ void Texturepool::loadtexture(std::string &texturedir) {
         loadtexture(child_path);
       }
     } else {
-      std::cout << "dir empty" << std::endl;
+      LOG_WARN("文件(路径)[" + std::filesystem::absolute(texturedir).string() +
+               "]不存在");
     }
   } else {
-    std::cout << "generate is already done, load failed" << std::endl;
+    LOG_INFO("纹理集生成已经完成,无法再次加载纹理");
   }
 }
 void Texturepool::creatatlas() {
@@ -103,10 +105,11 @@ void Texturepool::creatatlas() {
   _vheight = pack.binHeight;
   // 填充并释放纹理数据
   for (auto &pair : _texmetas) {
-    std::cout << pair.first
-              << "\t---res tex pos:[x:" + std::to_string(pair.second->woffset) +
-                     ",y:" + std::to_string(pair.second->hoffset) + "]"
-              << std::endl;
+    std::string dbgstr = pair.first + "---res tex pos:[x:" +
+                         std::to_string(pair.second->woffset) +
+                         ",y:" + std::to_string(pair.second->hoffset) + "]";
+    LOG_INFO("当前纹理位置信息:");
+    LOG_INFO(dbgstr);
     // 放置纹理到atlas
     glTexSubImage2D(GL_TEXTURE_2D, 0, pair.second->woffset,
                     pair.second->hoffset, pair.second->width,
@@ -117,11 +120,10 @@ void Texturepool::creatatlas() {
   glTexSubImage2D(GL_TEXTURE_2D, 0, _defmeta->woffset, _defmeta->hoffset,
                   _defmeta->width, _defmeta->height, GL_RGBA, GL_UNSIGNED_BYTE,
                   _texdatas[_defmeta]);
-  std::cout << "res atlas size:[" + std::to_string(pack.binWidth) + "x" +
-                   std::to_string(pack.binHeight) + "]"
-            << std::endl;
-  std::cout << "usage:[" + std::to_string(pack.Occupancy()) + "]" << std::endl;
-  std::cout << "start generate TBO" << std::endl;
+  LOG_INFO("最终纹理集大小:" + std::to_string(pack.binWidth) + "x" +
+           std::to_string(pack.binHeight) + "]");
+  LOG_INFO("纹理集填充率:[" + std::to_string(pack.Occupancy()) + "]");
+  LOG_DEBUG("开始初始化UTBO");
 
   // 生成UTBO纹理元数据
   glGenBuffers(1, &UTBO);
@@ -137,17 +139,15 @@ void Texturepool::creatatlas() {
   utbodata.push_back((float)_defmeta->height);
   _texmetas_by_index[0] = _defmeta;
   for (auto &meta : _metalist) {
-    std::cout << "导入meta:[" + meta->name + "],id[" +
-                     std::to_string(meta->metaid) + "]"
-              << std::endl;
+    LOG_INFO("导入meta:[" + meta->name + "],id[" +
+             std::to_string(meta->metaid) + "]");
     _texmetas_by_index[(int)meta->metaid] = meta;
     utbodata.push_back((float)meta->woffset);
     utbodata.push_back((float)meta->hoffset);
     utbodata.push_back((float)meta->width);
     utbodata.push_back((float)meta->height);
   }
-  std::cout << "all metas size:[" + std::to_string(_texmetas.size()) + "]"
-            << std::endl;
+  LOG_INFO("meta数:[" + std::to_string(_texmetas.size()) + "]");
   // 为 UTBO 分配数据空间
   glBufferData(GL_UNIFORM_BUFFER, (int)(utbodata.size() * sizeof(float)),
                utbodata.data(), GL_STATIC_DRAW);
@@ -157,6 +157,7 @@ void Texturepool::creatatlas() {
 
   // 解除绑定
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
-  std::cout << "generate done" << std::endl;
+  LOG_DEBUG("初始化UTBO完成");
+  LOG_INFO("生成纹理集完成");
   is_done = true;
 }

@@ -2,6 +2,7 @@
 #define SHADER_H
 
 #include "../../include/core/glcore.h"
+#include "../logger/logger.h"
 #include <unordered_map>
 
 enum SType { SHADER_COMPILE, PROGRAM_LINK };

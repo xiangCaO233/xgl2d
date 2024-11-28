@@ -8,4 +8,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "../src/logger/logger.h"
+
 #endif // GLCORE_H

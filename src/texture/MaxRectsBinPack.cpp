@@ -4,9 +4,11 @@
 #include <cmath>
 #include <cstring>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "MaxRectsBinPack.h"
+#include "logger/logger.h"
 
 using namespace std;
 
@@ -39,14 +41,16 @@ void MaxRectsBinPack::Expand(float rate) {
   freeRectangles.clear();
 
   freeRectangles.push_back(n);
+  LOG_INFO("扩容到[" + to_string(binWidth) + "x" + to_string(binHeight) + "]");
 }
 void MaxRectsBinPack::Insert(shared_ptr<TextureMeta> meta,
                              FreeRectChoiceHeuristic method) {
-  std::cout << "insert [" + meta->name + "]" << std::endl;
+  LOG_INFO("插入纹理:[" + meta->name + "]");
   auto res = Insert(meta->width, meta->height, method);
   if (res.height == 0) {
-    std::cout << "空间不足" << std::endl;
+    LOG_WARN("空间不足");
     Expand(binexpandrate);
+    LOG_INFO("扩容完成");
     restex.push_back(meta);
     // 转移缓存
     vector<shared_ptr<TextureMeta>> tempmetas;
