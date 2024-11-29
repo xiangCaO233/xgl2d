@@ -1,21 +1,22 @@
 #ifndef MESHBASE
 #define MESHBASE
 
-#include "../../include/core/glcore.h"
-#include "quad.h"
-#include "shader/shader.h"
-#include "texture/texturepool.h"
 #include <cstdint>
 #include <memory>
 #include <vector>
 
+#include "../../include/core/glcore.h"
+#include "quad.h"
+#include "shader/shader.h"
+#include "texture/texturepool.h"
+
 enum class Datatype {
     // 位置数据
-    POSITION, // 尺寸数据
-    SIZE, // 旋转数据
-    ROTATION, // 颜色数据
-    COLOR, // 纹理元数据
-    TEXMETA, // 贴图参数
+    POSITION,  // 尺寸数据
+    SIZE,      // 旋转数据
+    ROTATION,  // 颜色数据
+    COLOR,     // 纹理元数据
+    TEXMETA,   // 贴图参数
     UVARG
 };
 

@@ -1,8 +1,6 @@
 #ifndef TEXTUREPOOL_H
 #define TEXTUREPOOL_H
 
-#include "../../include/core/glcore.h"
-#include "shader/shader.h"
 #include <cstdint>
 #include <iostream>
 #include <memory>
@@ -10,14 +8,17 @@
 #include <unordered_map>
 #include <vector>
 
+#include "../../include/core/glcore.h"
+#include "shader/shader.h"
+
 enum TexType {
     // 直接填充纹理[0]
-    FILL, // 直接重复纹理(默认的左下角起点)[1]
-    REAPEAT, // 直接重复纹理(以中心点扩散)[2]
-    REAPEAT_BY_CENTER, // 直接适应宽度并纵向重复(同样默认左下角)[3]
-    FIT_WIDTH_AND_REPEAT, // 直接适应高度并横向重复(同样默认左下角)[4]
-    FIT_HEIGHT_AND_REPEAT, // 直接适应宽度并纵向重复(以中心点扩散)[5]
-    FIT_WIDTH_AND_REPEAT_BY_CENTER, // 直接适应高度并横向重复(以中心点扩散)[6]
+    FILL,		    // 直接重复纹理(默认的左下角起点)[1]
+    REAPEAT,		    // 直接重复纹理(以中心点扩散)[2]
+    REAPEAT_BY_CENTER,	    // 直接适应宽度并纵向重复(同样默认左下角)[3]
+    FIT_WIDTH_AND_REPEAT,   // 直接适应高度并横向重复(同样默认左下角)[4]
+    FIT_HEIGHT_AND_REPEAT,  // 直接适应宽度并纵向重复(以中心点扩散)[5]
+    FIT_WIDTH_AND_REPEAT_BY_CENTER,  // 直接适应高度并横向重复(以中心点扩散)[6]
     FIT_HEIGHT_AND_REPEAT_BY_CENTER
 };
 
@@ -33,8 +34,9 @@ struct TextureMeta {
 
     // 在TBO中的偏移
     bool operator==(const TextureMeta &other) const {
-        return name == other.name && width == other.width && height == other.height && woffset == other.woffset &&
-               hoffset == other.hoffset && metaid == other.metaid;
+	return name == other.name && width == other.width &&
+	       height == other.height && woffset == other.woffset &&
+	       hoffset == other.hoffset && metaid == other.metaid;
     }
 };
 
@@ -58,7 +60,7 @@ class Texturepool {
 
     friend class Mesh;
 
-public:
+   public:
     // 构造Texturepool
     // 直接读取纹理文件夹
     Texturepool(std::string &texturedir, Shader *shader);
@@ -78,26 +80,27 @@ public:
     void creatatlas();
 
     std::shared_ptr<TextureMeta> operator[](const char *name) {
-        std::string metaname = std::string(name);
-        auto it = _texmetas.find(metaname);
-        if (it != _texmetas.end()) {
-            // std::cout << "找到meta:[" << name << "]" << std::endl;
-            return it->second;
-        } else {
-            std::cout << "无法找到[" << name << "]" << std::endl;
-            return _defmeta;
-        }
+	std::string metaname = std::string(name);
+	auto it = _texmetas.find(metaname);
+	if (it != _texmetas.end()) {
+	    // std::cout << "找到meta:[" << name << "]" << std::endl;
+	    return it->second;
+	} else {
+	    std::cout << "无法找到[" << name << "]" << std::endl;
+	    return _defmeta;
+	}
     }
 
     std::shared_ptr<TextureMeta> operator[](int index) {
-        auto it = _texmetas_by_index.find(index);
-        if (it != _texmetas_by_index.end()) {
-            // std::cout << "找到meta:[" << it->second->name << "]" << std::endl;
-            return it->second;
-        } else {
-            std::cout << "无法找到[" << index << "]" << std::endl;
-            return _defmeta;
-        }
+	auto it = _texmetas_by_index.find(index);
+	if (it != _texmetas_by_index.end()) {
+	    // std::cout << "找到meta:[" << it->second->name << "]" <<
+	    // std::endl;
+	    return it->second;
+	} else {
+	    std::cout << "无法找到[" << index << "]" << std::endl;
+	    return _defmeta;
+	}
     }
 };
 

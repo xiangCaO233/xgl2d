@@ -1,13 +1,15 @@
-#include "logger/logger.h"
-#include "mesh/mesh.h"
-#include "shader/shader.h"
-#include "texture/texturepool.h"
-#include <chrono>
 #include <core/glcore.h>
+
+#include <chrono>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
 #include <string>
+
+#include "logger/logger.h"
+#include "mesh/mesh.h"
+#include "shader/shader.h"
+#include "texture/texturepool.h"
 
 glm::mat4 proj;
 glm::mat4 view;
@@ -20,8 +22,9 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
     glfwGetWindowSize(window, &windowWidth, &windowHeight);
     screensize = {windowWidth, windowHeight};
-    proj = glm::ortho(-(float) windowWidth / 2.0f, (float) windowWidth / 2.0f, -(float) windowHeight / 2.0f,
-                      (float) windowHeight / 2.0f, -1.0f, 1.0f);
+    proj = glm::ortho(-(float)windowWidth / 2.0f, (float)windowWidth / 2.0f,
+                      -(float)windowHeight / 2.0f, (float)windowHeight / 2.0f,
+                      -1.0f, 1.0f);
     // proj =
     //    glm::perspective(glm::radians(45.0f),
     //                     (float)windowWidth / (float)windowHeight, 0.1f,
@@ -52,7 +55,8 @@ int main(int argc, char *argv[]) {
 #endif
     windowWidth = 1440, windowHeight = 820;
     // 创建窗口
-    GLFWwindow *w = glfwCreateWindow(windowWidth, windowHeight, "example", nullptr, nullptr);
+    GLFWwindow *w = glfwCreateWindow(windowWidth, windowHeight, "example",
+                                     nullptr, nullptr);
     if (w == nullptr) {
         LOG_CRITICAL("创建窗口失败,程序退出");
         glfwTerminate();
@@ -61,7 +65,8 @@ int main(int argc, char *argv[]) {
     // 创建opengl上下文
     glfwMakeContextCurrent(w);
     const GLubyte *version = glGetString(GL_VERSION);
-    LOG_DEBUG("OpenGL Version: " + std::string(reinterpret_cast<const char *>(version)));
+    LOG_DEBUG("OpenGL Version: " +
+              std::string(reinterpret_cast<const char *>(version)));
     // 查询最大支持抗锯齿MSAA倍率
     GLint maxSamples;
     glGetIntegerv(GL_MAX_SAMPLES, &maxSamples);
@@ -85,12 +90,14 @@ int main(int argc, char *argv[]) {
     int maxUBOSize;
     glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &maxUBOSize);
     LOG_DEBUG("最大UBO块容量: " + std::to_string(maxUBOSize));
-    shader = new Shader("../assets/shader/newvertexshader.glsl.vert", "../assets/shader/newfragmentshader.glsl.frag");
+    shader = new Shader("../assets/shader/newvertexshader.glsl.vert",
+                        "../assets/shader/newfragmentshader.glsl.frag");
     shader->use();
 
     // 计算正交投影矩阵
-    proj = glm::ortho(-(float) windowWidth / 2.0f, (float) windowWidth / 2.0f, -(float) windowHeight / 2.0f,
-                      (float) windowHeight / 2.0f, -1.0f, 1.0f);
+    proj = glm::ortho(-(float)windowWidth / 2.0f, (float)windowWidth / 2.0f,
+                      -(float)windowHeight / 2.0f, (float)windowHeight / 2.0f,
+                      -1.0f, 1.0f);
     // 透视投影
     // proj =
     //    glm::perspective(glm::radians(45.0f),
@@ -140,30 +147,37 @@ int main(int argc, char *argv[]) {
         //         / 10.0f,
         //          windowHeight / 2.0 - j * windowHeight / 5.0f -
         //              windowHeight / 10.0f},
-        //         windowWidth / 5.0f, windowHeight / 5.0f, 0, {1.0, 1.0, 1.0, 1.0},
-        //         meta, TexType::REAPEAT_BY_CENTER, screensize);
+        //         windowWidth / 5.0f, windowHeight / 5.0f, 0,
+        //         {1.0, 1.0, 1.0, 1.0}, meta, TexType::REAPEAT_BY_CENTER,
+        //         screensize);
         //   }
         // }
-        // mesh.drawquad({100, 100}, 200, 80, 45, {1.0, 1.0, 0.0, 1.0}, screensize);
-        // mesh.drawquad({-200, 20}, 50, 300, -25, {0.2, 0.9, 0.5, 1.0},
-        // screensize); mesh.drawquad({300, -200}, 100, 150, 70, {0.0, 1.0,
-        // 0.0, 1.0}, screensize);
-        // float rotation = 30;
+        // mesh.drawquad({100, 100}, 200, 80, 45, {1.0, 1.0, 0.0, 1.0},
+        // screensize); mesh.drawquad({-200, 20}, 50, 300, -25, {0.2, 0.9,
+        // 0.5, 1.0}, screensize); mesh.drawquad({300, -200}, 100, 150, 70,
+        // {0.0, 1.0, 0.0, 1.0}, screensize); float rotation = 30;
         float rotation = asin(sin(glfwGetTime())) / M_PI * 180.0f;
         // auto meta = mesh.gettexmeta(rand() % 25 + 1);
         auto meta = mesh.gettexmeta("tianlangxing.png");
-        mesh.drawquad({0, 0}, windowWidth, windowHeight, rotation, {1.0, 0.1, 0.6, 1.0}, meta,
+        mesh.drawquad({0, 0}, windowWidth, windowHeight, rotation,
+                      {1.0, 0.1, 0.6, 1.0}, meta,
                       FIT_HEIGHT_AND_REPEAT_BY_CENTER, screensize);
-        mesh.drawquad({400, 200}, 300, 80, rotation, {0.5, 0.5, 0.5, 1.0}, meta, FIT_HEIGHT_AND_REPEAT_BY_CENTER,
+        mesh.drawquad({400, 200}, 300, 80, rotation, {0.5, 0.5, 0.5, 1.0}, meta,
+                      FIT_HEIGHT_AND_REPEAT_BY_CENTER, screensize);
+        mesh.drawquad({0, -300}, 400, 200, rotation, {0.0, 1.0, 1.0, 1.0}, meta,
+                      REAPEAT, screensize);
+        mesh.drawquad({500, -200}, 328, 328, rotation, {1.0, 0.0, 1.0, 1.0},
+                      meta, FILL, screensize);
+        mesh.drawquad({-400, 100}, 400, 146, rotation, {1.0, 1.0, 0.0, 1.0},
+                      meta, FIT_HEIGHT_AND_REPEAT, screensize);
+        mesh.drawquad({-400, -150}, 520, 276, rotation, {0.0, 1.0, 0.0, 1.0},
+                      meta, REAPEAT_BY_CENTER, screensize);
+        mesh.drawquad({100, 100}, 128, 345, rotation, {1.0f, 1.0f, 1.0f, 1.0f},
+                      meta, FIT_WIDTH_AND_REPEAT, screensize);
+        mesh.drawoval({0, 0}, 600, 600, 0, {1.0, 1.0, 1.0, 1.0}, meta, FILL,
                       screensize);
-        mesh.drawquad({0, -300}, 400, 200, rotation, {0.0, 1.0, 1.0, 1.0}, meta, REAPEAT, screensize);
-        mesh.drawquad({500, -200}, 328, 328, rotation, {1.0, 0.0, 1.0, 1.0}, meta, FILL, screensize);
-        mesh.drawquad({-400, 100}, 400, 146, rotation, {1.0, 1.0, 0.0, 1.0}, meta, FIT_HEIGHT_AND_REPEAT, screensize);
-        mesh.drawquad({-400, -150}, 520, 276, rotation, {0.0, 1.0, 0.0, 1.0}, meta, REAPEAT_BY_CENTER, screensize);
-        mesh.drawquad({100, 100}, 128, 345, rotation, {1.0f, 1.0f, 1.0f, 1.0f}, meta, FIT_WIDTH_AND_REPEAT, screensize);
-        mesh.drawoval({0, 0}, 600, 600, 0, {1.0, 1.0, 1.0, 1.0}, meta, FILL, screensize);
-        mesh.drawoval({300, -100}, 200, 100, rotation, {1.0, 1.0, 1.0, 1.0}, meta, FIT_HEIGHT_AND_REPEAT_BY_CENTER,
-                      screensize);
+        mesh.drawoval({300, -100}, 200, 100, rotation, {1.0, 1.0, 1.0, 1.0},
+                      meta, FIT_HEIGHT_AND_REPEAT_BY_CENTER, screensize);
         // mesh.drawtext({120, 120}, "nmsl", 14, STYLE::NORMAL, rotation,
         //               {1.0f, 1.0f, 1.0f, 1.0f}, screensize);
         mesh.finish();
@@ -171,9 +185,11 @@ int main(int argc, char *argv[]) {
         // 获取代码执行后的时间点
         auto end = std::chrono::high_resolution_clock::now();
         // 计算时间差
-        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+        auto duration =
+            std::chrono::duration_cast<std::chrono::microseconds>(end - start);
         LOG_TRACE("frame time:" + std::to_string(duration.count()) + "us");
-        // std::cout << "frame time:" << std::to_string(duration.count()) << "us"
+        // std::cout << "frame time:" << std::to_string(duration.count()) <<
+        // "us"
         //           << std::endl;
 
         glfwPollEvents();

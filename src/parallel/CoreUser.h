@@ -17,7 +17,7 @@ class ParallelWorker {
 
     void *(*task)();
 
-public:
+   public:
     // 构造ParallelWorker
     ParallelWorker(int threadcount);
 

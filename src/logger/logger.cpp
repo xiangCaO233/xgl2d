@@ -1,4 +1,5 @@
 #include "logger.h"
+
 #include <iostream>
 #include <string>
 
@@ -29,18 +30,21 @@ ANSI 颜色代码表
 46 - 青色
 47 - 白色
 */
-void CustomFormatter::format(const spdlog::details::log_msg &msg, spdlog::memory_buf_t &dest) {
+void CustomFormatter::format(const spdlog::details::log_msg &msg,
+                             spdlog::memory_buf_t &dest) {
     // 使用 std::chrono 格式化时间
     auto now = std::chrono::system_clock::now();
     auto duration = now.time_since_epoch();
     auto seconds = std::chrono::duration_cast<std::chrono::seconds>(duration);
-    auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration) -
-                        std::chrono::duration_cast<std::chrono::seconds>(duration);
+    auto milliseconds =
+        std::chrono::duration_cast<std::chrono::milliseconds>(duration) -
+        std::chrono::duration_cast<std::chrono::seconds>(duration);
     auto time = std::chrono::system_clock::to_time_t(now);
     std::tm tm_local = *std::localtime(&time);
     // 使用 fmt::format 格式化时间为 "HH:MM:SS.mmm"
-    std::string formatted_time = fmt::format("{:02}:{:02}:{:02}.{:03}", tm_local.tm_hour, tm_local.tm_min,
-                                             tm_local.tm_sec, milliseconds.count());
+    std::string formatted_time =
+        fmt::format("{:02}:{:02}:{:02}.{:03}", tm_local.tm_hour,
+                    tm_local.tm_min, tm_local.tm_sec, milliseconds.count());
     // 根据日志等级设置背景色和文本消息的前景色
     std::string bg_color_code;
     std::string message_color_code;
@@ -88,35 +92,41 @@ void CustomFormatter::format(const spdlog::details::log_msg &msg, spdlog::memory
             should_show_file = true;
             break;
         case spdlog::level::trace:
-            bg_color_code = "\033[40m";           // 白色背景
-            message_color_code = "\033[0;30;47m"; // 黑色前景
+            bg_color_code = "\033[40m";            // 白色背景
+            message_color_code = "\033[0;30;47m";  // 黑色前景
             message_forge_color_code = "\033[1;37;40m";
             log_level_str = "TRACE";
             break;
         default:
-            bg_color_code = "\033[40m";         // 黑色背景
-            message_color_code = "\033[97;40m"; // 白色前景
+            bg_color_code = "\033[40m";          // 黑色背景
+            message_color_code = "\033[97;40m";  // 白色前景
             break;
     }
     // 文件名和行号：紫色不加粗，若背景是紫色，则切换为白色
-    std::string file_color_code = (bg_color_code == "\033[45m") ? "\033[97m" : "\033[35m";
+    std::string file_color_code =
+        (bg_color_code == "\033[45m") ? "\033[97m" : "\033[35m";
     // 函数名：绿色加粗
     std::string function_color_code = "\033[32;1m";
     // 获取终端宽度
     size_t terminal_width = get_terminal_width();
     // 写入时间和背景色
-    fmt::format_to(std::back_inserter(dest), "{}\033[36;1m[{}] \033[0m", bg_color_code, formatted_time);
+    fmt::format_to(std::back_inserter(dest), "{}\033[36;1m[{}] \033[0m",
+                   bg_color_code, formatted_time);
     // 添加日志等级，使用背景色当做前景色
-    fmt::format_to(std::back_inserter(dest), "\033[1;97;40m[{}{}\033[1;97;40m/{}", message_forge_color_code,
-                   log_level_str, bg_color_code);
+    fmt::format_to(std::back_inserter(dest),
+                   "\033[1;97;40m[{}{}\033[1;97;40m/{}",
+                   message_forge_color_code, log_level_str, bg_color_code);
     // 添加函数名
-    fmt::format_to(std::back_inserter(dest), "{}{}{}\033[1;97;40m]: {}", bg_color_code, function_color_code,
-                   msg.source.funcname, bg_color_code);
+    fmt::format_to(std::back_inserter(dest), "{}{}{}\033[1;97;40m]: {}",
+                   bg_color_code, function_color_code, msg.source.funcname,
+                   bg_color_code);
     // 文本消息
-    fmt::format_to(std::back_inserter(dest), "{}{}{}", message_color_code, msg.payload, bg_color_code);
+    fmt::format_to(std::back_inserter(dest), "{}{}{}", message_color_code,
+                   msg.payload, bg_color_code);
     if (should_show_file) {
         // 添加文件和行号
-        fmt::format_to(std::back_inserter(dest), "{} [{}:{}]{}", file_color_code, msg.source.filename, msg.source.line,
+        fmt::format_to(std::back_inserter(dest), "{} [{}:{}]{}",
+                       file_color_code, msg.source.filename, msg.source.line,
                        bg_color_code);
     }
     // 补齐背景色到终端宽度
@@ -124,7 +134,8 @@ void CustomFormatter::format(const spdlog::details::log_msg &msg, spdlog::memory
     size_t padding_length = terminal_width - current_length;
     // 补充空白，保持背景色的统一
     if (padding_length > 0) {
-        fmt::format_to(std::back_inserter(dest), "{}{}", std::string(padding_length, ' '), "\033[0m");
+        fmt::format_to(std::back_inserter(dest), "{}{}",
+                       std::string(padding_length, ' '), "\033[0m");
     }
 };
 
@@ -136,8 +147,8 @@ size_t CustomFormatter::get_terminal_width() {
 #ifdef _WIN32
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     if (!GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
-      LOG_ERROR("获取控制台宽度失败");
-      return 80;
+        LOG_ERROR("获取控制台宽度失败");
+        return 80;
     }
     return csbi.dwSize.X;
 #elif __unix__ || __APPLE__
@@ -153,7 +164,8 @@ size_t CustomFormatter::get_terminal_width() {
 #endif
 };
 
-size_t CustomFormatter::calculate_display_width(const spdlog::memory_buf_t &buf) {
+size_t CustomFormatter::calculate_display_width(
+    const spdlog::memory_buf_t &buf) {
     size_t width = 0;
     bool in_escape_sequence = false;
     mbstate_t state{};
@@ -176,14 +188,14 @@ size_t CustomFormatter::calculate_display_width(const spdlog::memory_buf_t &buf)
         } else {
             // 处理普通字符或多字节字符
             size_t len = std::mbrtowc(&wc, &buf[i], buf.size() - i, &state);
-            if (len == (size_t) -1 || len == (size_t) -2 || len == 0) {
+            if (len == (size_t)-1 || len == (size_t)-2 || len == 0) {
                 // 无法解析为宽字符，按单字符处理
                 width++;
                 i++;
             } else {
                 // 宽字符解析成功
                 int char_width = wcwidth(wc);
-                width += (char_width > 0) ? char_width : 1; // 无效宽度视为1
+                width += (char_width > 0) ? char_width : 1;  // 无效宽度视为1
                 i += len;
             }
             int console_width = get_terminal_width();
@@ -199,7 +211,8 @@ size_t CustomFormatter::calculate_display_width(const spdlog::memory_buf_t &buf)
 std::shared_ptr<spdlog::logger> XLogger::_logger;
 
 // 包装的日志函数，带有调用者信息
-void XLogger::log(spdlog::level::level_enum level, const spdlog::source_loc &loc, const std::string &msg) {
+void XLogger::log(spdlog::level::level_enum level,
+                  const spdlog::source_loc &loc, const std::string &msg) {
     _logger->log(loc, level, msg);
 };
 
@@ -211,12 +224,14 @@ void XLogger::init() {
     auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     console_sink->set_level(spdlog::level::trace);
     // 创建一个文件日志 sink
-    auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("debug.log", true);
+    auto file_sink =
+        std::make_shared<spdlog::sinks::basic_file_sink_mt>("debug.log", true);
     file_sink->set_level(spdlog::level::trace);
     // 设置异步日志器，结合两个 sink
     spdlog::init_thread_pool(1, 1);
-    _logger = std::make_shared<spdlog::async_logger>("async_logger", spdlog::sinks_init_list{console_sink, file_sink},
-                                                     spdlog::thread_pool(), spdlog::async_overflow_policy::block);
+    _logger = std::make_shared<spdlog::async_logger>(
+        "async_logger", spdlog::sinks_init_list{console_sink, file_sink},
+        spdlog::thread_pool(), spdlog::async_overflow_policy::block);
     // 给控制台日志器使用自定义格式化器
     auto formatter = std::make_unique<CustomFormatter>();
     console_sink->set_formatter(std::move(formatter));

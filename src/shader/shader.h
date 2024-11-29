@@ -1,13 +1,12 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include "../../include/core/glcore.h"
-#include "../logger/logger.h"
 #include <unordered_map>
 
-enum SType {
-    SHADER_COMPILE, PROGRAM_LINK
-};
+#include "../../include/core/glcore.h"
+#include "../logger/logger.h"
+
+enum SType { SHADER_COMPILE, PROGRAM_LINK };
 
 class Shader {
     GLuint program{};
@@ -17,7 +16,7 @@ class Shader {
 
     friend class XquadMesh;
 
-public:
+   public:
     // 构造Shader
     Shader(const char *verglslfile, const char *fragglslfile);
 
@@ -47,7 +46,7 @@ public:
 
     void set_unfmat4f(const char *name, glm::mat4 &mat);
 
-private:
+   private:
     GLuint shader_program{0};
 
     // 检查着色器及链接器编译或链接错误
