@@ -10,26 +10,26 @@ class MaxRectsBinPack {
    public:
     /// Instantiates a bin of the given size.
     MaxRectsBinPack(int width = 4096, int height = 4096,
-		    float expandrate = 1.05);
+                    float expandrate = 1.05);
 
     /// Specifies the different heuristic rules that can be used when deciding
     /// where to place a new rectangle.
     enum FreeRectChoiceHeuristic {
-	RectBestShortSideFit,  ///< -BSSF: Positions the rectangle against the
-			       ///< short
-	///< side of a free rectangle into which it fits the
-	///< best.
-	RectBestLongSideFit,  ///< -BLSF: Positions the rectangle against the
-			      ///< long
-	///< side of a free rectangle into which it fits the
-	///< best.
-	RectBestAreaFit,  ///< -BAF: Positions the rectangle into the smallest
-			  ///< free
-	///< rect into which it fits.
-	RectBottomLeftRule,   ///< -BL: Does the Tetris placement.
-	RectContactPointRule  ///< -CP: Choosest the placement where the
-			      ///< rectangle
-	///< touches other rects as much as possible.
+        RectBestShortSideFit,  ///< -BSSF: Positions the rectangle against the
+                               ///< short
+        ///< side of a free rectangle into which it fits the
+        ///< best.
+        RectBestLongSideFit,  ///< -BLSF: Positions the rectangle against the
+                              ///< long
+        ///< side of a free rectangle into which it fits the
+        ///< best.
+        RectBestAreaFit,  ///< -BAF: Positions the rectangle into the smallest
+                          ///< free
+        ///< rect into which it fits.
+        RectBottomLeftRule,   ///< -BL: Does the Tetris placement.
+        RectContactPointRule  ///< -CP: Choosest the placement where the
+                              ///< rectangle
+                              ///< touches other rects as much as possible.
     };
 
     /// Inserts the given list of rectangles in an offline/batch mode, possibly
@@ -40,13 +40,13 @@ class MaxRectsBinPack {
     /// indices will not correspond to that of rects.
     /// @param method The rectangle placement rule to use when packing.
     void Insert(std::vector<RectSize> &rects, std::vector<Rect> &dst,
-		FreeRectChoiceHeuristic method);
+                FreeRectChoiceHeuristic method);
 
     /// Inserts a single rectangle into the bin, possibly rotated.
     Rect Insert(int width, int height, FreeRectChoiceHeuristic method);
 
     void Insert(std::shared_ptr<TextureMeta> meta,
-		FreeRectChoiceHeuristic method);
+                FreeRectChoiceHeuristic method);
 
     /// Computes the ratio of used surface area to the total bin area.
     float Occupancy() const;
@@ -72,7 +72,7 @@ class MaxRectsBinPack {
     /// @return This struct identifies where the rectangle would be placed if it
     /// were placed.
     Rect ScoreRect(int width, int height, FreeRectChoiceHeuristic method,
-		   int &score1, int &score2) const;
+                   int &score1, int &score2) const;
 
     /// Places the given rectangle into the bin.
     void PlaceRect(const Rect &node);
@@ -81,22 +81,22 @@ class MaxRectsBinPack {
     int ContactPointScoreNode(int x, int y, int width, int height) const;
 
     Rect FindPositionForNewNodeBottomLeft(int width, int height, int &bestY,
-					  int &bestX) const;
+                                          int &bestX) const;
 
     Rect FindPositionForNewNodeBestShortSideFit(int width, int height,
-						int &bestShortSideFit,
-						int &bestLongSideFit) const;
+                                                int &bestShortSideFit,
+                                                int &bestLongSideFit) const;
 
     Rect FindPositionForNewNodeBestLongSideFit(int width, int height,
-					       int &bestShortSideFit,
-					       int &bestLongSideFit) const;
+                                               int &bestShortSideFit,
+                                               int &bestLongSideFit) const;
 
     Rect FindPositionForNewNodeBestAreaFit(int width, int height,
-					   int &bestAreaFit,
-					   int &bestShortSideFit) const;
+                                           int &bestAreaFit,
+                                           int &bestShortSideFit) const;
 
     Rect FindPositionForNewNodeContactPoint(int width, int height,
-					    int &contactScore) const;
+                                            int &contactScore) const;
 
     /// @return True if the free node was split.
     bool SplitFreeNode(Rect freeNode, const Rect &usedNode);

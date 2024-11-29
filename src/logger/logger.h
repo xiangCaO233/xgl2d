@@ -29,7 +29,7 @@
 class CustomFormatter : public spdlog::formatter {
    public:
     void format(const spdlog::details::log_msg &msg,
-		spdlog::memory_buf_t &dest) override;
+                spdlog::memory_buf_t &dest) override;
 
     std::unique_ptr<spdlog::formatter> clone() const override;
 
@@ -47,29 +47,29 @@ class XLogger {
 
     // 包装的日志函数，带有调用者信息
     static void log(spdlog::level::level_enum level,
-		    const spdlog::source_loc &loc, const std::string &msg);
+                    const spdlog::source_loc &loc, const std::string &msg);
 
    public:
     // 获取文件名
     inline static const char *get_relative_file_path(const char *full_path) {
-	if (!full_path || *full_path == '\0') {
-	    return "unknown";
-	}
+        if (!full_path || *full_path == '\0') {
+            return "unknown";
+        }
 
-	static thread_local std::string relative_path;
-	std::string path(full_path);
-	size_t pos;
+        static thread_local std::string relative_path;
+        std::string path(full_path);
+        size_t pos;
 #ifdef _WIN32
-	pos = path.find_last_of("\\");
+        pos = path.find_last_of("\\");
 #else
-	pos = path.find_last_of("/\\");
+        pos = path.find_last_of("/\\");
 #endif
-	if (pos != std::string::npos) {
-	    relative_path = path.substr(pos + 1);
-	} else {
-	    relative_path = path;
-	}
-	return relative_path.c_str();
+        if (pos != std::string::npos) {
+            relative_path = path.substr(pos + 1);
+        } else {
+            relative_path = path;
+        }
+        return relative_path.c_str();
     }
 
     static void init();
@@ -91,7 +91,7 @@ class XLogger {
 // 定义自定义的 LOG_LOC 宏
 #define LOG_LOC                                                           \
     spdlog::source_loc {                                                  \
-	XLogger::get_relative_file_path(__FILE__), __LINE__, __FUNCTION__ \
+        XLogger::get_relative_file_path(__FILE__), __LINE__, __FUNCTION__ \
     }
 // 每种日志类型的宏，用于自动捕获调用者的信息
 #define LOG_TRACE(msg) XLogger::trace(LOG_LOC, msg)

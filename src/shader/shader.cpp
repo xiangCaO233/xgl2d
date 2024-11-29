@@ -66,31 +66,31 @@ void Shader::check_error(GLuint val, SType error_type) {
     int success;
     char infoLog[1024];
     switch (error_type) {
-	case SHADER_COMPILE: {
-	    glGetShaderiv(val, GL_COMPILE_STATUS, &success);
-	    if (!success) {
-		glGetShaderInfoLog(val, 1024, nullptr, infoLog);
-		LOG_ERROR("着色器编译失败");
-		LOG_ERROR(infoLog);
-	    }
-	    break;
-	}
-	case PROGRAM_LINK: {
-	    glGetProgramiv(val, GL_LINK_STATUS, &success);
-	    if (!success) {
-		glGetProgramInfoLog(val, 1024, nullptr, infoLog);
-		LOG_ERROR("着色器链接失败");
-		LOG_ERROR(infoLog);
-	    }
-	    break;
-	}
+        case SHADER_COMPILE: {
+            glGetShaderiv(val, GL_COMPILE_STATUS, &success);
+            if (!success) {
+                glGetShaderInfoLog(val, 1024, nullptr, infoLog);
+                LOG_ERROR("着色器编译失败");
+                LOG_ERROR(infoLog);
+            }
+            break;
+        }
+        case PROGRAM_LINK: {
+            glGetProgramiv(val, GL_LINK_STATUS, &success);
+            if (!success) {
+                glGetProgramInfoLog(val, 1024, nullptr, infoLog);
+                LOG_ERROR("着色器链接失败");
+                LOG_ERROR(infoLog);
+            }
+            break;
+        }
     }
 }
 
 GLint Shader::uniform_loc(const char *name) {
     auto it = uniform_locs.find(name);
     if (it != uniform_locs.end()) {
-	return (int)uniform_locs[name];
+        return (int)uniform_locs[name];
     }
     auto loc = glGetUniformLocation(shader_program, name);
     uniform_locs[name] = loc;
@@ -118,7 +118,7 @@ void Shader::set_unfm2i(const char *name, int value1, int value2) {
 }
 
 void Shader::set_unfm3f(const char *name, float value1, float value2,
-			float value3) {
+                        float value3) {
     glUniform3f(uniform_loc(name), value1, value2, value3);
 }
 

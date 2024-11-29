@@ -46,26 +46,33 @@ class Mesh {
     std::vector<std::vector<std::shared_ptr<Quad>>> _consequent_shapes;
     std::vector<std::shared_ptr<Quad>> _shapes;
     // 每一段要更新的连续的矩形和数据
-    std::vector<std::vector<std::shared_ptr<Quad>>> _update_consequent_shapes_poss;
+    std::vector<std::vector<std::shared_ptr<Quad>>>
+        _update_consequent_shapes_poss;
     std::vector<std::vector<float>> _update_consequent_shapes_pos_datas;
-    std::vector<std::vector<std::shared_ptr<Quad>>> _update_consequent_shapes_sizes;
+    std::vector<std::vector<std::shared_ptr<Quad>>>
+        _update_consequent_shapes_sizes;
     std::vector<std::vector<float>> _update_consequent_shapes_size_datas;
-    std::vector<std::vector<std::shared_ptr<Quad>>> _update_consequent_shapes_rotations;
+    std::vector<std::vector<std::shared_ptr<Quad>>>
+        _update_consequent_shapes_rotations;
     std::vector<std::vector<float>> _update_consequent_shapes_rotation_datas;
-    std::vector<std::vector<std::shared_ptr<Quad>>> _update_consequent_shapes_colors;
+    std::vector<std::vector<std::shared_ptr<Quad>>>
+        _update_consequent_shapes_colors;
     std::vector<std::vector<float>> _update_consequent_shapes_color_datas;
-    std::vector<std::vector<std::shared_ptr<Quad>>> _update_consequent_shapes_texmetas;
+    std::vector<std::vector<std::shared_ptr<Quad>>>
+        _update_consequent_shapes_texmetas;
     std::vector<std::vector<float>> _update_consequent_shapes_texmeta_datas;
-    std::vector<std::vector<std::shared_ptr<Quad>>> _update_consequent_shapes_uvargs;
+    std::vector<std::vector<std::shared_ptr<Quad>>>
+        _update_consequent_shapes_uvargs;
     std::vector<std::vector<float>> _update_consequent_shapes_uvarg_datas;
     // 当前正在处理的矩形下标
     uint32_t _current_handle_index{0};
 
     void updateVAOpointer(uintptr_t shapecount) const;
 
-public:
+   public:
     // 构造Mesh
-    explicit Mesh(Shader *shader, std::string &texdir, int oval_segment = 32, int initial_shape_count = 4096);
+    explicit Mesh(Shader *shader, std::string &texdir, int oval_segment = 32,
+                  int initial_shape_count = 4096);
 
     // 析构Mesh
     virtual ~Mesh();
@@ -85,78 +92,95 @@ public:
     static void unbind();
 
     // 绘制矩形(材质默认混合颜色并填充到矩形)
-    void
-    drawquad(glm::vec2 &cp, float w, float h, float rotation, glm::vec4 &color, std::shared_ptr<TextureMeta> &texture,
-             TexType texture_type, glm::vec2 &screen_size, ShapeType shapetype = QUAD);
+    void drawquad(glm::vec2 &cp, float w, float h, float rotation,
+                  glm::vec4 &color, std::shared_ptr<TextureMeta> &texture,
+                  TexType texture_type, glm::vec2 &screen_size,
+                  ShapeType shapetype = QUAD);
 
-    void
-    drawquad(glm::vec2 &&cp, float w, float h, float rotation, glm::vec4 &color, std::shared_ptr<TextureMeta> &texture,
-             TexType texture_type, glm::vec2 &screen_size);
+    void drawquad(glm::vec2 &&cp, float w, float h, float rotation,
+                  glm::vec4 &color, std::shared_ptr<TextureMeta> &texture,
+                  TexType texture_type, glm::vec2 &screen_size);
 
-    void
-    drawquad(glm::vec2 &cp, float w, float h, float rotation, glm::vec4 &&color, std::shared_ptr<TextureMeta> &texture,
-             TexType texture_type, glm::vec2 &screen_size);
+    void drawquad(glm::vec2 &cp, float w, float h, float rotation,
+                  glm::vec4 &&color, std::shared_ptr<TextureMeta> &texture,
+                  TexType texture_type, glm::vec2 &screen_size);
 
-    void
-    drawquad(glm::vec2 &&cp, float w, float h, float rotation, glm::vec4 &&color, std::shared_ptr<TextureMeta> &texture,
-             TexType texture_type, glm::vec2 &screen_size);
+    void drawquad(glm::vec2 &&cp, float w, float h, float rotation,
+                  glm::vec4 &&color, std::shared_ptr<TextureMeta> &texture,
+                  TexType texture_type, glm::vec2 &screen_size);
 
     // 绘制矩形(仅填充颜色)
-    void drawquad(glm::vec2 &cp, float w, float h, float rotation, glm::vec4 &color, glm::vec2 &screen_size);
+    void drawquad(glm::vec2 &cp, float w, float h, float rotation,
+                  glm::vec4 &color, glm::vec2 &screen_size);
 
-    void drawquad(glm::vec2 &&cp, float w, float h, float rotation, glm::vec4 &color, glm::vec2 &screen_size);
+    void drawquad(glm::vec2 &&cp, float w, float h, float rotation,
+                  glm::vec4 &color, glm::vec2 &screen_size);
 
-    void drawquad(glm::vec2 &cp, float w, float h, float rotation, glm::vec4 &&color, glm::vec2 &screen_size);
+    void drawquad(glm::vec2 &cp, float w, float h, float rotation,
+                  glm::vec4 &&color, glm::vec2 &screen_size);
 
-    void drawquad(glm::vec2 &&cp, float w, float h, float rotation, glm::vec4 &&color, glm::vec2 &screen_size);
+    void drawquad(glm::vec2 &&cp, float w, float h, float rotation,
+                  glm::vec4 &&color, glm::vec2 &screen_size);
 
     // 绘制矩形(仅填充材质)
-    void drawquad(glm::vec2 &cp, float w, float h, float rotation, std::shared_ptr<TextureMeta> &texture,
-                  TexType texture_type, glm::vec2 &screen_size);
+    void drawquad(glm::vec2 &cp, float w, float h, float rotation,
+                  std::shared_ptr<TextureMeta> &texture, TexType texture_type,
+                  glm::vec2 &screen_size);
 
-    void drawquad(glm::vec2 &&cp, float w, float h, float rotation, std::shared_ptr<TextureMeta> &texture,
-                  TexType texture_type, glm::vec2 &screen_size);
+    void drawquad(glm::vec2 &&cp, float w, float h, float rotation,
+                  std::shared_ptr<TextureMeta> &texture, TexType texture_type,
+                  glm::vec2 &screen_size);
 
     // 更新连续区
-    void update_consecutive(std::vector<std::vector<std::shared_ptr<Quad>>> &update_consequent_list,
-                            std::vector<std::shared_ptr<Quad>> *current_consequent_list,
-                            std::vector<std::vector<float>> &update_consequent_data_list,
-                            std::vector<float> *current_consequent_data, const std::shared_ptr<Quad> &handle_quad,
-                            Datatype type) const;
+    void update_consecutive(
+        std::vector<std::vector<std::shared_ptr<Quad>>> &update_consequent_list,
+        std::vector<std::shared_ptr<Quad>> *current_consequent_list,
+        std::vector<std::vector<float>> &update_consequent_data_list,
+        std::vector<float> *current_consequent_data,
+        const std::shared_ptr<Quad> &handle_quad, Datatype type) const;
 
     // 绘制椭圆,混合材质与颜色
-    void
-    drawoval(glm::vec2 &cp, float rx, float ry, float rotation, glm::vec4 &color, std::shared_ptr<TextureMeta> &texture,
-             TexType texture_type, glm::vec2 &screen_size);
+    void drawoval(glm::vec2 &cp, float rx, float ry, float rotation,
+                  glm::vec4 &color, std::shared_ptr<TextureMeta> &texture,
+                  TexType texture_type, glm::vec2 &screen_size);
 
-    void drawoval(glm::vec2 &&cp, float rx, float ry, float rotation, glm::vec4 &color,
-                  std::shared_ptr<TextureMeta> &texture, TexType texture_type, glm::vec2 &screen_size);
+    void drawoval(glm::vec2 &&cp, float rx, float ry, float rotation,
+                  glm::vec4 &color, std::shared_ptr<TextureMeta> &texture,
+                  TexType texture_type, glm::vec2 &screen_size);
 
-    void drawoval(glm::vec2 &cp, float rx, float ry, float rotation, glm::vec4 &&color,
-                  std::shared_ptr<TextureMeta> &texture, TexType texture_type, glm::vec2 &screen_size);
+    void drawoval(glm::vec2 &cp, float rx, float ry, float rotation,
+                  glm::vec4 &&color, std::shared_ptr<TextureMeta> &texture,
+                  TexType texture_type, glm::vec2 &screen_size);
 
-    void drawoval(glm::vec2 &&cp, float rx, float ry, float rotation, glm::vec4 &&color,
-                  std::shared_ptr<TextureMeta> &texture, TexType texture_type, glm::vec2 &screen_size);
+    void drawoval(glm::vec2 &&cp, float rx, float ry, float rotation,
+                  glm::vec4 &&color, std::shared_ptr<TextureMeta> &texture,
+                  TexType texture_type, glm::vec2 &screen_size);
 
     // 绘制椭圆(仅填充颜色)
-    void drawoval(glm::vec2 &cp, float rx, float ry, float rotation, glm::vec4 &color, glm::vec2 &screen_size);
+    void drawoval(glm::vec2 &cp, float rx, float ry, float rotation,
+                  glm::vec4 &color, glm::vec2 &screen_size);
 
-    void drawoval(glm::vec2 &&cp, float rx, float ry, float rotation, glm::vec4 &color, glm::vec2 &screen_size);
+    void drawoval(glm::vec2 &&cp, float rx, float ry, float rotation,
+                  glm::vec4 &color, glm::vec2 &screen_size);
 
-    void drawoval(glm::vec2 &cp, float rx, float ry, float rotation, glm::vec4 &&color, glm::vec2 &screen_size);
+    void drawoval(glm::vec2 &cp, float rx, float ry, float rotation,
+                  glm::vec4 &&color, glm::vec2 &screen_size);
 
-    void drawoval(glm::vec2 &&cp, float rx, float ry, float rotation, glm::vec4 &&color, glm::vec2 &screen_size);
+    void drawoval(glm::vec2 &&cp, float rx, float ry, float rotation,
+                  glm::vec4 &&color, glm::vec2 &screen_size);
 
     // 绘制椭圆(仅填充材质)
-    void drawvoal(glm::vec2 &cp, float rx, float ry, float rotation, std::shared_ptr<TextureMeta> &texture,
-                  TexType texture_type, glm::vec2 &screen_size);
+    void drawvoal(glm::vec2 &cp, float rx, float ry, float rotation,
+                  std::shared_ptr<TextureMeta> &texture, TexType texture_type,
+                  glm::vec2 &screen_size);
 
-    void drawoval(glm::vec2 &&cp, float rx, float ry, float rotation, std::shared_ptr<TextureMeta> &texture,
-                  TexType texture_type, glm::vec2 &screen_size);
+    void drawoval(glm::vec2 &&cp, float rx, float ry, float rotation,
+                  std::shared_ptr<TextureMeta> &texture, TexType texture_type,
+                  glm::vec2 &screen_size);
 
-    void
-    drawtext(glm::vec2 &pos, const char *characters, float fontsize, STYLE fontstyle, float rotation, glm::vec4 &color,
-             glm::vec2 &screensize);
+    void drawtext(glm::vec2 &pos, const char *characters, float fontsize,
+                  STYLE fontstyle, float rotation, glm::vec4 &color,
+                  glm::vec2 &screensize);
 
     void finish();
 };
