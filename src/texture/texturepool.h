@@ -12,14 +12,14 @@
 #include "shader/shader.h"
 
 enum TexType {
-    // 直接填充纹理[0]
-    FILL,               // 直接重复纹理(默认的左下角起点)[1]
-    REAPEAT,            // 直接重复纹理(以中心点扩散)[2]
-    REAPEAT_BY_CENTER,  // 直接适应宽度并纵向重复(同样默认左下角)[3]
-    FIT_WIDTH_AND_REPEAT,  // 直接适应高度并横向重复(同样默认左下角)[4]
-    FIT_HEIGHT_AND_REPEAT,  // 直接适应宽度并纵向重复(以中心点扩散)[5]
-    FIT_WIDTH_AND_REPEAT_BY_CENTER,  // 直接适应高度并横向重复(以中心点扩散)[6]
-    FIT_HEIGHT_AND_REPEAT_BY_CENTER
+    FILL,               // 直接填充纹理[0]
+    REAPEAT,            // 直接重复纹理(默认的左下角起点)[1]
+    REAPEAT_BY_CENTER,  // 直接重复纹理(以中心点扩散)[2]
+    FIT_WIDTH_AND_REPEAT,  // 直接适应宽度并纵向重复(同样默认左下角)[3]
+    FIT_HEIGHT_AND_REPEAT,  // 直接适应高度并横向重复(同样默认左下角)[4]
+    FIT_WIDTH_AND_REPEAT_BY_CENTER,  // 直接适应宽度并纵向重复(以中心点扩散)[5]
+    FIT_HEIGHT_AND_REPEAT_BY_CENTER  // 直接适应高度并横向重复(以中心点扩散)[6]
+
 };
 
 struct TextureMeta {
@@ -79,7 +79,7 @@ class Texturepool {
     // 构造图集
     void creatatlas();
 
-    std::shared_ptr<TextureMeta> operator[](const char *name) {
+    inline std::shared_ptr<TextureMeta> operator[](const char *name) {
         std::string metaname = std::string(name);
         auto it = _texmetas.find(metaname);
         if (it != _texmetas.end()) {
@@ -91,7 +91,7 @@ class Texturepool {
         }
     }
 
-    std::shared_ptr<TextureMeta> operator[](int index) {
+    inline std::shared_ptr<TextureMeta> operator[](int index) {
         auto it = _texmetas_by_index.find(index);
         if (it != _texmetas_by_index.end()) {
             // std::cout << "找到meta:[" << it->second->name << "]" <<

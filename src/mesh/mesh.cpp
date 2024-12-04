@@ -535,13 +535,6 @@ void Mesh::finish() {
                           currentlist.end());
         _shapes.erase(_shapes.begin() + _current_handle_index, _shapes.end());
     }
-    // std::cout << "debug:" << std::endl;
-    // std::cout << "gpu data:" << std::endl;
-    // auto data = std::vector<float>(_quads.size() * 19);
-    // glGetBufferSubData(GL_ARRAY_BUFFER, 0, data.size() * 4, data.data());
-    // for (auto d : data) {
-    //   std::cout << std::to_string(d) << ",";
-    // }
     //   更新连续的矩形数据
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
     if (!_update_consequent_shapes_poss.empty()) {

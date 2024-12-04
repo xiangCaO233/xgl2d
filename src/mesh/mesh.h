@@ -71,7 +71,7 @@ class Mesh {
 
    public:
     // 构造Mesh
-    explicit Mesh(Shader *shader, std::string &texdir, int oval_segment = 32,
+    explicit Mesh(Shader *shader, std::string &texdir, int oval_segment = 256,
                   int initial_shape_count = 4096);
 
     // 析构Mesh

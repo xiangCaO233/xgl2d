@@ -1,6 +1,5 @@
+#include "logger/logger.h"
 #define STB_IMAGE_IMPLEMENTATION
-
-#include "texturepool.h"
 
 #include <filesystem>
 #include <iostream>
@@ -11,6 +10,7 @@
 
 #include "MaxRectsBinPack.h"
 #include "stb_image.h"
+#include "texturepool.h"
 
 Texturepool::Texturepool(std::string &texturedir, Shader *shader)
     : _shader(shader) {
@@ -23,7 +23,7 @@ Texturepool::Texturepool(std::string &texturedir, Shader *shader)
     // 缩小使用临近过滤
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     // 放大使用线性过滤
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     // 反转y轴,合乎gl礼
     stbi_set_flip_vertically_on_load(true);
 
@@ -64,12 +64,13 @@ void Texturepool::loadtexture(std::string &texturedir) {
             LOG_CRITICAL("非法纹理文件(路径)");
             throw std::runtime_error("illegal texture file");
         } else if (std::filesystem::is_regular_file(texturedir)) {
-            LOG_INFO("读取纹理:[" +
+            LOG_INFO("读取纹理[" +
                      std::filesystem::absolute(texturedir).string() + "]");
             int twidth, theight, nrChannels;
             unsigned char *data =
                 stbi_load(std::filesystem::absolute(texturedir).c_str(),
-                          &twidth, &theight, &nrChannels, 0);
+                          &twidth, &theight, &nrChannels, STBI_rgb_alpha);
+            LOG_DEBUG("通道数:[" + std::to_string(nrChannels) + "]");
             // 读取到表中
             auto meta = std::make_shared<TextureMeta>();
             auto filename =

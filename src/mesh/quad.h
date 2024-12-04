@@ -24,7 +24,7 @@ class Quad {
     int updateindexlist{0}, updateindexelement{0};
 
     // 在模型缓冲区中的偏移
-    uint32_t model_data_offset[6]{0};
+    uint32_t model_data_offset[6]{0, 0, 0, 0, 0, 0};
 
     friend class Mesh;
 

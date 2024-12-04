@@ -67,6 +67,8 @@ int main(int argc, char *argv[]) {
     const GLubyte *version = glGetString(GL_VERSION);
     LOG_DEBUG("OpenGL Version: " +
               std::string(reinterpret_cast<const char *>(version)));
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     // 查询最大支持抗锯齿MSAA倍率
     GLint maxSamples;
     glGetIntegerv(GL_MAX_SAMPLES, &maxSamples);
@@ -74,7 +76,7 @@ int main(int argc, char *argv[]) {
     // 启用 最大 MSAA
     glfwWindowHint(GLFW_SAMPLES, maxSamples);
     // 禁用V-Sync
-    // glfwSwapInterval(0);
+    glfwSwapInterval(0);
 
     // 绑定窗口大小回调函数
     glfwSetFramebufferSizeCallback(w, framebuffer_size_callback);
@@ -136,29 +138,29 @@ int main(int argc, char *argv[]) {
         // arm处理器获取时钟周期
         //__asm__ volatile("mrs %0, CNTVCT_EL0" : "=r"(tsc));
         // std::cout << std::to_string(tsc) << std::endl;
-
         auto start = std::chrono::high_resolution_clock::now();
         // for (int i = 0; i < 5; i++) {
-        //   for (int j = 0; j < 5; j++) {
-        //     float rotation = asin(sin(glfwGetTime())) / M_PI * 180.0f;
-        //     auto meta = mesh.gettexmeta(5 * i + j + 1);
-        //     mesh.drawquad(
-        //         {-windowWidth / 2.0f + i * windowWidth / 5.0f + windowWidth
-        //         / 10.0f,
-        //          windowHeight / 2.0 - j * windowHeight / 5.0f -
-        //              windowHeight / 10.0f},
-        //         windowWidth / 5.0f, windowHeight / 5.0f, 0,
-        //         {1.0, 1.0, 1.0, 1.0}, meta, TexType::REAPEAT_BY_CENTER,
-        //         screensize);
-        //   }
+        //     for (int j = 0; j < 5; j++) {
+        //         float rotation = asin(sin(glfwGetTime())) / M_PI * 180.0f;
+        //         auto meta = mesh.gettexmeta(5 * i + j + 1);
+        //         mesh.drawquad({-windowWidth / 2.0f + i * windowWidth / 5.0f +
+        //                            windowWidth / 10.0f,
+        //                        windowHeight / 2.0 - j * windowHeight / 5.0f -
+        //                            windowHeight / 10.0f},
+        //                       windowWidth / 5.0f, windowHeight / 5.0f, 0,
+        //                       {1.0, 1.0, 1.0, 1.0}, meta, REAPEAT_BY_CENTER,
+        //                       screensize);
+        //     }
         // }
-        // mesh.drawquad({100, 100}, 200, 80, 45, {1.0, 1.0, 0.0, 1.0},
-        // screensize); mesh.drawquad({-200, 20}, 50, 300, -25, {0.2, 0.9,
-        // 0.5, 1.0}, screensize); mesh.drawquad({300, -200}, 100, 150, 70,
-        // {0.0, 1.0, 0.0, 1.0}, screensize); float rotation = 30;
+        //  mesh.drawquad({100, 100}, 200, 80, 45, {1.0, 1.0, 0.0, 1.0},
+        //  screensize); mesh.drawquad({-200, 20}, 50, 300, -25, {0.2, 0.9,
+        //  0.5, 1.0}, screensize); mesh.drawquad({300, -200}, 100, 150, 70,
+        //  {0.0, 1.0, 0.0, 1.0}, screensize); float rotation = 30;
         float rotation = asin(sin(glfwGetTime())) / M_PI * 180.0f;
         // auto meta = mesh.gettexmeta(rand() % 25 + 1);
         auto meta = mesh.gettexmeta("tianlangxing.png");
+        auto lhorizon = mesh.gettexmeta("l_horizon.png");
+        auto note = mesh.gettexmeta("note.png");
         mesh.drawquad({0, 0}, windowWidth, windowHeight, rotation,
                       {1.0, 0.1, 0.6, 1.0}, meta,
                       FIT_HEIGHT_AND_REPEAT_BY_CENTER, screensize);
@@ -178,8 +180,13 @@ int main(int argc, char *argv[]) {
                       screensize);
         mesh.drawoval({300, -100}, 200, 100, rotation, {1.0, 1.0, 1.0, 1.0},
                       meta, FIT_HEIGHT_AND_REPEAT_BY_CENTER, screensize);
-        // mesh.drawtext({120, 120}, "nmsl", 14, STYLE::NORMAL, rotation,
-        //               {1.0f, 1.0f, 1.0f, 1.0f}, screensize);
+        mesh.drawquad({0, 0}, windowWidth, 30, 0, {1.0f, 1.0f, 1.0f, 1.0f},
+                      lhorizon, FIT_HEIGHT_AND_REPEAT, screensize);
+
+        // mesh.drawquad({0, 0}, 200, 80, 0, {1.0, 1.0, 1.0, 1.0}, note, FILL,
+        //               screensize);
+        //  mesh.drawtext({120, 120}, "nmsl", 14, STYLE::NORMAL, rotation,
+        //                {1.0f, 1.0f, 1.0f, 1.0f}, screensize);
         mesh.finish();
         glfwSwapBuffers(w);
         // 获取代码执行后的时间点
@@ -191,7 +198,6 @@ int main(int argc, char *argv[]) {
         // std::cout << "frame time:" << std::to_string(duration.count()) <<
         // "us"
         //           << std::endl;
-
         glfwPollEvents();
         // 读取错误信息
         while (GLenum error = glGetError()) {
