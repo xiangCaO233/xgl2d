@@ -107,8 +107,6 @@ void CustomFormatter::format(const spdlog::details::log_msg &msg,
         (bg_color_code == "\033[45m") ? "\033[97m" : "\033[35m";
     // 函数名：绿色加粗
     std::string function_color_code = "\033[32;1m";
-    // 获取终端宽度
-    size_t terminal_width = get_terminal_width();
     // 写入时间和背景色
     fmt::format_to(std::back_inserter(dest), "{}\033[36;1m[{}] \033[0m",
                    bg_color_code, formatted_time);
@@ -129,85 +127,14 @@ void CustomFormatter::format(const spdlog::details::log_msg &msg,
                        file_color_code, msg.source.filename, msg.source.line,
                        bg_color_code);
     }
-    // 补齐背景色到终端宽度
-    size_t current_length = calculate_display_width(dest);
-    size_t padding_length = terminal_width - current_length;
-    // 补充空白，保持背景色的统一
-    if (padding_length > 0) {
-        fmt::format_to(std::back_inserter(dest), "{}{}",
-                       std::string(padding_length, ' '), "\033[0m");
-    }
+    fmt::format_to(std::back_inserter(dest), "{}{}{}", bg_color_code, "\n",
+                   bg_color_code);
 };
 
 std::unique_ptr<spdlog::formatter> CustomFormatter::clone() const {
     return std::make_unique<CustomFormatter>(*this);
 };
 
-size_t CustomFormatter::get_terminal_width() {
-#ifdef _WIN32
-    CONSOLE_SCREEN_BUFFER_INFO csbi;
-    if (!GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
-        LOG_ERROR("获取控制台宽度失败");
-        return 80;
-    }
-    return csbi.dwSize.X;
-#elif __unix__ || __APPLE__
-    struct winsize w;
-    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == -1) {
-        LOG_ERROR("获取控制台宽度失败");
-        return 80;
-    }
-    // std::cout << "终端宽度:[" + std::to_string(w.ws_col) + "]" << std::endl;
-    return w.ws_col;
-#else
-    return 80;
-#endif
-};
-
-size_t CustomFormatter::calculate_display_width(
-    const spdlog::memory_buf_t &buf) {
-    size_t width = 0;
-    bool in_escape_sequence = false;
-    mbstate_t state{};
-    wchar_t wc;
-
-    for (size_t i = 0; i < buf.size();) {
-        char c = buf[i];
-
-        if (c == '\033') {
-            // 转义序列开始
-            in_escape_sequence = true;
-            i++;
-        } else if (in_escape_sequence && c == 'm') {
-            // 转义序列结束
-            in_escape_sequence = false;
-            i++;
-        } else if (in_escape_sequence) {
-            // 跳过转义序列内容
-            i++;
-        } else {
-            // 处理普通字符或多字节字符
-            size_t len = std::mbrtowc(&wc, &buf[i], buf.size() - i, &state);
-            if (len == (size_t)-1 || len == (size_t)-2 || len == 0) {
-                // 无法解析为宽字符，按单字符处理
-                width++;
-                i++;
-            } else {
-                // 宽字符解析成功
-                int char_width = wcwidth(wc);
-                width += (char_width > 0) ? char_width : 1;  // 无效宽度视为1
-                i += len;
-            }
-            int console_width = get_terminal_width();
-            // 检查是否超出控制台宽度
-            if (width > console_width) {
-                // 换行处理
-                width %= console_width;
-            }
-        }
-    }
-    return width;
-};
 std::shared_ptr<spdlog::logger> XLogger::_logger;
 
 // 包装的日志函数，带有调用者信息

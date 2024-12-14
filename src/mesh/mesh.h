@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "../../include/core/glcore.h"
+#include "mesh/text/text.h"
 #include "quad.h"
 #include "shader/shader.h"
 #include "texture/texturepool.h"
@@ -40,6 +41,8 @@ class Mesh {
     int _oval_segment;
     // 绑定的着色器
     Shader *_shader;
+    // 文字pack
+    XText *_xtext;
     // 纹理池
     Texturepool *_texpool;
     // 包含的图形

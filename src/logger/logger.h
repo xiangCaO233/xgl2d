@@ -32,11 +32,6 @@ class CustomFormatter : public spdlog::formatter {
                 spdlog::memory_buf_t &dest) override;
 
     std::unique_ptr<spdlog::formatter> clone() const override;
-
-   private:
-    size_t get_terminal_width();
-
-    size_t calculate_display_width(const spdlog::memory_buf_t &buf);
 };
 
 class XLogger {

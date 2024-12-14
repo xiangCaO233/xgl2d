@@ -64,6 +64,7 @@ class Texturepool {
     // 构造Texturepool
     // 直接读取纹理文件夹
     Texturepool(std::string &texturedir, Shader *shader);
+    Texturepool(Shader *shader);
 
     // 析构Texturepool
     virtual ~Texturepool();
@@ -74,10 +75,10 @@ class Texturepool {
     void unbind();
 
     // 加载纹理文件或文件夹
-    void loadtexture(std::string &texturedir);
+    virtual void loadtexture(std::string &texturedir);
 
     // 构造图集
-    void creatatlas();
+    virtual void creatatlas();
 
     inline std::shared_ptr<TextureMeta> operator[](const char *name) {
         std::string metaname = std::string(name);

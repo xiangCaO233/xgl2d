@@ -43,6 +43,24 @@ Texturepool::Texturepool(std::string &texturedir, Shader *shader)
     loadtexture(texturedir);
 }
 
+Texturepool::Texturepool(Shader *shader) {
+    glGenTextures(1, &texture_atlas);
+    glBindTexture(GL_TEXTURE_2D, texture_atlas);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    static unsigned char whitePixel[4 * 9] = {
+        255,
+        255,
+        255,
+        255,
+    };
+    _defmeta = std::make_shared<TextureMeta>("defmeta", 1, 1, 0, 0);
+    _texmetas[_defmeta->name] = _defmeta;
+    _texdatas[_defmeta] = whitePixel;
+};
+
 Texturepool::~Texturepool() {
     glBindTexture(GL_TEXTURE_2D, 0);
     glDeleteTextures(1, &texture_atlas);

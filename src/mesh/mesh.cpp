@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "mesh/quad.h"
+#include "mesh/text/text.h"
 
 Mesh::Mesh(Shader *shader, std::string &texture_dir, int oval_segment,
            int initial_shape_count)
@@ -107,6 +108,9 @@ Mesh::Mesh(Shader *shader, std::string &texture_dir, int oval_segment,
     glVertexAttribPointer(7, 1, GL_FLOAT, GL_FALSE, sizeof(float),
                           (void *)(max_quad_count * 10 * sizeof(float)));
     glVertexAttribDivisor(7, 1);
+    // 初始化文本包
+    std::string fontf = "../assets/resources/font.ttf";
+    // _xtext = new XText(fontf, shader);
 
     // 初始化纹理池
     _texpool = new Texturepool(texture_dir, shader);

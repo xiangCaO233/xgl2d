@@ -13,6 +13,8 @@
 
 - 日志系统
   ![log](logger.jpg)
+- 修复模拟终端日志崩溃bug(Clion等ide中)
+  ![fixedlog](loggerbugfix.jpg)
 - 统一化绘制椭圆和矩形(好像真又是同一种东西Oval类直接删了)
   ![oval](ovaltest.jpg)
 - linux测试(差太远了)(旁边预加载纹理的固定消耗)

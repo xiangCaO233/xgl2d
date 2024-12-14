@@ -162,7 +162,7 @@ int main(int argc, char *argv[]) {
         auto lhorizon = mesh.gettexmeta("l_horizon.png");
         auto note = mesh.gettexmeta("note.png");
         mesh.drawquad({0, 0}, windowWidth, windowHeight, rotation,
-                      {1.0, 0.1, 0.6, 1.0}, meta,
+                      {1.0, 0.70, 0.74, 1.0}, meta,
                       FIT_HEIGHT_AND_REPEAT_BY_CENTER, screensize);
         mesh.drawquad({400, 200}, 300, 80, rotation, {0.5, 0.5, 0.5, 1.0}, meta,
                       FIT_HEIGHT_AND_REPEAT_BY_CENTER, screensize);
@@ -178,7 +178,7 @@ int main(int argc, char *argv[]) {
                       meta, FIT_WIDTH_AND_REPEAT, screensize);
         mesh.drawoval({0, 0}, 600, 600, 0, {1.0, 1.0, 1.0, 1.0}, meta, FILL,
                       screensize);
-        mesh.drawoval({300, -100}, 200, 100, rotation, {1.0, 1.0, 1.0, 1.0},
+        mesh.drawoval({300, -100}, 200, 100, rotation, {1.0, 0.41, 0.70, 1.0},
                       meta, FIT_HEIGHT_AND_REPEAT_BY_CENTER, screensize);
         mesh.drawquad({0, 0}, windowWidth, 30, 0, {1.0f, 1.0f, 1.0f, 1.0f},
                       lhorizon, FIT_HEIGHT_AND_REPEAT, screensize);
