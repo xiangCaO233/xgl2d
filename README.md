@@ -29,4 +29,8 @@
 - 黄色:适应高并以左下角为基准向右重采样
 - 灰色:适应高并以中心为基准扩散重采样
 - 白色:适应宽并以左下角为基准向上重采样
-- 灰色:适应宽并以中心为基准扩散重采样
+## 使用
+- 源图
+  ![srctex](assets/texture/l_horizon.png)
+- 应用扩散采样
+  ![texeffect](srcresampleeffect.png)
